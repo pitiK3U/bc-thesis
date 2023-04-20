@@ -1,0 +1,187 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% I, the copyright holder of this work, release this work into the
+%% public domain. This applies worldwide. In some countries this may
+%% not be legally possible; if so: I grant anyone the right to use
+%% this work for any purpose, without any conditions, unless such
+%% conditions are required by law.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[
+  digital,     %% The `digital` option enables the default options for the
+               %% digital version of a document. Replace with `printed`
+               %% to enable the default options for the printed version
+               %% of a document.
+%%  color,       %% Uncomment these lines (by removing the %% at the
+%%               %% beginning) to use color in the printed version of your
+%%               %% document
+  oneside,     %% The `oneside` option enables one-sided typesetting,
+               %% which is preferred if you are only going to submit a
+               %% digital version of your thesis. Replace with `twoside`
+               %% for double-sided typesetting if you are planning to
+               %% also print your thesis. For double-sided typesetting,
+               %% use at least 120 g/m² paper to prevent show-through.
+  nosansbold,  %% The `nosansbold` option prevents the use of the
+               %% sans-serif type face for bold text. Replace with
+               %% `sansbold` to use sans-serif type face for bold text.
+  nocolorbold, %% The `nocolorbold` option disables the usage of the
+               %% blue color for bold text, instead using black. Replace
+               %% with `colorbold` to use blue for bold text.
+  nolof,         %% The `lof` option prints the List of Figures. Replace
+               %% with `nolof` to hide the List of Figures.
+  nolot,         %% The `lot` option prints the List of Tables. Replace
+               %% with `nolot` to hide the List of Tables.
+]{fithesis4}
+%% The following section sets up the locales used in the thesis.
+\usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
+\usepackage[
+  main=english, %% By using `czech` or `slovak` as the main locale
+                %% instead of `english`, you can typeset the thesis
+                %% in either Czech or Slovak, respectively.
+  english, czech %% The additional keys allow
+]{babel}        %% foreign texts to be typeset as follows:
+%%
+
+\newcommand{\TODO}[1]{\textcolor{red}{\textit{#1}}}
+
+%% The following section sets up the metadata of the thesis.
+\thesissetup{
+    date        = \the\year/\the\month/\the\day,
+    university  = mu,
+    faculty     = fi,
+    type        = bc,
+    department  = \TODO{Department of Machine Learning and Data Processing},
+    author      = Petr Bém,
+    gender      = m,
+    advisor     = {RNDr. Jan Mrázek},
+    title       = {Firmware for RoFICoM},
+    TeXtitle    = {Firmware for \acrshort{roficom}},
+    keywords    = {\TODO{modular, robots, RoFI, firmware}},
+    TeXkeywords = {\TODO{keyword1, keyword2, \ldots}},
+    abstract    = {%
+      \TODO{This is the abstract of my thesis, which can, span multiple paragraphs.}
+    },
+    thanks      = {%
+      \TODO{These are the acknowledgments for my thesis, which can
+      span multiple paragraphs.}
+    },
+    bib         = citations.bib,
+    %% Remove the following line to use the JVS 2018 faculty logo.
+    facultyLogo = fithesis-fi,
+}
+\usepackage{makeidx}      %% The `makeidx` package contains
+\makeindex                %% helper commands for index typesetting.
+\usepackage{hyperref}
+\usepackage[acronym]{glossaries}          %% The `glossaries` package
+\renewcommand*\glspostdescription{\hfill} %% contains helper commands
+\loadglsentries{terms-abbrs.tex}  %% for typesetting glossaries
+\makenoidxglossaries                      %% and lists of abbreviations.
+%% These additional packages are used within the document:
+\usepackage{paralist} %% Compact list environments
+\usepackage{amsmath}  %% Mathematics
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{siunitx} %% SI units
+\usepackage{url}      %% Hyperlinks
+\usepackage{markdown} %% Lightweight markup
+\usepackage{listings} %% Source code highlighting
+\lstset{
+  basicstyle      = \ttfamily,
+  identifierstyle = \color{black},
+  keywordstyle    = \color{blue},
+  keywordstyle    = {[2]\color{cyan}},
+  keywordstyle    = {[3]\color{olive}},
+  stringstyle     = \color{teal},
+  commentstyle    = \itshape\color{magenta},
+  breaklines      = true,
+}
+\usepackage{floatrow} %% Putting captions above tables
+\floatsetup[table]{capposition=top}
+\usepackage[babel]{csquotes} %% Context-sensitive quotation marks
+\usepackage{todonotes} % colorful TODO notes, REMOVE
+\usepackage{xcolor}
+\begin{document}
+NOTE FOR VB000Eng: This is a draft version for the first submission. It only contains sections for review and outline to not break any currently made references. Many acronyms such as \acrshort{roficom} will be explained in the introduction.
+\TODO{Text in this style indicates that the marked text needs reworking, there is something missing like a reference or information that may be changed or inaccurate.}
+%% Uncomment the following lines (by removing the %% at the beginning)
+%% and to print out List of Abbreviations and/or Glossary in your
+%% document. Titles for these tables can be changed by replacing the
+%% titles `Abbreviations` and `Glossary`, respectively.
+\clearpage
+\printnoidxglossary[title={Abbreviations}, type=\acronymtype]
+\printnoidxglossary[title={Glossary}]
+
+\chapter{Introduction}
+
+\chapter{Preliminaries}
+
+\section[ RoFI ]{ \acrshort{rofi} }
+
+\section[Inter-Integrated Circuit communication protocol]{\acrlong{i2c} communication protocol} \label{i2c}
+\acrshort{i2c}, which stands for \acrlong{i2c}, is a protocol designed for communication between a controller (or more controllers) and multiple peripheral devices. The protocol requires only two lines: SDA (serial data) and SCL (serial clock). Both lines are open-drain with pull-up resistors, which means that the bus driver can drive the bus line low but cannot drive it high to prevent collision driving the line both high and low, which would damage the drivers.
+
+The protocol's communication is done in 8-bit packets. The transaction starts with the start condition. After that, every packet is confirmed from the receiving side with one acknowledgment bit, and the transaction ends with the stop condition. Since more peripheral devices can be connected to the \acrshort{i2c} bus, the controller must first address the peripheral to communicate.
+The address of a peripheral is either a 7-bit or 10-bit number, where the 10-bit address must be split into two packets with a specified format. The address is only 7-bit because the last bit indicates whether the controller wants to read (the bit is set to 0) or write (the bit is set to 1). The read/write bit is the least significant bit of the packet, and the most significant bit of the address is the most significant bit of the packet. After the address is sent and met with acknowledgment from the peripheral, the data begins to be transmitted. The protocol allows for any length of the data to be transmitted. 
+The start condition is when the controller drives the SDA line low before the SCL goes down. Stop condition is when the controller releases SDA (the line goes from low to high) \textbf{after} the SCL line changed to high. It is suggested not to change the SDA line while SCL is high to avoid signaling false stop conditions during data transmission. Note that the acknowledgment bit is negated, i.e., logical 0 on the bus line signals that the peripheral received the packet successfully, whereas logical 1 signals the opposite.
+
+This protocol has several advanced topics, such as 10-bit addresses, repeated start conditions, and clock stretching, which are not needed to understand this thesis.
+
+\chapter[ State of RoFICoM ]{ State of \acrshort{roficom} }
+
+
+\begin{markdown*}{%
+  hybrid,
+  definitionLists,
+  footnotes,
+  inlineFootnotes,
+  hashEnumerators,
+  fencedCode,
+  citations,
+  citationNbsps,
+  pipeTables,
+  tableCaptions,
+}
+# \texorpdfstring{ \acrshort{lidar} }{LiDAR} \label{lidar}
+
+\acrshort{lidar}, which stands for \acrlong{lidar}, is a device that measures range. \acrshort{lidar} uses laser and time, in which the light travels to an object or a surface and bounces back to determine the distance. As such \acrshort{lidar} is not only used for measuring the distance from an object but also for \textbf{3-D scanning}. 3-D scanning is \TODO{collecting and transforming data about the real-world environment} into a digital representation. Many industries use \acrshort{lidar}, e.g., one of the most known use cases might be in NASA's Mars helicopter Ingenuity \cite{garmin-lidar}.
+
+\acrshort{roficom} uses VL53L1X \acrshort{lidar} from STMicroelectronics. This specific \acrshort{lidar} has following main features:
+
+- the ability to accurately measure the range between \qty{4}{\centi\metre} and \qty{4}{\metre},
+- up to \qty{50}{\hertz} ranging frequency,
+- single \qty{2.8}{\volt} power supply,
+- \acrshort{i2c} communication interface with up to \qty{400}{\kilo\hertz} speed,
+- shutdown and interrupt pins. (However, these pins are not necessary.)
+
+Even though \acrshort{lidar} accurately measures the range between \qty{4}{\centi\metre} and \qty{4}{\metre}, it also measures distances below and above this range, although the measured distance does not have to be accurate. The lidar library, which \acrshort{roficom} uses, deals with inaccuracy by reporting the status of measured data, which is explained later on.
+
+The shutdown pin is used to reset the \acrshort{lidar} by software. That being said, on the actual hardware, the pin is inverted, which results in behavior more similar to enable pin, i.e., the device is enabled when the bus with a shutdown pin is driven high and the device shuts down when the bus is driven low. This pin does not have to be controlled by software. However, in that case, it still has to be connected to the power supply through a pull-up connector, which was the case in the \acrshort{roficom} version 0.6.
+
+On the other hand, the interrupt pin does not require to be connected. This pin signals that the new distance was measured and must be cleared before the next measurement. When the pin is not connected, it is never driven high, and thus the device is in always ready to measure state, which can result in missing measurements when the data is not received at the correct time. The alternative to the interrupt signal is polling. Polling means that the firmware asks the \acrshort{lidar} periodically whether the measurement data are ready to be transmitted. However, as previously mentioned, if the period is too long it is possible to miss some measured data. For example, if the inter-measurement timing (the time between two measurements) was \qty{100}{\milli\second} and the firmware's asking period was \qty{500}{\milli\second}, the firmware could miss four measurements from the \acrshort{lidar}. Polling was used with \acrshort{roficom} version 0.6 because the MCU did not have available pins for the interrupt pin. Whereas the \acrshort{roficom} version 1.0 is connected and uses the interrupt pin.
+
+## Communication
+As previously mentioned, VL53L1X uses the \acrshort{i2c} communication protocol. However, there is a small but significant change in communication. VL53L1X not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number and \textbf{must} be the first two data packets. The most significant byte of this index is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that in order to read data from the \acrshort{lidar}, the controller needs to make two transactions: first, a write transaction with register index, and second with the actual read. However, writing data to the \acrshort{lidar} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
+
+# Implementation - Design decisions
+This chapter walks over interesting design decisions and explains their reasoning.
+
+## \texorpdfstring{ \acrlong{bsp} }{BSP} \label{BSP}
+
+# \texorpdfstring{ \acrshort{roficom} }{RoFICoM} 1.0 \label{roficom 1.0}
+
+New \acrshort{roficom} revision arrived needing firmware updates to reflect changes in hardware.
+
+On the previous revision, \acrshort{roficom}'s MCU (STM32G071GBU6) had only one last pin left unconnected. The old revision did not have connected \acrshort{lidar}'s enable pin, which meant there was no way to reset the \acrshort{lidar} from the firmware in case of a failure. The interrupt (IRQ) \acrshort{lidar} pin was also not connected, but this was not an issue since it could have been solved by polling, as mentioned earlier in \TODO{Add a reference to the explanation of lidar usage}. Also, the magnetic sensors for the motor's retraction and expansion limit could not detect and stop the movement of the motor fast enough, which damaged the \acrshort{roficom}'s case. Missing pins and a change in the motor's limit led to the change of MCU.
+
+The newly chosen MCU (STM32G071CBUx) has \TODO{48} pins in total, which is a considerable upgrade from the \TODO{29} pins that had the previous MCU. Even though several pins changed, reflecting the new hardware revision in the firmware was not as hard because of the usage of \acrshort{bsp}, as explained in section \ref{BSP}. Furthermore, \acrshort{lidar}'s enable and interrupt pins got connected to the MCU's GPIO pins.
+
+As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
+
+\end{markdown*}
+
+\chapter{Conclusion}
+
+
+\appendix %% Start the appendices.
+\chapter{An appendix}
+
+\end{document}
