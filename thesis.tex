@@ -104,6 +104,8 @@
 \usepackage{todonotes} % colorful TODO notes, REMOVE
 \usepackage{xcolor}
 
+\usepackage{titlesec,titlecaps}
+
 \begin{document}
 %% Uncomment the following lines (by removing the %% at the beginning)
 %% and to print out List of Abbreviations and/or Glossary in your
@@ -187,8 +189,17 @@ On the other hand, the interrupt pin does not require to be connected. This pin 
 
 The alternative to the interrupt signal is polling. Polling means that the firmware asks the \acrshort{lidar} periodically whether the measurement data are ready to be transmitted. However, if the period is too long, it is possible to miss some measured data. For example, if the inter-measurement timing (the time between two measurements) was \qty{100}{\milli\second} and the firmware's asking period was \qty{500}{\milli\second}, the firmware could miss four measurements from the \acrshort{lidar}. Polling was used with \acrshort{roficom} version 0.6 because the MCU did not have available pins for the interrupt pin. Whereas the \acrshort{roficom} version 1.0 is connected and uses the interrupt pin.
 
-\section{ Distance modes }
-\gls{vl53l1x} has 3 distance modes: short, medium and long. 
+\section{ Distance modes } \label{distance-modes}
+\gls{vl53l1x} has 3 distance modes: short, medium and long. Since the \acrshort{lidar} depends on ambient light, this is when distance modes makes difference. Even though short mode can measure only up to \qty{136}{\centi\metre} it is not as impacted by the ambient light as other modes. In manual \cite{vl53l1x} is mentioned that the short distance mode can measure \qty{135}{\centi\metre} under strong ambient light, which is the same as without ambient light. In contrary, the medium and long modes are impacted by the ambient light. Whereas the long mode can measure up to \qty{360}{\centi\metre}, in the strong ambient light it only measured \qty{73}{\centi\metre}.
+
+\section{ Timings }
+
+\subsection{ Timing Budget } \label{TB}
+
+Timing budget is the time that \acrshort{lidar} measures the distance. \TODO{ Longer timing budget increases the maximum distance \acrshort{lidar} can measure and improves the repeatability error}, but comes at cost of increasing the power consumption. The user can set the timing budget, which is in range from \qtyrange{20}{1000}{\milli\second}. There are few constrains on the timing budget. The minimal budget timing that can be used for all distance modes is \qty{33}{\milli\second}, however the short distance can use lower timings. In order to be able to measure \qty{4}{\metre} in the long distance mode, the timing budget must be at least \qty{14}{\milli\second}.
+
+\subsection{ Inter-Measurement Period }
+Inter-measurement period is the time between the consecutive measurements. Therefore the Inter-measurement period must be longer than the timing budget. The inter-measurement period is also programmable by the user.
 
 \section{ Communication }
 \gls{vl53l1x} uses the \acrshort{i2c} communication protocol. However, there is a small but significant change in communication. \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number and \textbf{must} be the first two data packets. The most significant byte of this index is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that in order to read data from the \acrshort{lidar}, the controller needs to make two transactions: first, a write transaction with register index, and second with the actual read. However, writing data to the \acrshort{lidar} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
@@ -225,16 +236,67 @@ $\rightarrow$ Either repeat from waiting for measurements or stop the measuring.
 
 \todo{Insert API flow diagram}
 
-\TODO{Describe distance modes or before.}
-\TODO{Describe the timings or in lidar description.}
+\subsection{Error Handling}
+\subsubsection{ Distance Modes }
+\TODO{Merge with \ref{distance-modes}?}
+
+The ULD provides only two distance modes: short and long. Those modes are described in \ref{distance-modes}. The representation for modes are \lstinline|1| for the short mode, and \lstinline|2| for the long mode. The ULD provides functions \lstinline|VL53L1X_SetDistanceMode()| and \lstinline|VL53L1X_GetDistanceMode()| to set and retrieve current \acrshort{lidar} distance mode.
+
+\subsubsection{ Timing Budget }
+\TODO{Merge with TB in lidar?.}
+
+There is a difference in allowed values compared to the timing budget section. The allowed values for timing budget in the ULD are only $[15, 20,
+33, 50, 100, 200, \qty{500}{\milli\second}]$. However the \qty{15}{\milli\second} timing can be only used for the short distance mode. The default value is set to \qty{100}{\milli\second}.
+
+\subsubsection{ Inter-Measurement Period }
+\TODO{Merge with IMP in Lidar?}
+
+\TODO{As previously mentioned}, the inter-measurement period must be longer than the timing budget. However, the ULD does not validate this and it is left to the user to assure. Otherwise the actual inter-measurement period would be double the expected value. The default value is set to \qty{100}{\milli\second}.
+
+\subsubsection{ Result Structure }
 \TODO{Describe Result structure.}
 
-\chapter{ Implementation - Design decisions }
+\begin{lstlisting}
+typedef struct {
+    uint8_t Status;
+    uint16_t Distance;
+    uint16_t Ambient;
+    uint16_t SigPerSPAD;
+    uint16_t NumSPADs;
+} VL53L1X_Result_t;
+\end{lstlisting}
+
+\TODO{
+Most important result is the measured \lstinline|Distance| in \unit{\milli\metre} together with the \lstinline|Status| of the measured distance.
+}
+
+\paragraph{\TODO{Status}}
+
+The ULD manual \cite{um2510} documents only five statuses even though, in the \cite{vl53l1x} specifies eight. The five statuses with their corresponding values are:
+\begin{itemize}
+    \item Valid (0)
+    \item Sigma failure (1)
+    \item Signal failure (2)
+    \item Out of bounds (4)
+    \item Wraparound (7)
+\end{itemize}
+
+The range status of $0$ indicates successful measurement with the measurement data being ready to use.
+
+The sigma failure with value $1$ means that the standard deviation of the measurements had surpassed the expected (normal) values, thus resulting in error. This error can fixed by increasing the timing budget.
+
+The signal failure with value $2$ is caused by \acrshort{lidar} measuring weak signal. The signal rate is represented as a amplitude of the reflected signal from the target. This failure can happen when the target is too far, or is not reflective enough or there is no target at all. Since increasing the timing budget increases the maximum measurable distance it can eliminate this status, but does not have to.
+
+The out of bounds with value $4$ usually occurs when the target is at the maximum possible measurable distance (and it is a very bright target). Subsequently, the measured results may be inconsistent.
+
+The "wraparound" range status of value "7" is reported when the target is very reflective and the distance is longer that the physical limited distance measurable by the \acrshort{lidar}. This distance is \qty{1.3}{\metre} for the short distance mode and \qty{5}{\metre} for the long mode.
+
+\chapter{ Implementation - Design Decisions }
 This chapter walks over interesting design decisions and explains their reasoning.
 
 \section[I2C driver]{\acrshort{i2c} driver}
 
-\section{ Error handling }
+\section{ Error Handling }
 \TODO{
 \begin{itemize}
     \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{c++23}
