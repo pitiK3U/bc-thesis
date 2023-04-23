@@ -194,6 +194,8 @@ The alternative to the interrupt signal is polling. Polling means that the firmw
 
 \section{ Timings }
 
+\todo{ Insert timings diagram }
+
 \subsection{ Timing Budget } \label{TB}
 
 Timing budget is the time that \acrshort{lidar} measures the distance. \TODO{ Longer timing budget increases the maximum distance \acrshort{lidar} can measure and improves the repeatability error}, but comes at cost of increasing the power consumption. The user can set the timing budget, which is in range from \qtyrange{20}{1000}{\milli\second}. There are few constrains on the timing budget. The minimal budget timing that can be used for all distance modes is \qty{33}{\milli\second}, however the short distance can use lower timings. In order to be able to measure \qty{4}{\metre} in the long distance mode, the timing budget must be at least \qty{14}{\milli\second}.
@@ -236,7 +238,29 @@ $\rightarrow$ Either repeat from waiting for measurements or stop the measuring.
 
 \todo{Insert API flow diagram}
 
-\subsection{Error Handling}
+\subsubsection{ Error Handling }
+
+Since the ULD is a C \TODO{library} the error reporting is the returned value from every API function. \TODO{When results other then errors are needed, those are provided as an ``out'' argument, i.e., pointer to the given variable.}
+
+The error type (\lstinline[breaklines=false]|typedef int8_t VL53L1X_ERROR;|) for the ULD is 8-bit signed integer. The full API driver defines error values among the definition of the error type, however, this is not the case for the ULD. Even though the ULD does not specify error codes, the code for no error is defined to be $0$. Although the ULD usually returns errors from the underlying \acrshort{i2c} communication, in some cases the ULD sets the error to value $1$.
+
+Thus, the typical error handling of the ULD API calls look like the following snippet:
+
+\begin{lstlisting}
+VL53L1X_ERROR status;
+status = VL53L1X_SensorInit( ... );
+if (status != 0) {
+    // Report error
+    return status;
+}
+
+status = VL53L1X_StartRanging( ... );
+if (status != 0) {
+    ...
+    return status;
+}
+\end{lstlisting}
+
 \subsubsection{ Distance Modes }
 \TODO{Merge with \ref{distance-modes}?}
 
@@ -317,11 +341,11 @@ This chapter walks over interesting design decisions and explains their reasonin
 
 \TODO{main benefit: single point of gpio definitions, peripheral initialization, ... - enables for easier portability}
 
-In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides declaration of function \lstinline{dbgInstance}, which is function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on external function \lstinline{SystemCoreClockUpdate()}, which is \TODO{platform-dependant function} that needs to be called after board clock has been setup. \TODO{In contrary} the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
+\acrshort{bsp} is usually used in embedded environment and provides many benefits. Not only it abstracts hardware details, but also it establishes single source of truth for pin definitions, which is less error prone than having them defined and multiple places. \acrshort{bsp} assures correct initialization of the board at single place. Having everything at single point enables for easier portability across different board versions. The abstraction allows for usage of the \TODO{bsp parts} in different independent parts of the project. 
 
-??
+In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides declaration of function \lstinline{dbgInstance}, which is function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on external function \lstinline|SystemCoreClockUpdate()|, which is \TODO{platform-dependant function} that needs to be called after board clock has been setup. \TODO{In contrary} the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
 
-\verb|bsp.hpp| acts as an interface specifying what drivers and pins \acrshort{roficom} needs to function, however since those pins and drivers are stored as global variables in namespace \lstinline{bsp}, the interface should be kept as minimal as possible to save space in the global space. On the other hand \verb|bsp.cpp| acts as implementation of this interface and should mainly correctly setup the board, pins and drivers for usage, that means the \verb|bsp.cpp| can use pins and drivers that are not exposing as it needs to meet the interface specification.
+\verb|bsp.hpp| acts as an interface specifying what drivers and pins \acrshort{roficom} needs to function, however since those pins and drivers are stored as global variables in namespace \lstinline{bsp}, the interface should be kept as minimal as possible to save space in the global space. On the other hand \verb|bsp.cpp| acts as implementation of this interface and should mainly correctly setup the board, pins and drivers for usage, that means the \verb|bsp.cpp| can use pins and drivers that are not exposed as it needs to meet the interface specification.
 
 To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we need to change MCU on the board, thus changing pin layout. In this scenario we would only need to change the \verb|bsp.cpp| file with pin definitions (and if not already present implementation of drivers), but the \verb|bsp.hpp| and components built on top of that would be left unchanged and still work.
 
@@ -341,7 +365,7 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 
 \TODO{At one point} during the development the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide.  This resulted in corrupted stack frames during debugging. \TODO{} The Fix to this issue was reducing the size of \TODO{pre-allocated} packet buffer. The count of 1025B buffers was reduced from \TODO{20} to \TODO{5}. \TODO{This seemingly fixed the issue.}  
 
-\section{ \TODO{CRPT} }
+\section{ Platform Dependant Code -- port files -- \TODO{CRPT} }
 \begin{itemize}
     \item comparison CRPT vs inheritance approach
     \item inheritance = vtables can introduce waste of space
@@ -357,14 +381,15 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 
 Function `lidarGet()` tries to receive measurement results from the \acrshort{lidar} and assumes that the device is successfully initialized. This function takes a reference to the `Lidar` class and variable to store in results. Because `lidarGet()` is a polling function it needs to be called indefinitely to constantly update the currently measured distance. Due to the nature of polling, it is needed to poll only when \acrshort{roficom} is idle, otherwise constant polling \TODO{without ...}
 
-\subsection[Ultra Lite LiDAR library]{Ultra Lite \acrshort{lidar} library} \label{uld}
+\subsection[Ultra Lite LiDAR Library]{Ultra Lite \acrshort{lidar} Library} \label{uld}
 
 \TODO{
 \begin{itemize}
-    \item Use Low Power version due to saving space in Flash
+    \item Use Low Power version due to saving space in Flash; Release build: full api -- \texttt{\qty{19}{\kilo\byte}} vs ultra lite driver \texttt{\qty{1}{\kilo\byte}}
     \item \TODO{Use `extern "C"` include guards}
 \end{itemize}
 }
+
 
 \chapter[RoFICoM 1.0]{ \acrshort{roficom} 1.0 }
 
