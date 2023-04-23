@@ -122,20 +122,68 @@
 \begin{itemize}
     \item What is \acrshort{rofi} Platform
     \item What is \acrshort{roficom}
-    \begin{itemize}
-        \item Describe technicalities -- RAM: 36KB, Flash: 128KB, ...
-    \end{itemize}
     \item Explain \acrshort{i2c}
 \end{itemize}
 }
 
 \section[ RoFI ]{ \acrshort{rofi} }
-The \acrshort{rofi} is a platform of distributed modular robots developed at Masaryk University, Faculty of Informatics.
+\TODO{
+\begin{itemize}
+    \item Describe the platform
+    \item Universal module
+\end{itemize}
+}
+
+The \acrshort{rofi} is a platform of distributed self-reconfigurable modular robots developed at Masaryk University, Faculty of Informatics.
+
+The main goal of the \acrshort{rofi} platform is to provide well established open-source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ Github repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithm on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
+
+\TODO{\Glspl{rofibot}}
+
+The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A concrete example for the \acrshort{rofi} module is the \gls{universal-module}.
+
+\subsection{grid-aware}
+
+\subsection[ Universal Module ]{ \gls{universal-module} }
+\TODO{
+    \begin{itemize}
+        \item ESP32
+        \item SPI
+        \item UART
+        \item accumulator
+        \item EXT and INT power lines
+        \item 3 motors
+        \item 6 docks
+    \end{itemize}
+}
+\gls{universal-module} \glsdesc{universal-module}. The module is divided into four component: two bodies and two shoes. Each shoe contains three docks and \TODO{one joint}. Whereas the body 
+
+\todo{Insert image of \gls{universal-module}}
+
 
 \section[ RoFICoM ]{ \acrshort{roficom} }
+\TODO{
+\begin{itemize}
+    \item Explain \acrshort{roficom}
+    \item Describe components -- shirt, clip and body
+    \item Describe board -- RAM: 36KB, Flash: 128KB, ...
+\end{itemize}
+}
+
+\acrlong{roficom}, or \acrshort{roficom} for short, \TODO{...}
 
 
-\subsection{Technical details}
+\subsection{PCB details}
+\TODO{
+\begin{itemize}
+    \item MCU
+    \item motor
+    \item UART
+    \item SPI
+    \item \acrshort{i2c}
+    \item EXT and INT power lines
+\end{itemize}
+}
 
 \section[Inter-Integrated Circuit communication protocol]{\acrlong{i2c} communication protocol}
 \acrshort{i2c}, which stands for \acrlong{i2c}, is a protocol designed for communication between a controller (or more controllers) and multiple peripheral devices. The protocol requires only two lines: SDA (serial data) and SCL (serial clock). Both lines are open-drain with pull-up resistors, which means that the bus driver can drive the bus line low but cannot drive it high. This constrain prevents the collision  driving the line both high and low, which would damage the drivers.
@@ -154,6 +202,9 @@ This protocol has several advanced topics, such as 10-bit addresses, repeated st
 \TODO{
 \begin{itemize}
     \item Project structure/architecture
+    \begin{itemize}
+        \item Protocol
+    \end{itemize}
     \item \texttt{control\_board}
     \item \texttt{stm32cxx}
     \item \texttt{rofi-hal}
