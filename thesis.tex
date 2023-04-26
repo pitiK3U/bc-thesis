@@ -146,14 +146,22 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
         \item 6 docks
     \end{itemize}
 }
-\gls{universal-module} \glsdesc{universal-module}
+\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as all-in-one module, but rather as minimal needed module that can be used in nearly all systems. Thus, \gls{universal-module} uses only two sensors: an inertial measurement unit (IMU) and a distance sensor (\acrshort{lidar}). If specific sensors are needed, it is expected to use them as own modules.
 
-The module is divided into four component: two bodies and two shoes. Each shoe contains three docks and \TODO{one joint}. Whereas the body 
+The module is divided into four component: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. Whereas the body encloses actuators, electronics, and accumulators. There is one last \TODO{joint} between the two bodies. In total the module contains six docks and three \TODO{joints/motors} and the two types of sensors.
 
 \todo{Insert image of \gls{universal-module}}
 
+\section{ Architecture }
 
-\chapter[ RoFICoM ]{ \acrshort{roficom} }
+The docks used in the \gls{universal-module} are called \acrshortpl{roficom} and \TODO{are the most important part of this thesis}. The \acrshort{roficom} is in detail described and explained in the next chapter \ref{roficom}.
+
+Each module has a single \emph{control unit} that serves as a centralized control over modules actions and all the module components. The motors are controlled trough UART protocol and dock control is over SPI protocol. The control unit also controls charging and power management.
+
+\todo{Add \gls{universal-module} internal architecture diagram}
+
+
+\chapter[ RoFICoM ]{ \acrshort{roficom} } \label{roficom}
 \TODO{
 \begin{itemize}
     \item Explain \acrshort{roficom}
