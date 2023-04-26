@@ -117,16 +117,7 @@
 
 \chapter{Introduction}
 
-\chapter{Preliminaries}
-\TODO{
-\begin{itemize}
-    \item What is \acrshort{rofi} Platform
-    \item What is \acrshort{roficom}
-    \item Explain \acrshort{i2c}
-\end{itemize}
-}
-
-\section[ RoFI ]{ \acrshort{rofi} }
+\chapter[ RoFI ]{ \acrshort{rofi} }
 \TODO{
 \begin{itemize}
     \item Describe the platform
@@ -136,15 +127,14 @@
 
 The \acrshort{rofi} is a platform of distributed self-reconfigurable modular robots developed at Masaryk University, Faculty of Informatics.
 
-The main goal of the \acrshort{rofi} platform is to provide well established open-source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ Github repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithm on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
+The main goal of the \acrshort{rofi} platform is to provide well established open-source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ Github repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
 
 \TODO{\Glspl{rofibot}}
 
 The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A concrete example for the \acrshort{rofi} module is the \gls{universal-module}.
 
-\subsection{grid-aware}
 
-\subsection[ Universal Module ]{ \gls{universal-module} }
+\section[ Universal Module ]{ \gls{universal-module} }
 \TODO{
     \begin{itemize}
         \item ESP32
@@ -156,12 +146,14 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
         \item 6 docks
     \end{itemize}
 }
-\gls{universal-module} \glsdesc{universal-module}. The module is divided into four component: two bodies and two shoes. Each shoe contains three docks and \TODO{one joint}. Whereas the body 
+\gls{universal-module} \glsdesc{universal-module}
+
+The module is divided into four component: two bodies and two shoes. Each shoe contains three docks and \TODO{one joint}. Whereas the body 
 
 \todo{Insert image of \gls{universal-module}}
 
 
-\section[ RoFICoM ]{ \acrshort{roficom} }
+\chapter[ RoFICoM ]{ \acrshort{roficom} }
 \TODO{
 \begin{itemize}
     \item Explain \acrshort{roficom}
@@ -173,7 +165,7 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
 \acrlong{roficom}, or \acrshort{roficom} for short, \TODO{...}
 
 
-\subsection{PCB details}
+\section{PCB details}
 \TODO{
 \begin{itemize}
     \item MCU
@@ -198,7 +190,9 @@ This protocol has several advanced topics, such as 10-bit addresses, repeated st
 
 \TODO{Should I write about advanced topics? or at least 10-bit addresses?}
 
-\chapter[ State of RoFICoM ]{ State of \acrshort{roficom} }
+\chapter[ RoFI ]{ \acrshort{rofi} }
+
+\chapter[ RoFICoM -- what is done and what will be done ]{ \acrshort{roficom} -- what is done and what will be done }
 \TODO{
 \begin{itemize}
     \item Project structure/architecture
@@ -366,21 +360,11 @@ The out of bounds with value $4$ usually occurs when the target is at the maximu
 
 The "wraparound" range status of value "7" is reported when the target is very reflective and the distance is longer that the physical limited distance measurable by the \acrshort{lidar}. This distance is \qty{1.3}{\metre} for the short distance mode and \qty{5}{\metre} for the long mode.
 
-\chapter{ Implementation - Design Decisions }
-This chapter walks over interesting design decisions and explains their reasoning.
+\section{lidar?? hpp}
 
-\section[I2C driver]{\acrshort{i2c} driver}
+\subsection[LiDAR I2C implementation]{\acrshort{lidar} \acrshort{i2c} implementation} \label{lidar-i2c-impl}
 
-\section{ Error Handling }
-\TODO{
-\begin{itemize}
-    \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{c++23}
-    \item the reasoning for given result types - \lstinline{atoms::Void}, \lstinline{std::string_view}
-    \item \TODO{error handling in \acrshort{i2c} \& \acrshort{lidar} class}  
-\end{itemize}
-}
-
-\section[BSP]{\acrlong{bsp}} \label{BSP}
+\chapter[BSP]{\acrlong{bsp}} \label{BSP}
 \TODO{
 \begin{itemize}
     \item \acrshort{bsp} = providing i2c functions to \acrshort{lidar} library + easier portability
@@ -400,12 +384,26 @@ In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp
 
 To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we need to change MCU on the board, thus changing pin layout. In this scenario we would only need to change the \verb|bsp.cpp| file with pin definitions (and if not already present implementation of drivers), but the \verb|bsp.hpp| and components built on top of that would be left unchanged and still work.
 
-\subsection{Gpio::Pin initialization}
-\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, ... for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMelectronics}.
+\section[ Gpio::Pin Initialization ]{ \lstinline|Gpio::Pin| Initialization }
+\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, etc. for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMelectronics}.
 
-\section{lidar?? hpp}
+\chapter[ RoFI HAL ]{ \acrshort{rofi} \acrshort{hal} }
 
-\subsection[LiDAR I2C implementation]{\acrshort{lidar} \acrshort{i2c} implementation} \label{lidar-i2c-impl}
+\chapter{ Implementation - Design Decisions }
+This chapter walks over interesting design decisions and explains their reasoning.
+
+\section[ I2C driver ]{ \acrshort{i2c} driver }
+
+\section{ Motor driver }
+
+\section{ Error Handling }
+\TODO{
+\begin{itemize}
+    \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{c++23}
+    \item the reasoning for given result types - \lstinline{atoms::Void}, \lstinline{std::string_view}
+    \item \TODO{error handling in \acrshort{i2c} \& \acrshort{lidar} class}  
+\end{itemize}
+}
 
 \section{ \TODO{??} }
 \TODO{
