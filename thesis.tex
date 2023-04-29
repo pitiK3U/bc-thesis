@@ -30,6 +30,7 @@
                %% with `nolof` to hide the List of Figures.
   lot,         %% The `lot` option prints the List of Tables. Replace
                %% with `nolot` to hide the List of Tables.
+    draft,
 ]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
@@ -42,6 +43,7 @@
 %%
 
 \newcommand{\TODO}[1]{\textcolor{red}{\textit{#1}}}
+\newcommand{\TODOLIST}[1]{\TODO{#1}}
 
 %% The following section sets up the metadata of the thesis.
 \thesissetup{
@@ -101,8 +103,11 @@
 \usepackage{floatrow} %% Putting captions above tables
 \floatsetup[table]{capposition=top}
 \usepackage[babel]{csquotes} %% Context-sensitive quotation marks
-\usepackage{todonotes} % colorful TODO notes, REMOVE
 \usepackage{xcolor}
+\usepackage{graphicx}
+\graphicspath{ {./assets/} }
+
+\usepackage{todonotes} % colorful TODO notes, REMOVE
 
 \usepackage{titlesec,titlecaps}
 
@@ -118,7 +123,7 @@
 \chapter{Introduction}
 
 \chapter[ RoFI ]{ \acrshort{rofi} }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Describe the platform
     \item Universal module
@@ -135,7 +140,7 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
 
 
 \section[ Universal Module ]{ \gls{universal-module} }
-\TODO{
+\TODOLIST{
     \begin{itemize}
         \item ESP32
         \item SPI
@@ -166,7 +171,7 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 
 
 \chapter[ RoFICoM ]{ \acrshort{roficom} } \label{roficom}
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Explain \acrshort{roficom}
     \item Describe components -- shirt, clip and body
@@ -174,11 +179,163 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 \end{itemize}
 }
 
-\acrlong{roficom}, or \acrshort{roficom} for short, \TODO{...}
+\iffalse
+<!--
+- Connection/Communication part of RoFI Platform
+- Designed to be stand-alone unit (so it can be reused in other modules)
+- What it consists of?
+    - Docks Interaction
+    - Docks power-sharing
+-->
+\fi
+
+\acrlong{roficom}, \acrshort{roficom} for short, is an open-hardware connection system designed for the \acrshort{rofi} platform. \acrshort{roficom} focuses on reusability \TODO{in order to make it easily integrable} into any module for which \acrshort{roficom} provides
+communication to other modules. As the name suggests, its primary purpose is to (inter)connect modules. To achieve \TODO{this}, \acrshort{roficom} has a well-defined interface that can be divided into three parts:
+\begin{itemize}
+    \item mechanical structure,
+    \item connector-to-connector interface (communication between two \acrshortpl{roficom}),
+    \item connector-to-module interface (communication with the integrated module).
+\end{itemize}
+
+\begin{figure}[h]
+    % responsive_image path: assets/img/connector/roficom_main_sketch.jpg
+    \includegraphics{ example-image-a }
+    \caption{ \TODO{ Current look of \acrshort{roficom} } }
+\end{figure}
+
+\section{Mechanical structure}
+\iffalse
+<!--
+- Describe individual parts: body, clip and skirt
+- Magnets in skirt to ease/join the connecting
+- extrating and retracting  - motors
+- ?? lidar - I2C
+-->
+\fi
+
+RoFICoM is built from 3 main parts: \emph{body}, \emph{clip} and \emph{skirt}.
+
+\begin{figure}
+    %responsive_image path: assets/img/connector/dock_key_components.svg 
+    \includegraphics{example-image-a}
+    \caption{ \TODO{ Visual representation of main components } }
+\end{figure}
+
+The body is non-movable part that is mounted into the module.
+Clip and skirt are the most important parts for establishing strong mechanical connections between two \acrshortpl{roficom}.
+The clip component consists of four latches attached to a ring. Those latches get attached while connecting with
+other \acrshort{roficom}. While expanding, the clip gets rotated and expanded upward by the motor. In the process, the latches on the mating
+side slide under each other, therefore forming a mechanical connection that prevents connectors from being pulled apart.
+However, the latches themselves are insufficient for a mechanical connection, as a mutual rotation of the connectors releases
+the connection. This is why the skirt is needed. Two connected skirts stop the rotation against each other.
+
+In order to help and/or ease the process of connection there are magnets placed in the holes of skirt. This helps when two connecting sides are slightly misaligned.
+
+The motors that rotates the clip and the skirt are located at the bottom of the body. To rotate the clip and the skirt there is another component (shaft ring) that is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When motor activates it rotates the shaft ring and moves among the gearing elevating the components. 
+
+\begin{figure}
+    \centering
+    % responsive_image path: assets/img/connector/dock_arrangement.svg
+    \includegraphics{example-image-a}
+    \caption{ \TODO{ Visual representation of body with motor and shaft ring } }
+\end{figure}
 
 
-\section{PCB details}
-\TODO{
+\subsubsection{ Ratings }
+\begin{itemize}
+    \item compact, flat layout (diameter 50 mm, thickness 17 mm)
+    \item data and power sharing between connected units
+    \item load capacity
+        \item normal direction: 110 N
+        \item shear direction: 50 N
+    \item actuation time: less than 0.6 s
+    \item genderless, 90-degree symmetrical with automatic orientation detection
+\end{itemize}
+
+\subsection{ Connector to Connector Interface }
+\iffalse
+<!--
+- UART
+- data and power sharing - EXT and INT power lanes 
+-->
+\fi
+
+Connector to connector is done by small PCB inside skirt with spring-loaded pins for connection. This PCB provides both
+data and power sharing to the connected module.
+For data communication RoFICoM uses \textbf{UART} transferring frames with specified format and CRC. Those frames hold ``blobs'' --
+binary data that is transferred between modules. 
+
+\begin{figure}
+    % responsive_image path: assets/img/connector/skirt_pins.svg
+    \includegraphics{ example-image-a }
+    \caption{ Graph showing pin layout on PCB inside the skirt }
+\end{figure}
+
+\subsection{ Connector to Module Interface }
+RoFICoM provides \textbf{SPI} interface for communication between module and RoFICoM. The communication on the bus is performed
+in transactions. Transaction format consists of \textbf{command}, which is first 8 bits of transaction, followed by \textbf{command
+data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and are required to be supported by all
+connector types. For example some connector commands are: version command, status command, send and receive earlier
+mentioned blob.
+
+\iffalse
+<!--
+# Peripherals used & what they are used for
+- SPI - communication between RoFICoM & Universal module
+- UART - debugging communication
+- I2C - peripheral communication - lidar
+- Motors
+- Power management/sharing
+- Lidar
+-->
+\fi
+
+\iffalse
+\subsection{ Motivation of RoFICoM }
+<!--
+_Requirements_:
+- able to connect when docks are not touching side by side
+- genderless
+- connection in four different orientations
+- based on a mechanical connection
+- disconnect without the participation of the mating side
+- support data and power-sharing
+-->
+
+Since the RoFI platform is [grid-based]({% link _platform/01_grid-system.md %}), it results in several _requirements_
+for both the platform and, more importantly for us, the docking system.
+In order to answer "Why do we need it?" let's walk through the _requirements_, their cause and how RoFICoM implements them.
+
+<!-- The first _requirement_ is to **allow modules to connect
+when they are not touching side by side**, which is caused by the modules being sphere-shaped, resulting in an empty gap between two adjacent modules. RoFICoM solves this by having a [flat design with expanding and retracting](#mechanical-structure) as it connects and disconnects, respectively. -->
+RoFICoM has a flat design with ability to expand and retract. This allows RoFICoM to connect over empty space between
+adjacent modules. As result modules don't have to be physically touching to be able to connect.
+
+<!-- The _requirement_ of a **genderless** docking system and the **ability to connect in four different orientations** are to limit the
+complexity of configuration and reconfiguration. RoFICoM solves this by being 90-degree symmetrical (see figure below). -->
+RoFICoM has 90-degree symmetrical design, this is best seen in figure below on the skirt design. Therefore it enables
+RoFICoM to connect in **four different orientations** (0°, 90°, 180°, 270°) and makes the connector **genderless**.
+
+{% responsive_image path: assets/img/connector/skirt_symmetry.svg max_width: "450px" title: "Top down look of skirt symmetry" %}
+
+RoFICoM forms **strong mechanical connection** using previously mentioned clip and skirt. This feature not only helps RoFICoM stay connected under pressure, but also remain connected without electricity consumption or to avoid limitations of magnetic force.
+
+{% responsive_image path: assets/img/connector/locking_process.svg max_width: "450px" title: "Visualization of roficom's locking process." %}
+
+<!-- It is required to be able to **disconnect without the participation of the mating side** to ease reconfiguration. On top of
+that, this allows for connection to passive docks. RoFICoM solves this with its mechanical design of the clip and skirt.
+The design enables the connector to expand/retract and thus connect to/disconnect from the mating side independently
+of the other side. -->
+RoFICoM is designed . This design is accomplished by the clip and skirt, which enables **connection between mating sides** to be established **independently of each other**. Additionally this enables the RoFICoM to connect to passive docks.
+
+Last but not least, the docking system must **support data and power
+sharing**, which is used to coordinate and charge modules. RoFICoM solves this with a [connector-to-connector
+interface](#connector-to-connector-interface).
+\fi
+
+
+\section{ Hardware details }
+\TODOLIST{
 \begin{itemize}
     \item MCU
     \item motor
@@ -189,11 +346,23 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 \end{itemize}
 }
 
+\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}. Those two boards are connected with cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector to connector connection (i.e., UART pins -- TX and RX, EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection). For the \acrshort{lidar} there are four used pins: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), \acrshort{lidar} enable pin and \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
+
+\TODO{??system board??} contains all other necessary circuits for \acrshort{roficom} to function. This consist of foremost the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines (Although the circuit for reading current is not currently attached) and SPI interface needed for connector to module interface.
+
+\TODO{ Missing pins and a change in the motor's limit led to the change of MCU }
+
+The magnetic sensors for the motor's retraction and expansion limit could not detect and stop the movement of the motor fast enough, which damaged the \acrshort{roficom}'s case.
+As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
+
+\TODO{describe the MCU and its capabilities}
+
 \chapter[ RoFICoM -- what is done and what will be done ]{ \acrshort{roficom} -- what is done and what will be done }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Project structure/architecture
     \begin{itemize}
+        \item suites
         \item Protocol
     \end{itemize}
     \item \texttt{control\_board}
@@ -202,8 +371,39 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 \end{itemize}
 }
 
+\section{ Project Structure / Architecture}
+The \acrshort{rofi} repository is an enormous monolithic project and contains plethora \acrshort{rofi} related sub-projects. For this thesis only several sub-projects are important, those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
+
+\section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware }
+\acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
+
+\TODO{Stav firmware pred moji bp obsahoval nekolik veci implementovanych}. The implemented features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface) and a motor control. However, since the motor control was not able to stop the motor fast enough and the magnetic sensors for detecting the motor position got changed, \TODO{the firmware for motor control needed an update too}. 
+
+\TODO{Protocol -- here or in connector to connector interface}
+
+\section{ Stm32 Drivers }
+\TODOLIST{
+\begin{itemize}
+    \item already implemented
+    \item port files -- portability
+    \item to implement -- \acrshort{i2c}
+\end{itemize}
+}
+
+\section[ RoFI HAL ]{ \acrshort{rofi} HAL }
+\TODOLIST{
+\begin{itemize}
+    \item ROFI HAL interface -- current vs changes
+    \item ROFI HAL implementation esp32    
+\end{itemize}
+}
+
+\acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides abstraction over running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
+
+The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. 
+
 \chapter[LiDAR]{ \acrshort{lidar} }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item \TODO{Walk through \acrshort{lidar} features}
     \item \TODO{Communicating by \acrshort{i2c}}
@@ -234,7 +434,7 @@ The alternative to the interrupt signal is polling. Polling means that the firmw
 \section{ Communication }
 \gls{vl53l1x} uses the \acrshort{i2c} communication protocol. The next subsection describes this protocol, if you are familiar with the protocol you can continue to subsection \ref{sec:lidar-i2c}.
 
-\subsection[ Inter-Integrated Circuit Communication Protocol ]{ \acrlong{i2c} Communication Protocol }
+\subsection[ Inter-Integrated Circuit Communication Protocol ]{ \acrlong{i2c} Communication Protocol } \label{sec:i2c}
 \acrshort{i2c}, which stands for \acrlong{i2c}, is a protocol designed for communication between a controller (or more controllers) and multiple peripheral devices. The protocol requires only two lines: SDA (serial data) and SCL (serial clock). Both lines are open-drain with pull-up resistors, which means that the bus driver can drive the bus line low but cannot drive it high. This constrain prevents the collision  driving the line both high and low, which would damage the drivers.
 
 The protocol's communication is done in 8-bit packets. The transaction starts with the start condition. After that, every packet is confirmed from the receiving side with one acknowledgment bit, and the transaction ends with the stop condition. Since more peripheral devices can be connected to the \acrshort{i2c} bus, the controller must first address the peripheral to communicate.
@@ -369,7 +569,7 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
 \chapter[BSP]{\acrlong{bsp}} \label{BSP}
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item \acrshort{bsp} = providing i2c functions to \acrshort{lidar} library + easier portability
     \item \acrshort{bsp} = global namespace \lstinline{Gpio::Pin} initialization is **UB**
@@ -401,7 +601,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 \section{ Motor driver }
 
 \section{ Error Handling }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{c++23}
     \item the reasoning for given result types - \lstinline{atoms::Void}, \lstinline{std::string_view}
@@ -410,7 +610,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 }
 
 \section{ \TODO{??} }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Hard fault = ram had too high static usage, minimizing the usage by lower the number of available buckets for packets solved this (memory::pool)
 \end{itemize}
@@ -419,7 +619,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 \TODO{At one point} during the development the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide.  This resulted in corrupted stack frames during debugging. \TODO{} The Fix to this issue was reducing the size of \TODO{pre-allocated} packet buffer. The count of 1025B buffers was reduced from \TODO{20} to \TODO{5}. \TODO{This seemingly fixed the issue.}  
 
 \section{ Platform Dependant Code -- port files -- \TODO{CRPT} }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item comparison CRPT vs inheritance approach
     \item inheritance = vtables can introduce waste of space
@@ -427,7 +627,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 }
 
 \section{ \TODO{Size optimization} }
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Release build has over 107\% of MCU Flash
     \item `std::bind` -- `1,172B` vs Lambda `972B`
@@ -438,7 +638,7 @@ Function \lstinline|lidarGet()| tries to receive measurement results from the \a
 
 \subsection[Ultra Lite LiDAR Library]{Ultra Lite \acrshort{lidar} Library} \label{uld}
 
-\TODO{
+\TODOLIST{
 \begin{itemize}
     \item Use Low Power version due to saving space in Flash; Release build: full api -- \texttt{\qty{19}{\kilo\byte}} vs ultra lite driver \texttt{\qty{1}{\kilo\byte}}
     \item \TODO{Use `extern "C"` include guards}
@@ -450,7 +650,7 @@ Function \lstinline|lidarGet()| tries to receive measurement results from the \a
 
 New \acrshort{roficom} revision arrived needing firmware updates to reflect changes in hardware.
 
-\TODO{
+\TODOLIST{
 Changes from version 0.6:
 \begin{itemize}
     \item new MCU case with more pins: old = 29, new = 48 pins.
@@ -460,11 +660,10 @@ Changes from version 0.6:
 \end{itemize}
 }
 
-On the previous revision, \acrshort{roficom}'s MCU (STM32G071GBU6) had only one last pin left unconnected. The old revision did not have connected \acrshort{lidar}'s enable pin, which meant there was no way to reset the \acrshort{lidar} from the firmware in case of a failure. The interrupt (IRQ) \acrshort{lidar} pin was also not connected in the old revision, but this was not an issue since it could have been solved by polling, as mentioned earlier in \TODO{Add a reference to the explanation of lidar usage}. The magnetic sensors for the motor's retraction and expansion limit could not detect and stop the movement of the motor fast enough, which damaged the \acrshort{roficom}'s case. Missing pins and a change in the motor's limit led to the change of MCU.
+On the previous revision, \acrshort{roficom}'s MCU (STM32G071GBU6) had only one last pin left unconnected. The old revision did not have connected \acrshort{lidar}'s enable pin, which meant there was no way to reset the \acrshort{lidar} from the firmware in case of a failure. The interrupt (IRQ) \acrshort{lidar} pin was also not connected in the old revision, but this was not an issue since it could have been solved by polling, as mentioned earlier in \TODO{Add a reference to the explanation of lidar usage}. 
 
 The newly chosen MCU (STM32G071CBUx) has \TODO{48} pins in total, which is a considerable upgrade from the \TODO{29} pins \TODO{that had the previous} MCU. Even though several pins changed \TODO{something is missing here}, reflecting the new hardware revision in the firmware was not as hard because of the usage of \acrshort{bsp}, as explained in section \ref{BSP}. Furthermore, \acrshort{lidar}'s enable and interrupt pins got connected to the MCU's GPIO pins.
 
-As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
 
 \chapter{Conclusion}
 
