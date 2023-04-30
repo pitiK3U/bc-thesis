@@ -268,7 +268,7 @@ binary data that is transferred between modules.
 \begin{figure}
     % responsive_image path: assets/img/connector/skirt_pins.svg
     \includegraphics{ example-image-a }
-    \caption{ Graph showing pin layout on PCB inside the skirt }
+    \caption{ \TODO{Graph showing pin layout on PCB inside the skirt} }
 \end{figure}
 
 \subsection{ Connector to Module Interface }
@@ -400,9 +400,11 @@ The \acrshort{rofi} repository is an enormous monolithic project and contains pl
 
 \acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides abstraction over running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
 
-The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. 
+The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needed change to reflect this addition}.
 
-\chapter[LiDAR]{ \acrshort{lidar} }
+The current implementations are esp32 and simulator. The eps32 are the implementation for the \gls{universal-module}.
+
+\chapter[ LiDAR ]{ \acrshort{lidar} }
 \TODOLIST{
 \begin{itemize}
     \item \TODO{Walk through \acrshort{lidar} features}
@@ -434,7 +436,7 @@ The alternative to the interrupt signal is polling. Polling means that the firmw
 \section{ Communication }
 \gls{vl53l1x} uses the \acrshort{i2c} communication protocol. The next subsection describes this protocol, if you are familiar with the protocol you can continue to subsection \ref{sec:lidar-i2c}.
 
-\subsection[ Inter-Integrated Circuit Communication Protocol ]{ \acrlong{i2c} Communication Protocol } \label{sec:i2c}
+\subsection[ Inter-Integrated Circuit Protocol ]{ \acrlong{i2c} Protocol } \label{sec:i2c}
 \acrshort{i2c}, which stands for \acrlong{i2c}, is a protocol designed for communication between a controller (or more controllers) and multiple peripheral devices. The protocol requires only two lines: SDA (serial data) and SCL (serial clock). Both lines are open-drain with pull-up resistors, which means that the bus driver can drive the bus line low but cannot drive it high. This constrain prevents the collision  driving the line both high and low, which would damage the drivers.
 
 The protocol's communication is done in 8-bit packets. The transaction starts with the start condition. After that, every packet is confirmed from the receiving side with one acknowledgment bit, and the transaction ends with the stop condition. Since more peripheral devices can be connected to the \acrshort{i2c} bus, the controller must first address the peripheral to communicate.
@@ -450,7 +452,7 @@ This protocol has several advanced topics, such as 10-bit addresses, repeated st
 \subsection{ \TODO{Difference in lidar} } \label{sec:lidar-i2c}
 Even though the \gls{vl53l1x} uses \acrshort{i2c} protocol, there is a small but significant change in communication. \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number and \textbf{must} be the first two data packets. The most significant byte of this index is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that in order to read data from the \acrshort{lidar}, the controller needs to make two transactions: first, a write transaction with register index, and second with the actual read. However, writing data to the \acrshort{lidar} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
 
-\subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{lidar-i2c-impl}
+\subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
 
 
 \section{ \TODO{Protocol / API} }
@@ -461,7 +463,7 @@ STMicroelectronics provides three driver versions: Full API (standard), \acrlong
 The \acrlong{uld} was selected for the \acrshort{roficom} because the full API was too large for the firmware. The size of the full api driver's release build took up to \qty{19}{\kilo\byte} of the MCU's Flash. In comparison the release build of \acrlong{uld} takes only \qty{1}{\kilo\byte}. This resulted in missing errors and error messages that was previously used with the full API driver. The \acrshort{uld} only reports failures either caused by lidar (signified as value $1$) or from the under-laying layer (\acrshort{i2c} communication). But in both cases we lose the error message. \todo{How to solve this error handling}.
 
 \section[ API of the Ultra Lite Driver ]{ API of the \acrlong{uld} }
-Because the \acrshort{uld} API is platform independent, it requires the user to implement \acrshort{i2c} communication for the platform (the implementation of \acrshort{i2c} in \acrshort{roficom} is described in section \ref{lidar-i2c-impl}). The UM2510 \cite{um2510} manual explains how to use the \acrshort{uld} API and will be described in this section.
+Because the \acrshort{uld} API is platform independent, it requires the user to implement \acrshort{i2c} communication for the platform (the implementation of \acrshort{i2c} in \acrshort{roficom} is described in section \ref{sec:lidar-i2c-impl}). The UM2510 \cite{um2510} manual explains how to use the \acrshort{uld} API and will be described in this section.
 
 The flow of communication is following:
 
@@ -582,7 +584,7 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \acrshort{bsp} is usually used in embedded environment and provides many benefits. Not only it abstracts hardware details, but also it establishes single source of truth for pin definitions, which is less error prone than having them defined and multiple places. \acrshort{bsp} assures correct initialization of the board at single place. Having everything at single point enables for easier portability across different board versions. The abstraction allows for usage of the \TODO{bsp parts} in different independent parts of the project. 
 
-In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides declaration of function \lstinline{dbgInstance}, which is function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on external function \lstinline|SystemCoreClockUpdate()|, which is \TODO{platform-dependant function} that needs to be called after board clock has been setup. \TODO{In contrary} the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
+In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides declaration of function \lstinline{dbgInstance}, which is function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on external function \lstinline|SystemCoreClockUpdate()|, which is \TODO{platform-dependant function} that needs to be called after board clock has been setup. \TODO{In contrary}, the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
 
 \verb|bsp.hpp| acts as an interface specifying what drivers and pins \acrshort{roficom} needs to function, however since those pins and drivers are stored as global variables in namespace \lstinline{bsp}, the interface should be kept as minimal as possible to save space in the global space. On the other hand \verb|bsp.cpp| acts as implementation of this interface and should mainly correctly setup the board, pins and drivers for usage, that means the \verb|bsp.cpp| can use pins and drivers that are not exposed as it needs to meet the interface specification.
 
@@ -596,7 +598,41 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 \chapter{ Implementation - Design Decisions }
 This chapter walks over interesting design decisions and explains their reasoning.
 
+
+\section{ Platform Dependant Code -- port files -- \TODO{CRPT} }
+\TODOLIST{
+\begin{itemize}
+    \item comparison CRPT vs inheritance approach
+    \item inheritance = vtables can introduce waste of space
+\end{itemize}
+}
+
+To assure better portability the \verb|stm32cxx| drivers isolate processor family specific code into \emph{port} files. Under the path \path{RoFI/softwareComponents/stm32cxx/port/} are folders for family specific \TODO{abstraction}. The \verb|port| files are in the format \verb|{driver}.port.hpp|. For example the port file for \acrshort{i2c} for the microcontroller of \acrshort{roficom} is in \path{.../stm32cxx/stm32g0xx/i2c.port.hpp}.
+
+Port files follows the same guidelines that the specific code in under \lstinline|namespace detail| and it is implemented via \emph{mixins}. However, since \verb|c++| does not natively support mixins, this is done using the \verb|c++| technique called CRTP. CRTP is a templated class, which takes the class we wish to extend with our mixin as template parameter, and implements the mixin functionality on the template class. Such functionality might be enabling clock for periphery or \TODO{setting alternative function on periphery pins}.
+
 \section[ I2C driver ]{ \acrshort{i2c} driver }
+\TODO{Secion intro}
+
+The \acrshort{i2c} driver lies with other \verb|stm32| drivers in project at path \path{RoFI/softwareComponents/stm32cxx/src/drivers/}.
+
+The driver contains class \lstinline|I2C|, \lstinline|SdaPin| and \lstinline|SclPin|, to make the pins distinguishable from \lstinline|Gpio::Pin| i.e., when constructing the \lstinline|I2C| the following construction, where \lstinline|pinSda| and \lstinline|pinScl| are \lstinline|Gpio::Pin|s, \lstinline|I2C(..., pinSda, pinScl)| would fail to compile. On the other hand the construction \lstinline|I2C(..., SdaPin( pinSda ), SclPin( pinScl ) )| compiles. It also ensures that swapping the two pin classes would not compile, i.e., \lstinline|I2C(..., SclPin( ... ), SdaPin( ... ) )| would not compile.
+
+The \acrshort{i2c} driver provides two functions \lstinline|read| and \lstinline|write|. Those functions takes the \acrshort{i2c} address of the peripheral and data container. (There are also \lstinline|unsafe| variants of these functions that are used in \acrshort{lidar} \acrshort{i2c} implementation \ref{sec:lidar-i2c-impl} and takes raw buffer and its size instead of container.) Since the \lstinline|read| and \lstinline|write| are templated functions, they use private functions to actually implement \lstinline|read| and \lstinline|write|. These private functions are not templated and takes the raw buffer and size. Using slim templated function with inner function that is not templated reduces the size of generated functions from template, but allows the usage of generalized function.
+
+\TODO{i2c implementation using stm32 tools}
+
+\subsection{ Error handling }
+Since the two functions only takes the arguments either for reading from or writing to the given argument, the functions are free to return anything. In this case they return error. Because the \acrshort{i2c} driver is used in \acrshort{lidar} \acrshort{i2c}, the error values are chosen in a mind to be compatible with error handling in the \acrshort{uld} \ref{uld}. The \acrshort{i2c} error enum has the following errors:
+\begin{itemize}
+    \item \emph{Valid} value $0$ -- this is to be compatible with the \acrshort{lidar} error reporting,
+    \item \emph{Reserved} $1$ -- Reserved for the error reported by the \TODO{...},
+    \item \emph{NotAcknowledge} = 2 -- The acknowledgment bit was not signalled after the 8 bits were transmitted,
+    \item \emph{BusError} = 3 -- Bus error signals misplaced start or stop condition,
+    \item \emph{ArbitrationLoss} -- Arbitration loss occurs when two masters starts transmitting at the same time,
+    \item \emph{OverrunUnderrun} -- Overrun is when the newly sent 8-bits are read before the previous 8-bits were read, thus, resulting in data loss. On the other hand, Underrun is when the 8-bits are sent from the data register before the new 8-bits are written into the register, resulting in sending the same 8-bits of data second time,
+    \item \emph{BufferOverflow} -- Buffer overflow happens when the receiving data are longer than the allocated buffer to store those data. The data are read until the end of the buffer and the error is reported.
+\end{itemize}
 
 \section{ Motor driver }
 
@@ -616,15 +652,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 \end{itemize}
 }
 
-\TODO{At one point} during the development the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide.  This resulted in corrupted stack frames during debugging. \TODO{} The Fix to this issue was reducing the size of \TODO{pre-allocated} packet buffer. The count of 1025B buffers was reduced from \TODO{20} to \TODO{5}. \TODO{This seemingly fixed the issue.}  
-
-\section{ Platform Dependant Code -- port files -- \TODO{CRPT} }
-\TODOLIST{
-\begin{itemize}
-    \item comparison CRPT vs inheritance approach
-    \item inheritance = vtables can introduce waste of space
-\end{itemize}
-}
+\TODO{At one point} during the development the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide.  This resulted in corrupted stack frames during debugging. \TODO{} The Fix to this issue was reducing the size of \TODO{pre-allocated} packet buffer. The count of 1025B buffers was reduced from \TODO{20} to \TODO{5}. \TODO{This seemingly fixed the issue.} 
 
 \section{ \TODO{Size optimization} }
 \TODOLIST{
