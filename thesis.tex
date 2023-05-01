@@ -30,7 +30,7 @@
                %% with `nolof` to hide the List of Figures.
   lot,         %% The `lot` option prints the List of Tables. Replace
                %% with `nolot` to hide the List of Tables.
-    draft,
+    % draft,
 ]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
@@ -156,12 +156,13 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
 \TODO{IMU}
 
 \TODO{\acrshort{lidar}}
+The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and is in detail described in its own chapter \ref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock \TODO{...} or to help align docks when connecting. \TODO{The \acrshort{lidar} also scans the environment, which can be useful when the rofibot needs to walk up stairs, or so ...}
 
 The module is divided into four component: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. Whereas the body encloses actuators, electronics, and accumulators. There is one last \TODO{joint} between the two bodies. In total the module contains six docks and three \TODO{joints/motors} and the two types of sensors.
 
 \todo{Insert image of \gls{universal-module}}
 
-\section{ Architecture }
+\subsection{ Architecture }
 
 The docks used in the \gls{universal-module} are called \acrshortpl{roficom} and \TODO{are the most important part of this thesis}. The \acrshort{roficom} is in detail described and explained in the next chapter \ref{roficom}.
 
@@ -197,9 +198,9 @@ communication to other modules. As the name suggests, its primary purpose is to 
     \item connector-to-module interface (communication with the integrated module).
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}
     % responsive_image path: assets/img/connector/roficom_main_sketch.jpg
-    \includegraphics{ example-image-a }
+    \includegraphics{ roficom_main_sketch.jpg }
     \caption{ \TODO{ Current look of \acrshort{roficom} } }
 \end{figure}
 
@@ -213,12 +214,13 @@ communication to other modules. As the name suggests, its primary purpose is to 
 -->
 \fi
 
-RoFICoM is built from 3 main parts: \emph{body}, \emph{clip} and \emph{skirt}.
+RoFICoM is built from three main parts: \emph{body}, \emph{clip} and \emph{skirt}. These three parts are shown in figure \ref{ fig:key-components }
 
 \begin{figure}
     %responsive_image path: assets/img/connector/dock_key_components.svg 
-    \includegraphics{example-image-a}
-    \caption{ \TODO{ Visual representation of main components } }
+    \includegraphics{ dock_key_components.pdf }
+    \caption{ \TODO{ Visual representation of main components } \TODO{Add citation} }
+    \label{ fig:key-components }
 \end{figure}
 
 The body is non-movable part that is mounted into the module.
@@ -231,17 +233,18 @@ the connection. This is why the skirt is needed. Two connected skirts stop the r
 
 In order to help and/or ease the process of connection there are magnets placed in the holes of skirt. This helps when two connecting sides are slightly misaligned.
 
-The motors that rotates the clip and the skirt are located at the bottom of the body. To rotate the clip and the skirt there is another component (shaft ring) that is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When motor activates it rotates the shaft ring and moves among the gearing elevating the components. 
+The motor that rotates the clip and the skirt are located at the bottom of the body. To rotate the clip and the skirt there is another component (shaft ring) that is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When motor activates it rotates the shaft ring and moves among the gearing elevating the components. The motor in body and clip shaft with a bevel gearing is shown in the figure \ref{ fig:dock-arrangement }
 
 \begin{figure}
     \centering
     % responsive_image path: assets/img/connector/dock_arrangement.svg
-    \includegraphics{example-image-a}
-    \caption{ \TODO{ Visual representation of body with motor and shaft ring } }
+    \includegraphics{ dock_arrangement.pdf }
+    \caption{ \TODO{ Visual representation of body with motor and shaft ring } \TODO{Add citation} }
+    \label{ fig:dock-arrangement }
 \end{figure}
 
-
-\subsubsection{ Ratings }
+\iffalse
+\subsection{ Ratings }
 \begin{itemize}
     \item compact, flat layout (diameter 50 mm, thickness 17 mm)
     \item data and power sharing between connected units
@@ -251,8 +254,9 @@ The motors that rotates the clip and the skirt are located at the bottom of the 
     \item actuation time: less than 0.6 s
     \item genderless, 90-degree symmetrical with automatic orientation detection
 \end{itemize}
+\fi
 
-\subsection{ Connector to Connector Interface }
+\section{ Connector to Connector Interface }
 \iffalse
 <!--
 - UART
@@ -267,11 +271,11 @@ binary data that is transferred between modules.
 
 \begin{figure}
     % responsive_image path: assets/img/connector/skirt_pins.svg
-    \includegraphics{ example-image-a }
+    \includegraphics{ skirt_pins.pdf }
     \caption{ \TODO{Graph showing pin layout on PCB inside the skirt} }
 \end{figure}
 
-\subsection{ Connector to Module Interface }
+\section{ Connector to Module Interface }
 RoFICoM provides \textbf{SPI} interface for communication between module and RoFICoM. The communication on the bus is performed
 in transactions. Transaction format consists of \textbf{command}, which is first 8 bits of transaction, followed by \textbf{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and are required to be supported by all
@@ -356,6 +360,17 @@ The magnetic sensors for the motor's retraction and expansion limit could not de
 As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
 
 \TODO{describe the MCU and its capabilities}
+The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectronics. This microcontroller from the STM32G0 family is high-performance ARM Cortex-M0+ processor. The main features of this microcontroller are:
+
+\begin{itemize}
+    \item Maximum clock frequency of \qty{64}{\mega\hertz},
+    \item Biggest size of flash memory in current embedded microcontrollers of \qty{128}{\kilo\byte},
+    \item Static RAM of size \qty{36}{\kilo\byte},
+    \item 48 pins.
+\end{itemize}
+
+The microcontroller has other functionality that is used, such as CRC calculation, SPI, UART, \acrshort{i2c} and many more.
+
 
 \chapter[ RoFICoM -- what is done and what will be done ]{ \acrshort{roficom} -- what is done and what will be done }
 \TODOLIST{
@@ -400,11 +415,11 @@ The \acrshort{rofi} repository is an enormous monolithic project and contains pl
 
 \acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides abstraction over running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
 
-The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needed change to reflect this addition}.
+The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needs update to reflect this addition}.
 
 The current implementations are esp32 and simulator. The eps32 are the implementation for the \gls{universal-module}.
 
-\chapter[ LiDAR ]{ \acrshort{lidar} }
+\chapter[ LiDAR ]{ \acrshort{lidar} } \label{sec:lidar}
 \TODOLIST{
 \begin{itemize}
     \item \TODO{Walk through \acrshort{lidar} features}
@@ -591,7 +606,7 @@ In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp
 To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we need to change MCU on the board, thus changing pin layout. In this scenario we would only need to change the \verb|bsp.cpp| file with pin definitions (and if not already present implementation of drivers), but the \verb|bsp.hpp| and components built on top of that would be left unchanged and still work.
 
 \section[ Gpio::Pin Initialization ]{ \lstinline|Gpio::Pin| Initialization }
-\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, etc. for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMelectronics}.
+\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, etc. for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMicroelectronics}.
 
 \chapter[ RoFI HAL ]{ \acrshort{rofi} \acrshort{hal} }
 
