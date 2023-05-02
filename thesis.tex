@@ -132,11 +132,9 @@
 
 The \acrshort{rofi} is a platform of distributed self-reconfigurable modular robots developed at Masaryk University, Faculty of Informatics.
 
-The main goal of the \acrshort{rofi} platform is to provide well established open-source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ Github repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
+The main goal of the \acrshort{rofi} platform is to provide a well-established open source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ GitHub repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
 
-\TODO{\Glspl{rofibot}}
-
-The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A concrete example for the \acrshort{rofi} module is the \gls{universal-module}.
+The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
 
 
 \section[ Universal Module ]{ \gls{universal-module} }
@@ -151,27 +149,26 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
         \item 6 docks
     \end{itemize}
 }
-\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as all-in-one module, but rather as a module with minimal \TODO{necessary features} that can be used in nearly all systems. Thus, \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If specific sensors are needed, it is expected to use them as own modules.
+\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal \TODO{necessary features} that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If specific sensors are needed, it is expected to use them as own modules.
 
-\TODO{IMU}
+An inertial measurement device measures the unit's acceleration, angular velocity and orientation. The measured data can be used in algorithms coordinating the modules.
 
-\TODO{\acrshort{lidar}}
-The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and is in detail described in its own chapter \ref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock \TODO{...} or to help align docks when connecting. \TODO{The \acrshort{lidar} also scans the environment, which can be useful when the rofibot needs to walk up stairs, or so ...}
+The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and is described in detail in its own chapter \ref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock to an obstacle or a surface, or to help align docks when connecting. The \acrshort{lidar} can scan the environment. Scanning environment can be useful when the \gls{rofibot} needs to walk up stairs, or in general needs to know about its surroundings.
 
-The module is divided into four component: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. Whereas the body encloses actuators, electronics, and accumulators. There is one last \TODO{joint} between the two bodies. In total the module contains six docks and three \TODO{joints/motors} and the two types of sensors.
+The module is divided into four components: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. In comparison, the body encloses actuators, electronics, and accumulators. There is one last \TODO{joint} between the two bodies. In total, the module contains six docks, three \TODO{joints/motors} and two types of sensors.
 
 \todo{Insert image of \gls{universal-module}}
 
 \subsection{ Architecture }
 
-The docks used in the \gls{universal-module} are called \acrshortpl{roficom} and \TODO{are the most important part of this thesis}. The \acrshort{roficom} is in detail described and explained in the next chapter \ref{roficom}.
+The docks used in the \gls{universal-module} are called \acrshortpl{roficom}. The \acrshort{roficom} is in detail described and explained in the next section \ref{sec:roficom}.
 
-Each module has a single \emph{control unit} that serves as a centralized control over modules actions and all the module components. The motors are controlled trough UART protocol and docks are controlled over SPI protocol. The control unit also controls charging and power management.
+Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. The motors are controlled through UART protocol, and the docks are controlled over SPI protocol. The control unit also controls charging and power management.
 
 \todo{Add \gls{universal-module} internal architecture diagram}
 
 
-\chapter[ RoFICoM ]{ \acrshort{roficom} } \label{roficom}
+\section[ RoFI Communication Mechanism ]{ \acrlong{roficom} } \label{sec:roficom}
 \TODOLIST{
 \begin{itemize}
     \item Explain \acrshort{roficom}
@@ -191,20 +188,22 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 \fi
 
 \acrlong{roficom}, \acrshort{roficom} for short, is an open-hardware connection system designed for the \acrshort{rofi} platform. \acrshort{roficom} focuses on reusability \TODO{in order to make it easily integrable} into any module for which \acrshort{roficom} provides
-communication to other modules. As the name suggests, its primary purpose is to (inter)connect modules. To achieve \TODO{this}, \acrshort{roficom} has a well-defined interface that can be divided into three parts:
+communication to other modules. As the name suggests, its primary purpose is to (inter)connect modules. In order to achieve its purpose, the \acrshort{roficom} has a well-defined interface that can be divided into three parts:
 \begin{itemize}
     \item mechanical structure,
     \item connector-to-connector interface (communication between two \acrshortpl{roficom}),
     \item connector-to-module interface (communication with the integrated module).
 \end{itemize}
 
+\iffalse
 \begin{figure}
     % responsive_image path: assets/img/connector/roficom_main_sketch.jpg
     \includegraphics{ roficom_main_sketch.jpg }
-    \caption{ \TODO{ Current look of \acrshort{roficom} } }
+    \caption{ \TODO{ The current look of \acrshort{roficom} } }
 \end{figure}
+\fi
 
-\section{Mechanical structure}
+\subsection{Mechanical structure}
 \iffalse
 <!--
 - Describe individual parts: body, clip and skirt
@@ -223,23 +222,23 @@ RoFICoM is built from three main parts: \emph{body}, \emph{clip} and \emph{skirt
     \label{ fig:key-components }
 \end{figure}
 
-The body is non-movable part that is mounted into the module.
-Clip and skirt are the most important parts for establishing strong mechanical connections between two \acrshortpl{roficom}.
+The body is a non-movable part that is mounted into the module.
+The clip and skirt are the most important parts for establishing strong mechanical connections between two \acrshortpl{roficom}.
 The clip component consists of four latches attached to a ring. Those latches get attached while connecting with
 other \acrshort{roficom}. While expanding, the clip gets rotated and expanded upward by the motor. In the process, the latches on the mating
 side slide under each other, therefore forming a mechanical connection that prevents connectors from being pulled apart.
 However, the latches themselves are insufficient for a mechanical connection, as a mutual rotation of the connectors releases
 the connection. This is why the skirt is needed. Two connected skirts stop the rotation against each other.
 
-In order to help and/or ease the process of connection there are magnets placed in the holes of skirt. This helps when two connecting sides are slightly misaligned.
+In order to help ease the process of connection, there are magnets placed in the holes of skirt. This helps when two connecting sides are slightly misaligned.
 
-The motor that rotates the clip and the skirt are located at the bottom of the body. To rotate the clip and the skirt there is another component (shaft ring) that is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When motor activates it rotates the shaft ring and moves among the gearing elevating the components. The motor in body and clip shaft with a bevel gearing is shown in the figure \ref{ fig:dock-arrangement }
+The motor that rotates the clip and the skirt are located at the bottom of the body. The rotation of the clip and the skirt is accomplished by another component the shaft ring. The shaft ring is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When the motor activates, it rotates the shaft ring and moves among the gearing elevating the components. The motor in the body and clip shaft with a bevel gearing is shown in the figure \ref{ fig:dock-arrangement }.
 
 \begin{figure}
     \centering
     % responsive_image path: assets/img/connector/dock_arrangement.svg
     \includegraphics{ dock_arrangement.pdf }
-    \caption{ \TODO{ Visual representation of body with motor and shaft ring } \TODO{Add citation} }
+    \caption{ \TODO{ Visual representation of the body with motor and shaft ring } \TODO{Add citation} }
     \label{ fig:dock-arrangement }
 \end{figure}
 
@@ -256,7 +255,7 @@ The motor that rotates the clip and the skirt are located at the bottom of the b
 \end{itemize}
 \fi
 
-\section{ Connector to Connector Interface }
+\subsection{ Connector to Connector Interface }
 \iffalse
 <!--
 - UART
@@ -264,9 +263,9 @@ The motor that rotates the clip and the skirt are located at the bottom of the b
 -->
 \fi
 
-Connector to connector is done by small PCB inside skirt with spring-loaded pins for connection. This PCB provides both
+A small printed circuit board (PCB) inside skirt with spring-loaded pins realizes the connector-to-connector connection. This PCB provides both
 data and power sharing to the connected module.
-For data communication RoFICoM uses \textbf{UART} transferring frames with specified format and CRC. Those frames hold ``blobs'' --
+\acrshort{roficom} uses \textbf{UART} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' --
 binary data that is transferred between modules. 
 
 \begin{figure}
@@ -275,11 +274,11 @@ binary data that is transferred between modules.
     \caption{ \TODO{Graph showing pin layout on PCB inside the skirt} }
 \end{figure}
 
-\section{ Connector to Module Interface }
-RoFICoM provides \textbf{SPI} interface for communication between module and RoFICoM. The communication on the bus is performed
-in transactions. Transaction format consists of \textbf{command}, which is first 8 bits of transaction, followed by \textbf{command
+\subsection{ Connector to Module Interface }
+RoFICoM provides an \textbf{SPI} interface for communication between the module and RoFICoM. The communication on the bus is performed
+in transactions. Transaction format consists of \textbf{command}, which is the first 8 bits of a transaction, followed by \textbf{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and are required to be supported by all
-connector types. For example some connector commands are: version command, status command, send and receive earlier
+connector types. For example, some connector commands are version command, status command, send and receive earlier
 mentioned blob.
 
 \iffalse
@@ -338,7 +337,7 @@ interface](#connector-to-connector-interface).
 \fi
 
 
-\section{ Hardware details }
+\subsection{ Hardware details }
 \TODOLIST{
 \begin{itemize}
     \item MCU
@@ -350,26 +349,25 @@ interface](#connector-to-connector-interface).
 \end{itemize}
 }
 
-\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}. Those two boards are connected with cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector to connector connection (i.e., UART pins -- TX and RX, EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection). For the \acrshort{lidar} there are four used pins: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), \acrshort{lidar} enable pin and \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
+\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}. Those two boards are connected with a cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection. Those pins are UART pins (TX -- transmit pis and RX -- receive pin), EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection. The internal (INT) powerline can be used to charge the current module, or to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), the \acrshort{lidar} enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
 
-\TODO{??system board??} contains all other necessary circuits for \acrshort{roficom} to function. This consist of foremost the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines (Although the circuit for reading current is not currently attached) and SPI interface needed for connector to module interface.
+\TODO{system board} contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines, and SPI interface needed for the connector to module interface. That being said, the circuit for reading current is not attached at the moment.
 
-\TODO{ Missing pins and a change in the motor's limit led to the change of MCU }
+% \TODO{ Missing pins and a change in the motor's limit led to the change of MCU }
 
 The magnetic sensors for the motor's retraction and expansion limit could not detect and stop the movement of the motor fast enough, which damaged the \acrshort{roficom}'s case.
 As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
 
-\TODO{describe the MCU and its capabilities}
-The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectronics. This microcontroller from the STM32G0 family is high-performance ARM Cortex-M0+ processor. The main features of this microcontroller are:
+The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectronics. This microcontroller from the STM32G0 family is a high-performance ARM Cortex-M0+ processor. The main features of this microcontroller are:
 
 \begin{itemize}
-    \item Maximum clock frequency of \qty{64}{\mega\hertz},
-    \item Biggest size of flash memory in current embedded microcontrollers of \qty{128}{\kilo\byte},
+    \item A maximum clock frequency of \qty{64}{\mega\hertz},
+    \item The biggest size of flash memory currently in embedded microcontrollers of \qty{128}{\kilo\byte},
     \item Static RAM of size \qty{36}{\kilo\byte},
     \item 48 pins.
 \end{itemize}
 
-The microcontroller has other functionality that is used, such as CRC calculation, SPI, UART, \acrshort{i2c} and many more.
+The microcontroller has other functionality, such as CRC calculation, SPI, UART, \acrshort{i2c} and many more.
 
 
 \chapter[ RoFICoM -- what is done and what will be done ]{ \acrshort{roficom} -- what is done and what will be done }
@@ -387,12 +385,12 @@ The microcontroller has other functionality that is used, such as CRC calculatio
 }
 
 \section{ Project Structure / Architecture}
-The \acrshort{rofi} repository is an enormous monolithic project and contains plethora \acrshort{rofi} related sub-projects. For this thesis only several sub-projects are important, those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
+The \acrshort{rofi} repository is an enormous monolithic project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
 
 \section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware }
 \acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
 
-\TODO{Stav firmware pred moji bp obsahoval nekolik veci implementovanych}. The implemented features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface) and a motor control. However, since the motor control was not able to stop the motor fast enough and the magnetic sensors for detecting the motor position got changed, \TODO{the firmware for motor control needed an update too}. 
+\TODO{Stav firmware pred moji bp obsahoval nekolik veci implementovanych}. The implemented features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface) and motor control. However, since the motor control could not stop the motor fast enough and the magnetic sensors for detecting the motor position changed, \TODO{the motor control firmware needed an update too}. 
 
 \TODO{Protocol -- here or in connector to connector interface}
 
@@ -413,9 +411,9 @@ The \acrshort{rofi} repository is an enormous monolithic project and contains pl
 \end{itemize}
 }
 
-\acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides abstraction over running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
+\acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides an abstraction over the running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
 
-The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needs update to reflect this addition}.
+The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needs an update to reflect this addition}.
 
 The current implementations are esp32 and simulator. The eps32 are the implementation for the \gls{universal-module}.
 
@@ -585,7 +583,7 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
-\chapter[BSP]{\acrlong{bsp}} \label{BSP}
+\chapter[ Board Support Package ]{\acrlong{bsp}} \label{BSP}
 \TODOLIST{
 \begin{itemize}
     \item \acrshort{bsp} = providing i2c functions to \acrshort{lidar} library + easier portability
@@ -641,7 +639,7 @@ The \acrshort{i2c} driver provides two functions \lstinline|read| and \lstinline
 Since the two functions only takes the arguments either for reading from or writing to the given argument, the functions are free to return anything. In this case they return error. Because the \acrshort{i2c} driver is used in \acrshort{lidar} \acrshort{i2c}, the error values are chosen in a mind to be compatible with error handling in the \acrshort{uld} \ref{uld}. The \acrshort{i2c} error enum has the following errors:
 \begin{itemize}
     \item \emph{Valid} value $0$ -- this is to be compatible with the \acrshort{lidar} error reporting,
-    \item \emph{Reserved} $1$ -- Reserved for the error reported by the \TODO{...},
+    \item \emph{Reserved} $1$ -- Reserved for the error reported by the \TODO{todo ...},
     \item \emph{NotAcknowledge} = 2 -- The acknowledgment bit was not signalled after the 8 bits were transmitted,
     \item \emph{BusError} = 3 -- Bus error signals misplaced start or stop condition,
     \item \emph{ArbitrationLoss} -- Arbitration loss occurs when two masters starts transmitting at the same time,
@@ -679,7 +677,7 @@ Since the two functions only takes the arguments either for reading from or writ
 
 Function \lstinline|lidarGet()| tries to receive measurement results from the \acrshort{lidar} and assumes that the device is successfully initialized. This function takes a reference to the \lstinline|Lidar| class and variable to store in results. Because \lstinline|lidarGet()| is a polling function it needs to be called indefinitely to constantly update the currently measured distance. Due to the nature of polling, it is needed to poll only when \acrshort{roficom} is idle, otherwise constant polling \TODO{without ...}
 
-\subsection[Ultra Lite LiDAR Library]{Ultra Lite \acrshort{lidar} Library} \label{uld}
+\subsection[ Ultra Lite LiDAR Library ]{ Ultra Lite \acrshort{lidar} Library } \label{uld}
 
 \TODOLIST{
 \begin{itemize}
@@ -689,7 +687,7 @@ Function \lstinline|lidarGet()| tries to receive measurement results from the \a
 }
 
 
-\chapter[RoFICoM 1.0]{ \acrshort{roficom} 1.0 }
+\chapter[ RoFICoM 1.0 ]{ \acrshort{roficom} 1.0 }
 
 New \acrshort{roficom} revision arrived needing firmware updates to reflect changes in hardware.
 
