@@ -30,7 +30,7 @@
                %% with `nolof` to hide the List of Figures.
   lot,         %% The `lot` option prints the List of Tables. Replace
                %% with `nolot` to hide the List of Tables.
-    draft,
+    % draft,
 ]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
@@ -43,7 +43,7 @@
 %%
 
 \newcommand{\TODO}[1]{\textcolor{red}{\textit{#1}}}
-\newcommand{\TODOLIST}[1]{\TODO{#1}}
+\newcommand{\TODOLIST}[1]{\iffalse\TODO{#1}\fi}
 
 %% The following section sets up the metadata of the thesis.
 \thesissetup{
@@ -51,7 +51,7 @@
     university  = mu,
     faculty     = fi,
     type        = bc,
-    % department  = \TODO{Department of Machine Learning and Data Processing},
+    department  = \TODO{Department of Machine Learning and Data Processing},
     author      = Petr Bém,
     gender      = m,
     advisor     = {RNDr. Jan Mrázek},
@@ -60,16 +60,9 @@
     keywords    = {\TODO{modular, robots, RoFI, firmware}},
     TeXkeywords = {\TODO{keyword1, keyword2, \ldots}},
     abstract    = {%
-      % Background
-      \acrshort{roficom} is the Communication Mechanism for the \acrshort{rofi} platform, which is open software and open-hardware platform for modular robots.
-      % Objective
-      This thesis focuses on bringing the already existing firmware to production ready state, this includes improving the existing firmware of the \acrshort{roficom} and implementing additional features. The main \TODO{goals are} adopting the existing implementation to new hardware version, distance measurement and propagating distance to the \acrshort{rofi} module.  
-      % Methods
-      At first, the thesis describes the \acrshort{rofi} platform, the existing implementation and explains the structure of the project.
-      Then there is detailed description of both existing \acrshort{roficom}'s hardware and firmware. \TODO{Followed by changes brought by this thesis}.
-      After that there are depicted most interesting implementation decisions and their explanation. 
-      % Results
-      % Conclusions
+      This is the abstract of my thesis, which can
+
+      span multiple paragraphs.
     },
     thanks      = {%
       These are the acknowledgments for my thesis, which can
@@ -124,47 +117,15 @@
 %% document. Titles for these tables can be changed by replacing the
 %% titles `Abbreviations` and `Glossary`, respectively.
 \clearpage
+NOTE FOR VB000Eng: Even though this document contains the full current version of my thesis, for the review, I am submitting only the chapter RoFI \ref{sec:rofi}, which should be around the limit of 5 ``normostrana'' of text.
+
+\TODO{Again text in this style indicates that the marked text needs reworking, there is something missing like a reference or information that may be changed or inaccurate.}
 \printnoidxglossary[title={Abbreviations}, type=\acronymtype]
 \printnoidxglossary[title={Glossary}]
 
 \chapter{Introduction}
-\TODOLIST{
-\begin{itemize}
-    \item Goals
-    \begin{itemize}
-        \item Lidar -- i2c, specific lidar \& to check/change comm protocol
-        \item Motor
-        \item Transition to new hw board
-        \item Power interface
-        \item HAL??
-        \item Firmware polishing
-    \end{itemize}
-    \item Prototype implementation vs current implementation
-\end{itemize}
-}
 
-% Introduce topic
-This thesis improves firmware for the connector of the \acrshort{rofi} platform.
-
-% Background -- previous research
-In this thesis, the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) to describe the result project after my thesis.
-
-The \acrshort{rofi} platform is established in thesis of my advisor Jan Mrázek \cite{Mrazek2019thesis}.
-
-% Establishing the problem
-
-% Specifying objectives
-The main objectives for this thesis are:
-\begin{itemize}
-    \item Implement distance measuring into \acrshort{roficom}. This includes implementation of \acrshort{i2c} driver and inter \TODO{zaimplementovani/pridani/pouziti} \acrshort{lidar} library.
-    \item Propagating the measurements from \acrshort{roficom} to \acrshort{rofi} module. 
-    \item Port the prototype firmware for the \acrshort{roficom} to production-ready hardware board.
-    \item 
-\end{itemize}
-
-% Paper structure
-
-\chapter[ RoFI ]{ \acrshort{rofi} }
+\chapter[ RoFI ]{ \acrshort{rofi} } \label{sec:rofi}
 \TODOLIST{
 \begin{itemize}
     \item Describe the platform
@@ -174,9 +135,9 @@ The main objectives for this thesis are:
 
 The \acrshort{rofi} is a platform of distributed self-reconfigurable modular robots developed at Masaryk University, Faculty of Informatics.
 
-The main goal of the \acrshort{rofi} platform is to provide a well-established open source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ GitHub repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
+The main goal of the \acrshort{rofi} platform is to provide a well-established open source and open-hardware platform for metamorphic robots. Thus both source-code and hardware schematics are provided publicly in the \TODO{ GitHub repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than solving real-world problems.
 
-The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
+The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A group of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
 
 
 \section[ Universal Module ]{ \gls{universal-module} }
@@ -191,7 +152,7 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
         \item 6 docks
     \end{itemize}
 }
-\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal \TODO{necessary features} that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If specific sensors are needed, it is expected to use them as own modules.
+\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal necessary features that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If specific sensors are needed, it is expected to use them as own modules.
 
 An inertial measurement device measures the unit's acceleration, angular velocity and orientation. The measured data can be used in algorithms coordinating the modules.
 
@@ -229,7 +190,7 @@ Each module has a single \emph{control unit} that serves as a centralized contro
 -->
 \fi
 
-\acrlong{roficom}, \acrshort{roficom} for short, is an open-hardware connection system designed for the \acrshort{rofi} platform. \acrshort{roficom} focuses on reusability \TODO{in order to make it easily integrable} into any module for which \acrshort{roficom} provides
+\acrlong{roficom}, \acrshort{roficom} for short, is an open-hardware connection system designed for the \acrshort{rofi} platform. \acrshort{roficom} focuses on reusability in order to make it easily integrable into any module for which \acrshort{roficom} provides
 communication to other modules. As the name suggests, its primary purpose is to (inter)connect modules. In order to achieve its purpose, the \acrshort{roficom} has a well-defined interface that can be divided into three parts:
 \begin{itemize}
     \item mechanical structure,
@@ -250,7 +211,7 @@ communication to other modules. As the name suggests, its primary purpose is to 
 <!--
 - Describe individual parts: body, clip and skirt
 - Magnets in skirt to ease/join the connecting
-- extracting and retracting  - motors
+- extrating and retracting  - motors
 - ?? lidar - I2C
 -->
 \fi
@@ -310,11 +271,13 @@ data and power sharing to the connected module.
 \acrshort{roficom} uses \textbf{UART} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' --
 binary data that is transferred between modules. 
 
+\iffalse
 \begin{figure}
     % responsive_image path: assets/img/connector/skirt_pins.svg
     \includegraphics{ skirt_pins.pdf }
     \caption{ \TODO{Graph showing pin layout on PCB inside the skirt} }
 \end{figure}
+\fi
 
 \subsection{ Connector to Module Interface }
 RoFICoM provides an \textbf{SPI} interface for communication between the module and RoFICoM. The communication on the bus is performed
@@ -391,7 +354,7 @@ interface](#connector-to-connector-interface).
 \end{itemize}
 }
 
-\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}. Those two boards are connected with a cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection. Those pins are UART pins (TX -- transmit pis and RX -- receive pin), EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection. The internal (INT) powerline can be used to charge the current module, or to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), the \acrshort{lidar} enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
+\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{system board}. Those two boards are connected with a cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection. Those pins are UART pins (TX -- transmit pis and RX -- receive pin), EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection. The internal (INT) powerline can be used to charge the current module, or to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), the \acrshort{lidar} enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
 
 \TODO{system board} contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines, and SPI interface needed for the connector to module interface. That being said, the circuit for reading current is not attached at the moment.
 
@@ -427,12 +390,12 @@ The microcontroller has other functionality, such as CRC calculation, SPI, UART,
 }
 
 \section{ Project Structure / Architecture}
-The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|c++| project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
+The \acrshort{rofi} repository is an enormous monolithic project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
 
 \section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware }
 \acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
 
-The prototype version had several needed features implemented. Those features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface) and motor control. However, since the motor control could not stop the motor fast enough and the magnetic sensors for detecting the motor position changed, \TODO{the motor control firmware needed an update too}. 
+\TODO{Stav firmware pred moji bp obsahoval nekolik veci implementovanych}. The implemented features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface) and motor control. However, since the motor control could not stop the motor fast enough and the magnetic sensors for detecting the motor position changed, \TODO{the motor control firmware needed an update too}. 
 
 \TODO{Protocol -- here or in connector to connector interface}
 
@@ -445,26 +408,19 @@ The prototype version had several needed features implemented. Those features we
 \end{itemize}
 }
 
-The \lstinline|stm32cxx| sub-project abstracts and wraps around the bare 
-\verb|C| stm32 drivers into nicer \verb|c++| \TODO{classes}. This abstraction allows using the drivers without explicitly handling family specific code, and provides easier and prettier usage rather than using the \verb|C| drivers.
-
-The port files of the \lstinline|stm32cxx| handles the portability, or the MCU family specific code. \TODO{Port files explanation here? -- or in design decisions}
-
-The prototype version had \TODO{many drivers, that were needed, implemented}, such as drivers for GPIO, UART, SPI and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter and blocking wait for time, and missing family specific definitions.
-
 \section[ RoFI HAL ]{ \acrshort{rofi} HAL }
 \TODOLIST{
 \begin{itemize}
-    \item ROFI HAL interface -- prototype vs changes
+    \item ROFI HAL interface -- current vs changes
     \item ROFI HAL implementation esp32    
 \end{itemize}
 }
 
 \acrlong{hal}, or \acrshort{hal} for short, is part of the \acrshort{rofi} platform that provides an abstraction over the running platform, which can be real hardware or a simulator. It can also be used as an abstraction over different \acrshort{rofi} hardware -- modules with motors, sensors and more -- without changing the user firmware. Therefore, \acrshort{rofi} \acrshort{hal} aims to define a solid and compact interface to make both -- the implementation and the usage simpler.
 
-The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. Every change that breaks the previous interface version is costly, because that change needs to be reflected in every implementation, which can be a lot. For example, implementation for each module with specific sensor, motor and multiple simulators. However, due to the addition of \acrshort{lidar}, \TODO{the interface needs an update to reflect this addition}.
+The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. \TODO{Text about the interface, that chagnes in the interface are costly.} However, due to the addition of \acrshort{lidar}, \TODO{the interface needs an update to reflect this addition}.
 
-The prototype had implementations for esp32 and simulator. The esp32 are the implementation for the \gls{universal-module}.
+The current implementations are esp32 and simulator. The eps32 are the implementation for the \gls{universal-module}.
 
 \chapter[ LiDAR ]{ \acrshort{lidar} } \label{sec:lidar}
 \TODOLIST{
@@ -632,25 +588,19 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
-
-
 \chapter[ Board Support Package ]{\acrlong{bsp}} \label{BSP}
 \TODOLIST{
 \begin{itemize}
     \item \acrshort{bsp} = providing i2c functions to \acrshort{lidar} library + easier portability
     \item \acrshort{bsp} = global namespace \lstinline{Gpio::Pin} initialization is **UB**
 \end{itemize}
-}
-
-Most of the \TODO{development was done} on the prototype board but it was expected to move to the production-ready (current) version of the hardware board. This was important especially because the MCU's case changed, which resulted in pin changes and addition of magnetic sensors for the motor. Easier transition is accomplished by using \acrshort{bsp}.
+} 
 
 \acrlong{bsp}, or \acrshort{bsp} for short, is a layer of abstraction specifying  \TODO{minimal needed hardware requirements} for the project, and procedures for board initialization. For example needed pins and peripherals, such as \acrshort{i2c}. 
 
 \TODO{main benefit: single point of gpio definitions, peripheral initialization, ... - enables for easier portability}
 
-The main benefit and use case for \acrshort{bsp} is having all board specific code in one place. The code typically used in \acrshort{bsp} is pin definitions, initialization routines and overall board initialization.
-
-\acrshort{bsp} is usually used in embedded environment and provides many benefits. Not only it abstracts hardware details, but also it establishes single source of truth for pin definitions, which is less error prone than having them defined at multiple places. \acrshort{bsp} assures correct initialization of the board at single place. Having everything at single point enables for easier portability across different board versions. The abstraction allows for usage of the \TODO{bsp parts} in different independent parts of the project. 
+\acrshort{bsp} is usually used in embedded environment and provides many benefits. Not only it abstracts hardware details, but also it establishes single source of truth for pin definitions, which is less error prone than having them defined and multiple places. \acrshort{bsp} assures correct initialization of the board at single place. Having everything at single point enables for easier portability across different board versions. The abstraction allows for usage of the \TODO{bsp parts} in different independent parts of the project. 
 
 In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides declaration of function \lstinline{dbgInstance}, which is function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on external function \lstinline|SystemCoreClockUpdate()|, which is \TODO{platform-dependant function} that needs to be called after board clock has been setup. \TODO{In contrary}, the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
 
@@ -661,30 +611,7 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 \section[ Gpio::Pin Initialization ]{ \lstinline|Gpio::Pin| Initialization }
 \lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, etc. for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMicroelectronics}.
 
-\chapter[ RoFI Hardware Abstraction Layer ]{ \acrshort{rofi} \acrlong{hal} }
-
-\TODO{section intro + ref?}
-
-\section{Interface}
-
-\TODOLIST{
-\begin{itemize}
-    \item Current interface components - RoFI, joint, connector
-    \item \textbf{Proxy} 
-    \item Changes done -- Added distance and status
-\end{itemize}
-}
-
-The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component. It is meant to be lightweight, safely copyable and shareable. 
-
-
-\section{Implementation -- esp32}
-\TODOLIST{
-\begin{itemize}
-    \item Apply changes from interface
-    \item Issue $\rightarrow$ status is not being updated $\rightarrow$ Needed to implement poller
-\end{itemize}
-}
+\chapter[ RoFI HAL ]{ \acrshort{rofi} \acrshort{hal} }
 
 \chapter{ Implementation - Design Decisions }
 This chapter walks over interesting design decisions and explains their reasoning.
@@ -755,7 +682,7 @@ Since the two functions only takes the arguments either for reading from or writ
 
 Function \lstinline|lidarGet()| tries to receive measurement results from the \acrshort{lidar} and assumes that the device is successfully initialized. This function takes a reference to the \lstinline|Lidar| class and variable to store in results. Because \lstinline|lidarGet()| is a polling function it needs to be called indefinitely to constantly update the currently measured distance. Due to the nature of polling, it is needed to poll only when \acrshort{roficom} is idle, otherwise constant polling \TODO{without ...}
 
-\subsection[ Ultra Lite LiDAR Library ]{ Ultra Lite \acrshort{lidar} Library } \label{uld}
+\subsection[Ultra Lite LiDAR Library]{Ultra Lite \acrshort{lidar} Library} \label{uld}
 
 \TODOLIST{
 \begin{itemize}
@@ -765,8 +692,8 @@ Function \lstinline|lidarGet()| tries to receive measurement results from the \a
 }
 
 
-\chapter[ RoFICoM 1.0 ]{ \acrshort{roficom} 1.0 }
-%% REMOVE:
+\chapter[RoFICoM 1.0]{ \acrshort{roficom} 1.0 }
+
 New \acrshort{roficom} revision arrived needing firmware updates to reflect changes in hardware.
 
 \TODOLIST{
