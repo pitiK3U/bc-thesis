@@ -118,6 +118,9 @@
 
 \usepackage{titlesec,titlecaps}
 
+\usepackage{enumitem} % No spaces between bullet list
+\setlist{noitemsep,parsep=0pt,partopsep=0pt} % topsep=0pt,
+
 \begin{document}
 %% Uncomment the following lines (by removing the %% at the beginning)
 %% and to print out List of Abbreviations and/or Glossary in your
@@ -159,7 +162,8 @@ The main objectives for this thesis are:
     \item Implement distance measuring into \acrshort{roficom}. This includes implementation of \acrshort{i2c} driver and inter \TODO{zaimplementovani/pridani/pouziti} \acrshort{lidar} library.
     \item Propagating the measurements from \acrshort{roficom} to \acrshort{rofi} module. 
     \item Port the prototype firmware for the \acrshort{roficom} to production-ready hardware board.
-    \item 
+    \item Change motor control to use new magnetic sensors.
+    \item Implement power control i.e., reading current and voltage on EXT and INT powerlines, charging accumulator from INT powerline and discharging the accumulator to the INT powerline.
 \end{itemize}
 
 % Paper structure
@@ -524,26 +528,27 @@ STMicroelectronics provides three driver versions: Full API (standard), \acrlong
 
 The \acrlong{uld} was selected for the \acrshort{roficom} because the full API was too large for the firmware. The size of the full api driver's release build took up to \qty{19}{\kilo\byte} of the MCU's Flash. In comparison the release build of \acrlong{uld} takes only \qty{1}{\kilo\byte}. This resulted in missing errors and error messages that was previously used with the full API driver. The \acrshort{uld} only reports failures either caused by lidar (signified as value $1$) or from the under-laying layer (\acrshort{i2c} communication). But in both cases we lose the error message. \todo{How to solve this error handling}.
 
-\section[ API of the Ultra Lite Driver ]{ API of the \acrlong{uld} }
+\section[ API of the Ultra Lite Driver ]{ API of the \acrlong{uld} } \label{sec:lidar-api}
 Because the \acrshort{uld} API is platform independent, it requires the user to implement \acrshort{i2c} communication for the platform (the implementation of \acrshort{i2c} in \acrshort{roficom} is described in section \ref{sec:lidar-i2c-impl}). The UM2510 \cite{um2510} manual explains how to use the \acrshort{uld} API and will be described in this section.
 
 The flow of communication is following:
-
-Wait for successful boot of the \acrshort{lidar}.
-
-$\rightarrow$ Initialize the \acrshort{lidar}.
-
-$\rightarrow$ Set optional settings for the \acrshort{lidar}, such as changing the \acrshort{lidar}'s \acrshort{i2c} address, changing the distance mode, changing timings for measurements, \&c.
-
-$\rightarrow$ Start ranging, i.e. start measuring the data.
-
-$\rightarrow$ Wait for the data to be ready -- either by polling or by interrupt.
-
-$\rightarrow$ Receive the data from \acrshort{lidar}.
-
-$\rightarrow$ Prepare for next ranging -- clear the interrupt flag.
-
-$\rightarrow$ Either repeat from waiting for measurements or stop the measuring.
+\begin{enumerate}
+    \item Wait for successful boot of the \acrshort{lidar}.
+    
+    \item Initialize the \acrshort{lidar}.
+    
+    \item  Set optional settings for the \acrshort{lidar}, such as changing the \acrshort{lidar}'s \acrshort{i2c} address, changing the distance mode, changing timings for measurements, \TODO{\&c}.
+    
+    \item Start ranging, i.e. start measuring the data.
+    
+    \item Wait for the data to be ready -- either by polling or by interrupt.
+    
+    \item Receive the data from \acrshort{lidar}.
+    
+    \item Prepare for next ranging -- clear the interrupt flag.
+    
+    \item Either repeat step $5.$ or stop the measuring.
+\end{enumerate}
 
 \todo{Insert API flow diagram}
 
@@ -632,6 +637,16 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
+Because most of the \acrshort{roficom} project is using \verb|c++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} was designed to keep similar communication flow as with the \verb|C| driver (i.e. as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit, i.e, \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
+
+\TODO{Error handling}
+Managing state goes in hand with error handling since every operation can fail either by \acrshort{i2c} failing, \verb|C| driver failing or simply by the fact the \acrshort{lidar} is not plugged in. Before considering the error handling it is important to mention that the operation of \acrshort{lidar} differs in returned value. For example, some function returns the distance mode, the measurement result, or in most cases, they do not return any value; however, all of them can fail.
+
+There are several choices for considering error handling in \verb|c++|. The first choice that comes to mind is exceptions. However, they are not suitable for embedded programming due to the overhead they bring, and thus cannot be used. Another solution might be returning error and other return values are passed in as output argument (e.g. pointer or reference). This solution has mainly two issues. The first issue is that every function call needs to be checked explicitly whether it succeeded or not, cluttering the code a lot. The second issue is that \TODO{for each return value we need variable in the caller function.} This complicates the code, for example consider what needs to be done to check whether the measured data are ready to receive from the \acrshort{lidar}. Firstly, we need to create \lstinline|bool| in the current scope, that will hold the readiness of the \acrshort{lidar}, than we call the function to get the readiness, after that we must check whether anything failed, and if not we can finally check whether the data is ready or not. This produce is much more complicated then having simple check in the form \lstinline[breaklines=false]|if (lidar.getMeasurementDataReady()) {...}|.
+
+\verb|c++23| contains new mechanism for error handling the \lstinline|std::expected|, which is similar to the Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing the project is using \verb|c++20| since not all the features of \verb|c++23| are yet implemented in used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project.
+
+The \lstinline|Result| concept is that it contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are not familiar with monadic functions, they are functions that allows you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant check whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then|, \lstinline|or_else| and \lstinline|transform|. The \lstinline|and_then| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present, otherwise it returns the error. Similarly, the \lstinline|or_else| returns value if it contains value, otherwise returns result of its argument (again callable function). The \lstinline|transform| and \lstinline|transform_error| is used to transform the type of value or error respectively.    
 
 
 \chapter[ Board Support Package ]{\acrlong{bsp}} \label{BSP}
