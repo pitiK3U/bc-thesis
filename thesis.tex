@@ -30,7 +30,7 @@
                %% with `nolof` to hide the List of Figures.
   lot,         %% The `lot` option prints the List of Tables. Replace
                %% with `nolot` to hide the List of Tables.
-    draft,
+    % draft,
 ]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
@@ -597,7 +597,7 @@ For the \acrshort{uld}, there is a difference in allowed values \TODO{compared} 
 
 The inter-measurement period must be longer than the timing budget. However, the \acrshort{uld} does not validate this and it is left to the user to assure. Otherwise the actual inter-measurement period would be double the expected value. The default value is set to \qty{100}{\milli\second}.
 
-\subsection{ Result Structure }
+\subsection{ Result Structure } \label{sec:lidar-result}
 \TODO{Describe Result structure.}
 
 \begin{lstlisting}
@@ -637,16 +637,20 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
-Because most of the \acrshort{roficom} project is using \verb|c++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} was designed to keep similar communication flow as with the \verb|C| driver (i.e. as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit, i.e, \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
+Because most of the \acrshort{roficom} project is using \verb|c++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} was designed to keep similar communication flow as with the \verb|C| driver (as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting or crashing the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit. The states are -- \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
 
-\TODO{Error handling}
-Managing state goes in hand with error handling since every operation can fail either by \acrshort{i2c} failing, \verb|C| driver failing or simply by the fact the \acrshort{lidar} is not plugged in. Before considering the error handling it is important to mention that the operation of \acrshort{lidar} differs in returned value. For example, some function returns the distance mode, the measurement result, or in most cases, they do not return any value; however, all of them can fail.
+\subsection{Error handling}
+Managing state goes in hand with error handling since every operation can fail by either \acrshort{i2c} failing, \verb|C| driver failing or simply by the fact the \acrshort{lidar} is not plugged in. Before considering the error handling it is important to mention that the operations of \acrshort{lidar} differs in returned value. For example, some function returns the distance mode, the measurement result, or in most cases, they do not return any value; however, all of them can fail.
 
-There are several choices for considering error handling in \verb|c++|. The first choice that comes to mind is exceptions. However, they are not suitable for embedded programming due to the overhead they bring, and thus cannot be used. Another solution might be returning error and other return values are passed in as output argument (e.g. pointer or reference). This solution has mainly two issues. The first issue is that every function call needs to be checked explicitly whether it succeeded or not, cluttering the code a lot. The second issue is that \TODO{for each return value we need variable in the caller function.} This complicates the code, for example consider what needs to be done to check whether the measured data are ready to receive from the \acrshort{lidar}. Firstly, we need to create \lstinline|bool| in the current scope, that will hold the readiness of the \acrshort{lidar}, than we call the function to get the readiness, after that we must check whether anything failed, and if not we can finally check whether the data is ready or not. This produce is much more complicated then having simple check in the form \lstinline[breaklines=false]|if (lidar.getMeasurementDataReady()) {...}|.
+There are several choices for considering error handling in \verb|c++|. The first choice that comes to mind are exceptions. However, they are not suitable for embedded programming due to the overhead they bring, and thus cannot be used. Another solution might be returning error, and passing in other return values as output argument (e.g. pointer or reference). This solution has mainly two issues. The first issue is that every function call needs to be checked explicitly whether it succeeded or not, significantly cluttering the code. The second issue is that \TODO{for each return value we need variable in the caller function.} This complicates the code, for example consider what needs to be done to check whether the measured data are ready to receive from the \acrshort{lidar}. Firstly, we need to create \lstinline|bool| in the current scope, that will hold the readiness of the \acrshort{lidar}, then we call the function to get the readiness, after that we must check whether anything failed, and if not we can finally check whether the data is ready or not. This produces code which is much more complicated then having simple check in the form \lstinline[breaklines=false]|if (lidar.getMeasurementDataReady()) {...}|.
 
-\verb|c++23| contains new mechanism for error handling the \lstinline|std::expected|, which is similar to the Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing the project is using \verb|c++20| since not all the features of \verb|c++23| are yet implemented in used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project.
+\verb|c++23| contains new mechanism for error handling the \lstinline|std::expected|, which is similar to the Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing the project is using \verb|c++20| since not all the features of \verb|c++23| are yet implemented in used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project and the \lstinline|Result| can be found under the path \path{RoFI/softwareComponents/atoms/include/atoms/result.hpp}.
 
-The \lstinline|Result| concept is that it contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are not familiar with monadic functions, they are functions that allows you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant check whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then|, \lstinline|or_else| and \lstinline|transform|. The \lstinline|and_then| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present, otherwise it returns the error. Similarly, the \lstinline|or_else| returns value if it contains value, otherwise returns result of its argument (again callable function). The \lstinline|transform| and \lstinline|transform_error| is used to transform the type of value or error respectively.    
+The \lstinline|Result| contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are not familiar with monadic functions, they allows you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant checking whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then()|, \lstinline|or_else()| and \lstinline|transform()|. The \lstinline|and_then()| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present, otherwise it returns the error. Similarly, the \lstinline|or_else()| returns value if it contains value, otherwise returns result of its argument (again callable function). The \lstinline|transform()| and \lstinline|transform_error()| are used to transform the type of value or error respectively.
+
+\subsection{ Usage of the driver }
+
+\subsection{ Autonomous distance mode }
 
 
 \chapter[ Board Support Package ]{\acrlong{bsp}} \label{BSP}
@@ -690,10 +694,25 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 \end{itemize}
 }
 
-The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component. It is meant to be lightweight, safely copyable and shareable. 
+The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component. It is meant to be lightweight, safely copyable and shareable.
 
+The prototype version contains three main components -- \lstinline|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor, and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, which consists of number of joints and connectors the module. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both control and \TODO{get joint information}.
 
-\section{Implementation -- esp32}
+The only component that needed change, due to the \acrshort{lidar} addition, was the connector. The \lstinline|Connector| proxy has ability to extend and retract the connector, connect and disconnect powerlines (internal or external), reaction to connection and disconnection from mating side and powerlines, and sending and reacting to received packets. The part of the \lstinline|Connector| that needed change was the \lstinline|ConnectorState|. The prototype version of the \lstinline|ConnectorState| contains information about the connector's position (extended or retracted), connection on powerlines and to the mating side, orientation of the connection (North, East, South, West), and the voltage and current of the powerlines.
+
+The state was extended by the measured distance and the measurement status. However, this is different status that the \acrshort{lidar} status from \ref{sec:lidar-result}. Whereas, the measured distance is just 16-bit number with the measured distance in \unit{\mm}, the status is more complicated.
+
+The status is 2-bit number with each value having assigned specific meaning. The status values and their meanings are the following:
+\begin{itemize}
+    \item \lstinline|0b00| = Valid -- The measured distance is fully valid to use.
+    \item \lstinline|0b01| = Out of Range -- The measured data was measured, however they \textbf{does not have to be valid}. Usually this means that the data are outside of the measurable range, however, it can also be caused by wrong settings.
+    \item \lstinline|0b10| = Not Measured -- This status is when the \acrshort{lidar} is not plugged in, or the request was made before the first \acrshort{lidar} measurement was completed.
+    \item \lstinline|0b11| = Error -- This signals error, which can be  \acrshort{i2c} communication error, \acrshort{lidar} error, or that the device got unplugged while communicating.  
+\end{itemize}
+
+This specific choice of values allows for the individual bits of the status to carry their own meaning, i.e. the higher bit acts as an inverted \emph{validity} bit (value \verb|1| means the measure data cannot be used), and the lower bit acts as a \emph{certainty} bit (value of \verb|0| means that measure distance should be correct). Note that the bit can be used as certainty bit only when the validity bit is set to valid. The \acrshort{lidar} status is for explicitness represented as a \lstinline|enum|.
+
+\section{ Implementation -- esp32 }
 \TODOLIST{
 \begin{itemize}
     \item Apply changes from interface
@@ -701,7 +720,15 @@ The prototype version of the interface has all components as a \emph{Proxy}. Pro
 \end{itemize}
 }
 
-\chapter{ Implementation - Design Decisions }
+Since the protocol changed, the changes must be synchronized to all implementations. Not only does this change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status and measured distance is described in \TODO{add section reference}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). \TODO{Other implementations are out of the scope of my work.}
+
+The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. Any command, such as to connect, disconnect, are handled by the \lstinline|ConnectorBus| for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on parallel thread. The sent is handled by the function \lstinline|run()| with specified command as argument. After the command is sent and response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from|.
+
+The changes made to the esp32 implementation are addition of new flags of the protocol \TODO{(\acrshort{lidar} status)}. Followed by parsing the status response from the connector in the \lstinline|ConnectorStateImpl::from|, that contains the \acrshort{lidar} status and measured distance. As last, due to the change of size of the command, the change needs to be update in the \lstinline|ConnectorBus::run()|, but also in the dma buffer allocation of the \lstinline|ConnectorBus|.
+
+\TODO{Needed poller}
+
+\chapter{ Implementation -- Design Decisions }
 This chapter walks over interesting design decisions and explains their reasoning.
 
 
@@ -741,6 +768,16 @@ Since the two functions only takes the arguments either for reading from or writ
 \end{itemize}
 
 \section{ Motor driver }
+
+\section{ Power control }
+\section{Protocol implementation}
+\TODOLIST{
+\begin{itemize}
+    \item Added power information - connection of INT and EXT, current and voltage of INT and EXT.
+    \item Connection to mating side.
+    \item Lidar status and distance and setting \TODO{ distance mode ?? }.
+\end{itemize}
+}
 
 \section{ Error Handling }
 \TODOLIST{
