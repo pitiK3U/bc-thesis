@@ -116,6 +116,9 @@
 
 \usepackage{todonotes} % colorful TODO notes, REMOVE
 
+\usepackage{tikz}
+\usepackage{aeguill}
+
 \usepackage{titlesec,titlecaps}
 
 \usepackage{enumitem} % No spaces between bullet list
@@ -648,7 +651,21 @@ There are several choices for considering error handling in \verb|c++|. The firs
 
 The \lstinline|Result| contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are not familiar with monadic functions, they allows you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant checking whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then()|, \lstinline|or_else()| and \lstinline|transform()|. The \lstinline|and_then()| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present, otherwise it returns the error. Similarly, the \lstinline|or_else()| returns value if it contains value, otherwise returns result of its argument (again callable function). The \lstinline|transform()| and \lstinline|transform_error()| are used to transform the type of value or error respectively.
 
+Even though the return value types differ for many functions, the error type is the same for all the function, \TODO{thus it is important choice}. The default error type for the \lstinline|Result| is \verb|c++|'s \lstinline|std::string|. However, \lstinline|std::string| is very robust and heavy library (in embedded context), which means it is not suitable for the firmware. Two alternatives were considered -- \lstinline|std::string_view| and base number (or a enum). The \lstinline|std::string_view| was chosen since it allows error detection when developing. However, all functions are implemented in a way to allow for easy error type change. Every functions returns the error wrapped by function \lstinline|errorMessage( error )|. The function \lstinline|errorMessage()| converts the bare error (in this case the error return by the \gls{vl53l1x} driver) to the \acrshort{lidar}'s error. Thus, when changing the error type for the \acrshort{lidar} only the \lstinline|error_type| member and the \lstinline|errorMessage| function needs to be changed.
+
 \subsection{ Usage of the driver }
+
+\begin{figure}[ht]
+    \input{lidar-state.tex}
+    \caption[Diagram of \acrshort{lidar}'s state]{\TODO{lidar state}}
+    \label{fig:lidar-state}
+\end{figure}
+
+Since the current requirement on the \acrshort{lidar} is to always measure the distance, the firmware accounts for two states -- actively measuring and uninitialized (or unable to measure). The \verb|Measuring| in the figure above stays the same as the actively measuring. However, the state ``unable to measure'' is combined from states \verb|Missing|, \verb|Uninitialized| and \TODO{somewhat} \verb|Initialized|. These two new states makes state handling easier in the code. The state ``unable to measure'' is handled by the function \lstinline|lidarInit()|, and the state \verb|Measuring| is handled by \lstinline|lidarGet()|. The main purpose of \lstinline|lidarInit()| is to correctly initialize the device and start measuring. On the other hand, the function \lstinline|lidarGet()| expects the device to be correctly initialized and measuring. The purpose of \lstinline|lidarGet()| is to check whether the distance is measured, and if it is, save the measurements for the next transfer to the \TODO{module's esp32}.
+
+Those two functions can call each other, because if anything fails in the process (in both functions), the device probably needs to be initialized again. In contrary, when the \lstinline|lidarInit()| succeeds it is safe to call \lstinline|lidarGet()|. \lstinline|lidarGet()| calls it self, to assure the latest measurements are saved. It is important to note, that not receiving the data (i.e., the data is not ready yet) is not failure, and only means it is necessary to check on the data again. Otherwise the measured value would never be received -- the device would get initialized again before the first measurement.
+
+Nevertheless, the previous implementation would result in infinite indirect recursion, to avoid the recursion the current implementation uses \lstinline|IdleTask::defer()|. \lstinline|IdleTask| is class that provides scheduling function calls, the scheduled functions are called with \lstinline[breaklines=false]|IdleTask::run()|. The usage of scheduled function calls allows the firmware to schedule other routines in between the two lidar functions, and to handle necessary tasks, such as SPI communication.
 
 \subsection{ Autonomous distance mode }
 
@@ -728,6 +745,8 @@ The changes made to the esp32 implementation are addition of new flags of the pr
 
 \TODO{Needed poller}
 
+Those changes are enough for getting the status and distance. However, the state is only updated, when status command is issued, this means that the state of status and distance does not represent current value. Updating the state was solved with poller. This poller runs in separate thread and periodically asks the \acrshort{roficom} to update the state. There must be a slight delay between commands to allow the \acrshort{roficom} for applying the commands and sending response. The poller is done by the FreeRTOS function \lstinline|xTaskCreate()|, that creates the new thread for polling, and constantly issues the command status.
+
 \chapter{ Implementation -- Design Decisions }
 This chapter walks over interesting design decisions and explains their reasoning.
 
@@ -753,7 +772,7 @@ The driver contains class \lstinline|I2C|, \lstinline|SdaPin| and \lstinline|Scl
 
 The \acrshort{i2c} driver provides two functions \lstinline|read| and \lstinline|write|. Those functions takes the \acrshort{i2c} address of the peripheral and data container. (There are also \lstinline|unsafe| variants of these functions that are used in \acrshort{lidar} \acrshort{i2c} implementation \ref{sec:lidar-i2c-impl} and takes raw buffer and its size instead of container.) Since the \lstinline|read| and \lstinline|write| are templated functions, they use private functions to actually implement \lstinline|read| and \lstinline|write|. These private functions are not templated and takes the raw buffer and size. Using slim templated function with inner function that is not templated reduces the size of generated functions from template, but allows the usage of generalized function.
 
-\TODO{i2c implementation using stm32 tools}
+\TODO{i2c implementation using stm32 tools ?}
 
 \subsection{ Error handling }
 Since the two functions only takes the arguments either for reading from or writing to the given argument, the functions are free to return anything. In this case they return error. Because the \acrshort{i2c} driver is used in \acrshort{lidar} \acrshort{i2c}, the error values are chosen in a mind to be compatible with error handling in the \acrshort{uld} \ref{uld}. The \acrshort{i2c} error enum has the following errors:
@@ -802,6 +821,7 @@ Since the two functions only takes the arguments either for reading from or writ
 \begin{itemize}
     \item Release build has over 107\% of MCU Flash
     \item `std::bind` -- `1,172B` vs Lambda `972B`
+    \item using the \texttt{LL} stm32 drivers rather than HAL?
 \end{itemize}
 }
 
