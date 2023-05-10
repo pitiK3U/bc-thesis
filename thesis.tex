@@ -486,7 +486,7 @@ The port files of the \lstinline|stm32cxx| handles the portability, or the MCU f
 
 The prototype version had \TODO{many drivers, that were needed, implemented}, such as drivers for GPIO, UART, SPI and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter and blocking wait for time, and missing family specific definitions.
 
-\section[ RoFI HAL ]{ \acrshort{rofi} HAL }
+\section[ RoFI HAL ]{ \acrshort{rofi} HAL } \label{sec:rofi-hal-desc}
 \TODOLIST{
 \begin{itemize}
     \item ROFI HAL interface --- prototype vs changes
@@ -498,7 +498,9 @@ The prototype version had \TODO{many drivers, that were needed, implemented}, su
 
 The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{implementation}. Every change that breaks the previous interface version is costly, because that change needs to be reflected in every implementation, which can be a lot. For example, implementation for each module with specific sensor, motor and multiple simulators. However, due to the addition of \acrshort{lidar}, \TODO{the interface needs an update to reflect this addition}.
 
-The prototype had implementations for esp32 and simulator. The esp32 are the implementation for the \gls{universal-module}.
+The prototype had implementations for esp32 and simulator. The esp32 is the implementation for the \gls{universal-module}.
+
+The actual changes to the prototype implementation are described later in chapter \ref{cht:rofi-hal}.
 
 \chapter[ Distance Measurement --- LiDAR ]{ Distance Measurement --- \acrshort{lidar} } \label{sec:lidar}
 \TODOLIST{
@@ -548,14 +550,14 @@ The start condition is when the controller drives the SDA line low before the SC
 
 \TODO{Should I write about advanced topics? or at least 10-bit addresses?}
 
-\subsection{ \TODO{Difference in lidar} } \label{sec:lidar-i2c}
-Even though the \gls{vl53l1x} uses \acrshort{i2c} protocol, there is a small but significant change in communication. \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number and \textbf{must} be the first two data packets. The most significant byte of this index is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that in order to read data from the \acrshort{lidar}, the controller needs to make two transactions: first, a write transaction with register index, and second with the actual read. However, writing data to the \acrshort{lidar} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
+\subsection[ Addressing LiDAR's Registers ]{ Addressing \acrshort{lidar}'s Registers } \label{sec:lidar-i2c} 
+\gls{vl53l1x} does not only use an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number. However, the \acrshort{i2c} protocol only addresses the device, in order to address device's register normal transaction is started, where the first two data packets are the two bytes of the register address. The most significant byte of this index (register address) is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that in order to read data from the \acrshort{lidar}, the controller needs to make two transactions: first, a write transaction with register index, and second with the actual read. However, writing data to the \acrshort{lidar} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
 
 \subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
 \TODOLIST{
 \begin{itemize}
     \item i2c driver
-    \item platform files
+    \item \gls{vl53l1x} platform files
 \end{itemize}
 }
 
@@ -595,11 +597,15 @@ The flow of communication is following:
 
 Since the \acrshort{uld} is a C \TODO{library} the error reporting is the returned value from every API function. \TODO{When results other then errors are needed, those are provided as an ``out'' argument, i.e., pointer to the given variable.}
 
-The error type (\lstinline[breaklines=false]|typedef int8_t VL53L1X_ERROR;|) for the \acrshort{uld} is 8-bit signed integer. The full API driver defines error values among the definition of the error type, however, this is not the case for the \acrshort{uld}. Even though the \acrshort{uld} does not specify error codes, the code for no error is defined to be $0$. Although the \acrshort{uld} usually returns errors from the underlying \acrshort{i2c} communication, in some cases the \acrshort{uld} sets the error to value $1$.
+The error type (\lstinline[breaklines=false]|typedef int8_t VL53L1X_ERROR;|) for the \acrshort{uld} is 8-bit signed integer. The full API driver defines error values among the definition of the error type, however, this is not the case for the \acrshort{uld}. Even though the \acrshort{uld} does not specify error codes, the code for no error is defined to be $0$. Although the \acrshort{uld} usually returns errors from the underlying \acrshort{i2c} communication, in some cases the \acrshort{uld} sets the error to value $1$. Thus, the typical error handling of the \acrshort{uld} API calls look like the code in listing \ref{lst:c-error}.
 
-Thus, the typical error handling of the \acrshort{uld} API calls look like the following code listing:
-
-\begin{lstlisting}[float, caption={Structure of error handling of the \acrshort{uld} function calls.}, captionpos=b]
+\begin{lstlisting}[
+    float=t,
+    emph={status != 0}, emphstyle=\underbar,
+    caption={Structure of error handling of the \acrshort{uld} function calls.},
+    captionpos=b,
+    label={lst:c-error}
+    ]
 VL53L1X_ERROR status;
 status = VL53L1X_SensorInit( ... );
 if (status != 0) {
@@ -609,7 +615,7 @@ if (status != 0) {
 
 status = VL53L1X_StartRanging( ... );
 if (status != 0) {
-    ...
+    ... // Report error again
     return status;
 }
 \end{lstlisting}
@@ -733,10 +739,9 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 \section[ Gpio::Pin Initialization ]{ \lstinline|Gpio::Pin| Initialization }
 \lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation unit is not defined by the language specification. As a result \lstinline{bsp} cannot use \lstinline{GpioA}, etc. for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where first argument is the pin position and second argument is \TODO{the GPIO line defined by STMicroelectronics}.
 
-\chapter[ RoFI Hardware Abstraction Layer ]{ \acrshort{rofi} \acrlong{hal} }
+\chapter[ RoFI Hardware Abstraction Layer ]{ \acrshort{rofi} \acrlong{hal} } \label{cht:rofig-hal}
 
-\TODO{section intro + ref?}
-
+This chapter describes changes made to the prototype version of the \acrshort{rofi} \acrshort{hal} --- in both interface and \gls{universal-module} implementation. The \acrshort{rofi} \acrshort{hal} has been introduced in section \ref{sec:rofi-hal-desc}.
 \section{Interface}
 
 \TODOLIST{
@@ -749,7 +754,7 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where we
 
 The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component. It is meant to be lightweight, safely copyable and shareable.
 
-The prototype version contains three main components --- \lstinline|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor, and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, which consists of number of joints and connectors the module. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both control and \TODO{get joint information}.
+The prototype version contains three main components --- \lstinline[breakatwhitespace]|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor, and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, which consists of number of joints and connectors the module. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both control and \TODO{get joint information}.
 
 The only component that needed change, due to the \acrshort{lidar} addition, was the connector. The \lstinline|Connector| proxy has ability to extend and retract the connector, connect and disconnect powerlines (internal or external), reaction to connection and disconnection from mating side and powerlines, and sending and reacting to received packets. The part of the \lstinline|Connector| that needed change was the \lstinline|ConnectorState|. The prototype version of the \lstinline|ConnectorState| contains information about the connector's position (extended or retracted), connection on powerlines and to the mating side, orientation of the connection (North, East, South, West), and the voltage and current of the powerlines.
 
@@ -775,16 +780,16 @@ This specific choice of values allows for the individual bits of the status to c
 
 Since the protocol changed, the changes must be synchronized to all implementations. Not only does this change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status and measured distance is described in \TODO{add section reference}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). \TODO{Other implementations are out of the scope of my work.}
 
-The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. Any command, such as to connect, disconnect, are handled by the \lstinline|ConnectorBus| for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on parallel thread. The sent is handled by the function \lstinline|run()| with specified command as argument. After the command is sent and response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from|.
+The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. Any command, such as to connect, disconnect, are handled by the \lstinline|ConnectorBus| for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on parallel thread. The sent is handled by the function \lstinline|run()| with specified command as argument. After the command is sent and response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from()|.
 
-The changes made to the esp32 implementation are addition of new flags of the protocol \TODO{(\acrshort{lidar} status)}. Followed by parsing the status response from the connector in the \lstinline|ConnectorStateImpl::from|, that contains the \acrshort{lidar} status and measured distance. As last, due to the change of size of the command, the change needs to be update in the \lstinline|ConnectorBus::run()|, but also in the dma buffer allocation of the \lstinline|ConnectorBus|.
+The changes made to the esp32 implementation are addition of new flags of the protocol \TODO{(\acrshort{lidar} status)}. Followed by parsing the status response from the connector in the \lstinline|ConnectorStateImpl::from()|, that contains the \acrshort{lidar} status and measured distance. As last, due to the change of size of the command, the change needs to be update in the \lstinline|ConnectorBus::run()|, but also in the dma buffer allocation of the \lstinline|ConnectorBus|.
 
 \TODO{Needed poller}
 
 Those changes are enough for getting the status and distance. However, the state is only updated, when status command is issued, this means that the state of status and distance does not represent current value. Updating the state was solved with poller. This poller runs in separate thread and periodically asks the \acrshort{roficom} to update the state. There must be a slight delay between commands to allow the \acrshort{roficom} for applying the commands and sending response. The poller is done by the FreeRTOS function \lstinline|xTaskCreate()|, that creates the new thread for polling, and constantly issues the command status.
 
 \chapter{ Implementation --- Design Decisions }
-This chapter walks over interesting design decisions and explains their reasoning.
+This chapter walks over interesting design decisions and explains their reasoning. \TODO{Mention the following sections}.
 
 
 \section{ Platform Dependant Code --- port files --- \TODO{CRPT} }
