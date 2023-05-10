@@ -122,6 +122,10 @@
 \usepackage{enumitem} % No spaces between bullet list
 \setlist{noitemsep,parsep=0pt,partopsep=0pt} % topsep=0pt,
 
+\makeatletter
+\def\fps@figure{ht} % sensible figure positioning
+\makeatother
+
 \begin{document}
 %% Uncomment the following lines (by removing the %% at the beginning)
 %% and to print out List of Abbreviations and/or Glossary in your
@@ -149,6 +153,12 @@
 
 % Introduce topic
 This thesis improves the currently implemented firmware for the connector of the \acrshort{rofi} platform.
+
+\begin{figure}[ht]
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{ assets/rofi-logo.jpg }
+    \caption[\acrshort{rofi} logo]{The \acrshort{rofi} platform logo with \gls{universal-module} \cite{rofiweb}}
+    \label{fig:rofi-logo}
+\end{figure}
 
 % Background --- previous research
 The \acrshort{rofi} platform is established in thesis of my advisor Jan Mrázek \cite{Mrazek2019thesis}. My advisor's thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In case of the docking system, my advisor's thesis introduces connector to connector and connector to module communication (\TODO{which both persists to this day}), and the mechanical structure, which got improved over the proposed version.
@@ -183,6 +193,12 @@ The structure of this paper starts with introduction to the \acrshort{rofi} plat
 
 The \acrshort{rofi} is a platform of distributed self-reconfigurable modular robots developed at Faculty of Informatics, Masaryk University.
 
+\begin{figure}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/rofiTransformation.jpg}
+    \caption[short]{Illustration of possible \acrshort{rofi} robots transformation from \TODO{\cite{rofiweb}}}
+    \label{fig:rofi-transformation}
+\end{figure}
+
 The main goal of the \acrshort{rofi} platform is to provide a well-established open source and open-hardware platform for metamorphic robots. Therefore, both source-code and hardware schematics are provided publicly in the \TODO{ GitHub repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such platform is testing reconfiguring algorithms on a hardware platform and further research into this topic rather than \TODO{solving real-world problems}.
 
 The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
@@ -216,8 +232,13 @@ The docks used in the \gls{universal-module} are called \acrshortpl{roficom}. Th
 
 Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. The motors are controlled through UART protocol, and the docks are controlled over SPI protocol. The control unit also controls charging and power management.
 
-\todo{Add \gls{universal-module} internal architecture diagram}
+The architecture of the \gls{universal-module} is shown in figure \ref{fig:uni-mod-arch}.
 
+\begin{figure}[ht]
+    \includegraphics{ assets/universal-module-arch.pdf }
+    \caption{Architecture of the \gls{universal-module} from \TODO{\cite{Mrazek2019thesis} page 35}}
+    \label{fig:uni-mod-arch}
+\end{figure}
 
 \section[ RoFI Communication Mechanism ]{ \acrlong{roficom} } \label{sec:roficom}
 \TODOLIST{
@@ -264,14 +285,14 @@ communication to other modules. As the name suggests, its primary purpose is to 
 -->
 \fi
 
-\TODO{The description is outdated.}
+This section describes the mechanical components, their functionality and mechanism used to extend and retract the connector. This section summarizes the previously mention paper ``RoFICoM'' \cite{MrazekBarnat2019Roficom}, where the structure is explained in more depth.
 
 RoFICoM is built from three main parts: \emph{body}, \emph{clip} and \emph{skirt}. These three parts are shown in figure \ref{ fig:key-components }
 
-\begin{figure}
+\begin{figure}[ht]
     %responsive_image path: assets/img/connector/dock_key_components.svg 
-    \includegraphics{ dock_key_components.pdf }
-    \caption{ \TODO{ Visual representation of main components } \TODO{Add citation} }
+    \includegraphics{ dock_components.pdf }
+    \caption{ The components of the connector from the paper ``RoFICoM'' \cite{MrazekBarnat2019Roficom} }
     \label{ fig:key-components }
 \end{figure}
 
@@ -283,7 +304,7 @@ side slide under each other, therefore forming a mechanical connection that prev
 However, the latches themselves are insufficient for a mechanical connection, as a mutual rotation of the connectors releases
 the connection. This is why the skirt is needed, two connected skirts stop the rotation against each other. In order to help ease the process of connection, there are magnets placed in the holes of skirt. This helps when two connecting sides are slightly misaligned.
 
-The motor that rotates the clip and the skirt are located at the bottom of the body. The rotation of the clip and the skirt is accomplished by another component the shaft ring. The shaft ring is connected to the clip and has a bevel gearing (stair like ramp) connected to the motor. When the motor activates, it rotates the shaft ring and moves among the gearing elevating the components. The motor in the body and clip shaft with a bevel gearing is shown in the figure \ref{ fig:dock-arrangement }.
+The motor that rotates the clip and the skirt are located at the bottom of the body. The rotation of the clip and the skirt is accomplished by another component the \TODO{gearing}, which is connected with both skirt and clip with a \TODO{metal rod?}, that spans from the holes in the body up to the skirt. When the motor activates, it rotates the gearing together with the two components, and the \TODO{metal rods} moves the interconnected components among the hole path in the body, which elevates the components.
 
 \begin{figure}
     \centering
@@ -400,7 +421,7 @@ interface](#connector-to-connector-interface).
 \end{itemize}
 }
 
-\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}. Those two boards are connected with a cable connecting the pins on two boards. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection. Those pins are UART pins (TX --- transmit pis and RX --- receive pin), EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection. The internal (INT) powerline can be used to charge the current module, or to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), the \acrshort{lidar} enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
+\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}, that are connected with a cable connecting the pins between them. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection, where the pins are UART pins (TX --- transmit pis and RX --- receive pin), EXT and INT powerlines, and ``sense`` pins for detecting the orientation of the connection. The internal (INT) powerline can be used to charge the current module, or to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \ref{sec:i2c}), the \acrshort{lidar} enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
 
 \TODO{system board} contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines, and SPI interface needed for the connector to module interface. That being said, the circuit for reading current is not attached at the moment.
 
@@ -415,7 +436,7 @@ The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectro
     \item A maximum clock frequency of \qty{64}{\mega\hertz},
     \item The biggest size of flash memory currently in embedded microcontrollers of \qty{128}{\kilo\byte},
     \item Static RAM of size \qty{36}{\kilo\byte},
-    \item 48 pins.
+    \item 48 available pins.
 \end{itemize}
 
 The microcontroller has other functionality, such as CRC calculation, SPI, UART, \acrshort{i2c} and many more.
@@ -438,7 +459,7 @@ The microcontroller has other functionality, such as CRC calculation, SPI, UART,
 This chapter focuses on the software of the \acrshort{rofi} platform, and describes both the state of software in the prototype implementation and the changes in the current implementation.
 
 % \section{ Project Structure / Architecture}
-The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|c++| project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
+The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|C++| project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers and \acrshort{rofi} HAL.
 
 \TODO{Need more introduction or depth description of the strucutre ??}
 
@@ -459,7 +480,7 @@ The prototype version had several needed features implemented. Those features we
 }
 
 The \lstinline|stm32cxx| sub-project abstracts and wraps around the bare 
-\verb|C| stm32 drivers into nicer \verb|c++| \TODO{classes}. This abstraction allows using the drivers without explicitly handling family specific code, and provides easier and prettier usage rather than using the \verb|C| drivers.
+\verb|C| stm32 drivers into nicer \verb|C++| \TODO{classes}. This abstraction allows using the drivers without explicitly handling family specific code, and provides easier and prettier usage rather than using the \verb|C| drivers.
 
 The port files of the \lstinline|stm32cxx| handles the portability, or the MCU family specific code. \TODO{Port files explanation here? or in design decisions}
 
@@ -487,7 +508,7 @@ The prototype had implementations for esp32 and simulator. The esp32 are the imp
     \item \TODO{\acrshort{lidar} protocol}
 \end{itemize}
 }
-This chapter describes \acrshort{lidar} and its capabilities, how to use the \gls{vl53l1x} \acrshort{lidar}, which includes communicating with the \gls{vl53l1x} over the bus and using the \gls{vl53l1x} driver provided by the manufacturer. The last section ?describes? the current implementation of the \acrshort{lidar} driver, which is \verb|c++| class abstracting the usage of the \gls{vl53l1x} driver.  
+This chapter describes \acrshort{lidar} and its capabilities, how to use the \gls{vl53l1x} \acrshort{lidar}, which includes communicating with the \gls{vl53l1x} over the bus and using the \gls{vl53l1x} driver provided by the manufacturer. The last section ?describes? the current implementation of the \acrshort{lidar} driver, which is \verb|C++| class abstracting the usage of the \gls{vl53l1x} driver.  
 
 \acrshort{lidar}, which stands for \acrlong{lidar}, is a device that measures range. \acrshort{lidar} uses laser and time, in which the light travels to an object or a surface and bounces back to determine the distance. Thus, the results of this technique is very dependant on the ambient light in the measured environment. As such, the \acrshort{lidar} is not only used for measuring the distance from an object but also for \emph{3-D scanning}. 3-D scanning is \TODO{collecting data about the real world environment} into a digital representation. Many industries use \acrshort{lidar}, one of the most known use cases might be in NASA's Mars helicopter Ingenuity \cite{garmin-lidar}.
 
@@ -655,24 +676,24 @@ The ``wraparound'' range status of value $7$ is reported when the target is very
 
 \section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } }
 
-Because most of the \acrshort{roficom} project is using \verb|c++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} was designed to keep similar communication flow as with the \verb|C| driver (as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting or crashing the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit. The states are: \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
+Because most of the \acrshort{roficom} project is using \verb|C++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} was designed to keep similar communication flow as with the \verb|C| driver (as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting or crashing the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit. The states are: \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
 
 \subsection{Error handling}
 Managing state goes in hand with error handling since every operation can fail by either \acrshort{i2c} failing, \verb|C| driver failing or simply by the fact the \acrshort{lidar} is not plugged in. Before considering the error handling it is important to mention that the operations of \acrshort{lidar} differs in returned value. For example, some function returns the distance mode, the measurement result, or in most cases, they do not return any value; however, all of them can fail.
 
-There are several choices for considering error handling in \verb|c++|. The first choice that comes to mind are exceptions. However, they are not suitable for embedded programming due to the overhead they bring, and thus cannot be used. Another solution might be returning error, and passing in other return values as output argument (e.g. pointer or reference). This solution has mainly two issues. The first issue is that every function call needs to be checked explicitly whether it succeeded or not, significantly cluttering the code. The second issue is that \TODO{for each return value we need variable in the caller function.} This complicates the code, for example consider what needs to be done to check whether the measured data are ready to receive from the \acrshort{lidar}. Firstly, we need to create \lstinline|bool| in the current scope, that will hold the readiness of the \acrshort{lidar}, then we call the function to get the readiness, after that we must check whether anything failed, and if not we can finally check whether the data is ready or not. This produces code which is much more complicated then having simple check in the form \lstinline[breaklines=false]|if (lidar.getMeasurementDataReady()) {...}|.
+There are several choices for considering error handling in \verb|C++|. The first choice that comes to mind are exceptions. However, they are not suitable for embedded programming due to the overhead they bring, and thus cannot be used. Another solution might be returning error, and passing in other return values as output argument (e.g. pointer or reference). This solution has mainly two issues. The first issue is that every function call needs to be checked explicitly whether it succeeded or not, significantly cluttering the code. The second issue is that \TODO{for each return value we need variable in the caller function.} This complicates the code, for example consider what needs to be done to check whether the measured data are ready to receive from the \acrshort{lidar}. Firstly, we need to create \lstinline|bool| in the current scope, that will hold the readiness of the \acrshort{lidar}, then we call the function to get the readiness, after that we must check whether anything failed, and if not we can finally check whether the data is ready or not. This produces code which is much more complicated then having simple check in the form \lstinline[breaklines=false]|if (lidar.getMeasurementDataReady()) {...}|.
 
-\verb|c++23| contains new mechanism for error handling the \lstinline|std::expected|, which is similar to the Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing the project is using \verb|c++20| since not all the features of \verb|c++23| are yet implemented in used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project and the \lstinline|Result| can be found under the path \path{RoFI/softwareComponents/atoms/include/atoms/result.hpp}.
+\verb|C++23| contains new mechanism for error handling the \lstinline|std::expected|, which is similar to the Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing the project is using \verb|C++20| since not all the features of \verb|C++23| are yet implemented in used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project and the \lstinline|Result| can be found under the path \path{RoFI/softwareComponents/atoms/include/atoms/result.hpp}.
 
 The \lstinline|Result| contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are not familiar with monadic functions, they allows you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant checking whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then()|, \lstinline|or_else()| and \lstinline|transform()|. The \lstinline|and_then()| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present, otherwise it returns the error. Similarly, the \lstinline|or_else()| returns value if it contains value, otherwise returns result of its argument (again callable function). The \lstinline|transform()| and \lstinline|transform_error()| are used to transform the type of value or error respectively.
 
-Even though the return value types differ for many functions, the error type is the same for all the function, \TODO{thus it is important choice}. The default error type for the \lstinline|Result| is \verb|c++|'s \lstinline|std::string|. However, \lstinline|std::string| is very robust and heavy library (in embedded context), which means it is not suitable for the firmware. Two alternatives were considered --- \lstinline|std::string_view| and base number (or a enum). The \lstinline|std::string_view| was chosen since it allows error detection when developing. However, all functions are implemented in a way to allow for easy error type change. Every functions returns the error wrapped by function \lstinline|errorMessage( error )|. The function \lstinline|errorMessage()| converts the bare error (in this case the error return by the \gls{vl53l1x} driver) to the \acrshort{lidar}'s error. Thus, when changing the error type for the \acrshort{lidar} only the \lstinline|error_type| member and the \lstinline|errorMessage| function needs to be changed.
+Even though the return value types differ for many functions, the error type is the same for all the function, \TODO{thus it is important choice}. The default error type for the \lstinline|Result| is \verb|C++|'s \lstinline|std::string|. However, \lstinline|std::string| is very robust and heavy library (in embedded context), which means it is not suitable for the firmware. Two alternatives were considered --- \lstinline|std::string_view| and base number (or a enum). The \lstinline|std::string_view| was chosen since it allows error detection when developing. However, all functions are implemented in a way to allow for easy error type change. Every functions returns the error wrapped by function \lstinline|errorMessage( error )|. The function \lstinline|errorMessage()| converts the bare error (in this case the error return by the \gls{vl53l1x} driver) to the \acrshort{lidar}'s error. Thus, when changing the error type for the \acrshort{lidar} only the \lstinline|error_type| member and the \lstinline|errorMessage| function needs to be changed.
 
 \subsection{ Usage of the driver }
 
 \begin{figure}[ht]
     \input{lidar-state.tex}
-    \caption[Diagram of \acrshort{lidar}'s state]{\TODO{lidar state}}
+    \caption[Diagram of \acrshort{lidar}'s state]{\TODO{THIS WILL BE REPLACED lidar state}}
     \label{fig:lidar-state}
 \end{figure}
 
@@ -776,7 +797,7 @@ This chapter walks over interesting design decisions and explains their reasonin
 
 To assure better portability the \verb|stm32cxx| drivers isolate processor family specific code into \emph{port} files. Under the path \path{RoFI/softwareComponents/stm32cxx/port/} are folders for family specific \TODO{abstraction}. The \verb|port| files are in the format \verb|{driver}.port.hpp|. For example the port file for \acrshort{i2c} for the microcontroller of \acrshort{roficom} is in \path{.../stm32cxx/stm32g0xx/i2c.port.hpp}.
 
-Port files follows the same guidelines that the specific code in under \lstinline|namespace detail| and it is implemented via \emph{mixins}. However, since \verb|c++| does not natively support mixins, this is done using the \verb|c++| technique called CRTP. CRTP is a templated class, which takes the class we wish to extend with our mixin as template parameter, and implements the mixin functionality on the template class. Such functionality might be enabling clock for periphery or \TODO{setting alternative function on periphery pins}.
+Port files follows the same guidelines that the specific code in under \lstinline|namespace detail| and it is implemented via \emph{mixins}. However, since \verb|C++| does not natively support mixins, this is done using the \verb|C++| technique called CRTP. CRTP is a templated class, which takes the class we wish to extend with our mixin as template parameter, and implements the mixin functionality on the template class. Such functionality might be enabling clock for periphery or \TODO{setting alternative function on periphery pins}.
 
 \section[ I2C driver ]{ \acrshort{i2c} driver }
 \TODO{Secion intro}
@@ -816,7 +837,7 @@ Since the two functions only takes the arguments either for reading from or writ
 \section{ Error Handling }
 \TODOLIST{
 \begin{itemize}
-    \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{c++23}
+    \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{C++23}
     \item the reasoning for given result types - \lstinline{atoms::Void}, \lstinline{std::string_view}
     \item \TODO{error handling in \acrshort{i2c} \& \acrshort{lidar} class}  
 \end{itemize}
