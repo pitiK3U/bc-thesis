@@ -72,9 +72,7 @@
       % Conclusions
     },
     thanks      = {%
-      These are the acknowledgments for my thesis, which can
-
-      span multiple paragraphs.
+        \TODO{These are the acknowledgments for my thesis, which can}
     },
     bib         = citations.bib,
     %% Remove the following line to use the JVS 2018 faculty logo.
@@ -150,26 +148,30 @@
 }
 
 % Introduce topic
-This thesis improves firmware for the connector of the \acrshort{rofi} platform.
+This thesis improves the currently firmware for the connector of the \acrshort{rofi} platform.
 
 % Background -- previous research
+The \acrshort{rofi} platform is established in thesis of my advisor Jan Mrázek \cite{Mrazek2019thesis}. My advisor's thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In case of the docking system, my advisor's thesis introduces connector to connector and connector to module communication (\TODO{which both persists to this day}), and the mechanical structure, which got improved over the proposed version.
+
+Even though my advisor's thesis showcases prototype of the connector, that prototype differs a lot from the currently implemented one. The more up to date version of the connector is described in the paper ``RoFICoM -- First Open-Hardware Connector for Metamorphic Robots'' by Jan Mrázek and Jiří Barnat \cite{MrazekBarnat2019Roficom}.
+
 In this thesis, the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) to describe the result project after my thesis.
 
-The \acrshort{rofi} platform is established in thesis of my advisor Jan Mrázek \cite{Mrazek2019thesis}.
-
 % Establishing the problem
+\TODO{Even though} the previous work creates the connector, the implementation is in work-in-progress state. The aim of this thesis is to enhance the firmware of the \acrshort{roficom} to production ready state by improving the prototype implementation and adding new features.
 
 % Specifying objectives
 The main objectives for this thesis are:
 \begin{itemize}
-    \item Implement distance measuring into \acrshort{roficom}. This includes implementation of \acrshort{i2c} driver and inter \TODO{zaimplementovani/pridani/pouziti} \acrshort{lidar} library.
-    \item Propagating the measurements from \acrshort{roficom} to \acrshort{rofi} module. 
-    \item Port the prototype firmware for the \acrshort{roficom} to production-ready hardware board.
-    \item Change motor control to use new magnetic sensors.
-    \item Implement power control i.e., reading current and voltage on EXT and INT powerlines, charging accumulator from INT powerline and discharging the accumulator to the INT powerline.
+    \item Implement distance measuring into \acrshort{roficom}. This includes implementation of \acrshort{i2c} driver and \TODO{integration} of the \gls{vl53l1x} driver.
+    \item Propagate the measurements from \acrshort{roficom} to the \gls{universal-module}. 
+    \item Port the prototype firmware for the \acrshort{roficom} to production-ready version of the hardware board.
+    \item Change motor control in the firmware to use newly added magnetic sensors.
+    \item Implement power control -- i.e., reading current and voltage on EXT and INT powerlines, charging accumulator from INT powerline and discharging the accumulator to the INT powerline.
 \end{itemize}
 
 % Paper structure
+The structure of this paper starts with introduction to the \acrshort{rofi} platform and description of its components in chapter, which is followed by the overview of the prototype firmware implementation \TODO{and proposes what changes will be made}. After that, this thesis focuses on \TODO{three} main features implemented in this thesis. \TODO{Those features are distance measuring in the chapter \acrshort{lidar} \ref{sec:lidar}, }. The last chapter focuses on other interesting implementations and there reasoning, followed by the conclusion of this thesis.
 
 \chapter[ RoFI ]{ \acrshort{rofi} }
 \TODOLIST{
@@ -473,7 +475,7 @@ The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{im
 
 The prototype had implementations for esp32 and simulator. The esp32 are the implementation for the \gls{universal-module}.
 
-\chapter[ LiDAR ]{ \acrshort{lidar} } \label{sec:lidar}
+\chapter[ Distance Measurement -- LiDAR ]{ Distance Measurement -- \acrshort{lidar} } \label{sec:lidar}
 \TODOLIST{
 \begin{itemize}
     \item \TODO{Walk through \acrshort{lidar} features}
