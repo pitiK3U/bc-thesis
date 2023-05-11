@@ -197,7 +197,7 @@ The \acrshort{rofi} is a platform of distributed self-reconfigurable modular rob
 
 \begin{figure}
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/rofiTransformation.jpg}
-    \caption[short]{Illustration of possible \acrshort{rofi} robots transformation from \TODO{\cite{rofiweb}}}
+    \caption[\acrshort{rofi} transformation]{Illustration of possible \acrshort{rofi} robots transformation from \TODO{\cite{rofiweb}}}
     \label{fig:rofi-transformation}
 \end{figure}
 
@@ -754,7 +754,7 @@ This chapter describes changes made to the prototype version of the \acrshort{ro
 \end{itemize}
 }
 
-The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component. It is meant to be lightweight, safely copyable and shareable.
+The prototype version of the interface has all components as a \emph{Proxy}. Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component, it is meant to be lightweight, safely copyable and shareable.
 
 The prototype version contains three main components --- \lstinline[breakatwhitespace]|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor, and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, which consists of number of joints and connectors the module. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both control and \TODO{get joint information}.
 
@@ -831,8 +831,25 @@ Since the two functions only takes the arguments either for reading from or writ
 
 \section{ Motor driver }
 
+\TODO{section intro}
+
+The current position of the gearing is detected by the newly added array of magnetic sensors. The gearing contains small magnet that actives the sensors while moving near them. While testing the movement, it was observed that at the same multi sensors can detect the magnet, which influenced the way the current position is measured. The current position is measured as sum of positions of active pins divided by the count of active pins further divided by the position of last pin. The pins are index from $\numrange{0}{9}$, where the gearing in retracted position actives the sensor pin $0$ and in expanded state the sensor pin $9$ is active. Such indexing should mean that the count of active pins should be always at least one; however, due to the movement or \TODO{malfunction}, the count can be zero, which would result in division by zero crashing the whole system. The measured position ranges from $0$ to $100$ (the calculated value times $100$) and sets explicitly the value $-1$ for error in measuring (i.e., zero active sensors). Explicitly setting the error value allows stopping the motor, otherwise it could run indefinitely damaging the structure. 
+
+\begin{figure}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/motor-state-diagram-wip.png}
+    \caption{Diagram of motor's state}
+    \label{fig:motor-state}
+\end{figure}
+
+The figure \ref{fig:motor-state} shows the possible states and there transition in the motor driver. The most important states are \lstinline|Retracted| and \lstinline|Expanded| as they indicates requested position (the motor's goal). The modeled states in the driver are: \lstinline|Retracted|, \lstinline|Expanded|, \lstinline|Retracting|, \lstinline|Expanding| and \lstinline|Unknown|. The \lstinline|Unknown| state is used to indicate the initial state before the position is calculated, this state can change into any other state based on the set goal and current position. The \lstinline|Expanding| is the transition from the \lstinline|Retracted| state to the \lstinline|Expanded| state, similarly the \lstinline|Retracting| state is the transaction from \lstinline|Expanded| state to the \lstinline|Retracted| state. Both states (\lstinline|Expanding| and \lstinline|Retracting|) can be split into two more states: Fast and Slow. The Fast state utilizes the whole power of the motor and upon reaching specified threshold position the state changes to the Slow one, which, in contrary, slows the motor in order to stop the movement before reaching the physical end in the mechanical structure.
+
+The thresholds were determined by manual testing.
+
+\TODO{However, the current implementation still has issue of sometimes going over the edge sensors falling from the gearing reach.}
+
 \section{ Power control }
-\section{Protocol implementation}
+
+\section[ Protocol Implementation in RoFICoM ]{ Protocol implementation in \acrshort{roficom} }
 \TODOLIST{
 \begin{itemize}
     \item Added power information - connection of INT and EXT, current and voltage of INT and EXT.
