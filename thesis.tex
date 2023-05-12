@@ -744,7 +744,8 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine scenario, where MC
 \chapter[ RoFI Hardware Abstraction Layer ]{ \acrshort{rofi} \acrlong{hal} } \label{cht:rofig-hal}
 
 This chapter describes changes made to the prototype version of the \acrshort{rofi} \acrshort{hal} --- in both interface and \gls{universal-module} implementation. The \acrshort{rofi} \acrshort{hal} has been introduced in section \ref{sec:rofi-hal-desc}.
-\section{Interface}
+
+\section{Interface} \label{sec:rofi-hal-interface}
 
 \TODOLIST{
 \begin{itemize}
@@ -764,13 +765,13 @@ The state was extended by the measured distance and the measurement status. Howe
 
 The status is 2-bit number with each value having assigned specific meaning. The status values and their meanings are the following:
 \begin{itemize}
-    \item \lstinline|0b00| = Valid --- The measured distance is fully valid to use.
-    \item \lstinline|0b01| = Out of Range --- The measured data was measured, however they \textbf{does not have to be valid}. Usually this means that the data are outside of the measurable range, however, it can also be caused by wrong settings.
-    \item \lstinline|0b10| = Not Measured --- This status is when the \acrshort{lidar} is not plugged in, or the request was made before the first \acrshort{lidar} measurement was completed.
-    \item \lstinline|0b11| = Error --- This signals error, which can be  \acrshort{i2c} communication error, \acrshort{lidar} error, or that the device got unplugged while communicating.  
+    \item \lstinline|0b00| = Error --- This signals error, which can be  \acrshort{i2c} communication error, \acrshort{lidar} error, or that the device got unplugged while communicating.  
+    \item \lstinline|0b01| = Not Measured --- This status is when the \acrshort{lidar} is not plugged in, or the request was made before the first \acrshort{lidar} measurement was completed.
+    \item \lstinline|0b10| = Out of Range --- The measured data was measured, however they \textbf{does not have to be valid}. Usually this means that the data are outside of the measurable range, however, it can also be caused by wrong settings.
+    \item \lstinline|0b11| = Fully Valid --- The measured distance is fully valid to use.
 \end{itemize}
 
-This specific choice of values allows for the individual bits of the status to carry their own meaning, i.e. the higher bit acts as an inverted \emph{validity} bit (value \verb|1| means the measure data cannot be used), and the lower bit acts as a \emph{certainty} bit (value of \verb|0| means that measure distance should be correct). Note that the bit can be used as certainty bit only when the validity bit is set to valid. The \acrshort{lidar} status is for explicitness represented as a \lstinline|enum|.
+The value for the Error was chosen carefully to prevent false signaling of the measured state --- if there is error in communication with the \acrshort{roficom}, the read value is $0$, and thus the \acrshort{lidar} status is parsed as an Error. Additionally, the specific choice of values allows for the individual bits of the status to carry their own meaning, i.e. the higher bit acts as an \emph{validity} bit (the value \verb|1| means the measure data can be used), and the lower bit acts as a \emph{certainty} bit (the value of \verb|1| means that measure distance should be correct). Note that the bit can be used as certainty bit only when the validity bit is set to valid. The \acrshort{lidar} status is for explicitness represented as a \lstinline|enum|.
 
 \section{ Implementation --- esp32 }
 \TODOLIST{
@@ -857,6 +858,14 @@ The thresholds were determined by manual testing.
     \item Lidar status and distance and setting \TODO{ distance mode ?? }.
 \end{itemize}
 }
+
+\TODO{Section intro}
+
+The prototype version of the firmware contains implementation for the connector-to-module communication, although, not complete. The unfinished command is the status command, which only contained expanding and retracting the connector based on received command and responding with blobs remaining to be sent and received. The status command parsing, reacting and responding is accomplished by the function \lstinline|onCmdStatus()|, that is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power management), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional, since the command status can be received before the \acrshort{lidar} responded with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
+
+The \lstinline|onCmdStatus()| function can be virtually split into two halves --- the first half is parsing the requested command and reacting to it and the second half is creating and sending the response. The interesting part in the first half is that the \acrshort{lidar} distance mode can contain invalid value (\lstinline|0b11|), which is simply ignore, because user's request should not be able to break the firmware.
+
+The most interesting part of the second half is the \TODO{transformation} of \acrshort{lidar} status into the protocol flag. The values of the flag are specified in the section \ref{sec:rofi-hal-interface}. Each of possible value for the flag can be derived from the possible value of \lstinline|std::optional< LidarResult >|. If the optional does not contain a value, that means that the result is \emph{not yet measured} (or the \acrshort{lidar} is not plugged in). Otherwise the \lstinline|Result| class must be present. If the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two checks handles the validity bit of the flag. After that the \lstinline|Result| must contain result type, which is the \gls{vl53l1x} result structure described in section \ref{sec:lidar-result}. The certainty bit is decided by the value of the \gls{vl53l1x} status from the result structure --- value of $0$ (i.e., the previously mentioned value of valid status) results in Fully Valid flag; whereas, other values result in the Out of Range flag, since the measurement may not be correct. Consequently, the distance is set only if the validity bit is set to valid.
 
 \section{ Error Handling }
 \TODOLIST{
