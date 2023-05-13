@@ -61,9 +61,9 @@
     TeXkeywords = {\TODO{keyword1, keyword2, \ldots}},
     abstract    = {%
       % Background
-      \acrshort{roficom} is the Communication Mechanism for the \acrshort{rofi} platform, which is open software and open-hardware platform for modular robots.
+      \acrshort{roficom} is the Communication Mechanism for the \acrshort{rofi} platform --- an open software and open-hardware platform for modular robots.
       % Objective
-      This thesis focuses on bringing the already existing firmware to production ready state, this includes improving the existing firmware of the \acrshort{roficom} and implementing additional features. The main \TODO{goals are} adopting the existing implementation to new hardware version, distance measurement and propagating distance to the \acrshort{rofi} module.  
+      This thesis focuses on bringing the already existing firmware to production-ready state, this includes improving the existing firmware of the \acrshort{roficom} and implementing additional features. The main \TODO{goals are} adopting the existing implementation to new hardware version, distance measurement and propagating distance to the \acrshort{rofi} module.  
       % Methods
       At first, the thesis describes the \acrshort{rofi} platform, the existing implementation and explains the structure of the project.
       Then there is detailed description of both existing \acrshort{roficom}'s hardware and firmware. \TODO{Followed by changes brought by this thesis}.
@@ -163,11 +163,11 @@ This thesis improves the currently implemented firmware for the connector of the
 \end{figure}
 
 % Background --- previous research
-The \acrshort{rofi} platform is established in thesis of my advisor Jan Mrázek \cite{Mrazek2019thesis}. My advisor's thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In case of the docking system, my advisor's thesis introduces connector to connector and connector to module communication (\TODO{which both persists to this day}), and the mechanical structure, which got improved over the proposed version.
+The \acrshort{rofi} platform is established in thesis of Jan Mrázek \cite{Mrazek2019thesis}. His thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In case of the docking system, his thesis introduces connector to connector and connector to module communication (\TODO{which both persists to this day}), and the mechanical structure, which got improved over the proposed version.
 
-Even though my advisor's thesis showcases prototype of the connector, that prototype differs a lot from the current version. The more up to date version of the connector is described in the paper ``RoFICoM --- First Open-Hardware Connector for Metamorphic Robots'' by Jan Mrázek and Jiří Barnat \cite{MrazekBarnat2019Roficom}.
+Even though the thesis (of Jan Mrázek) showcases prototype of the connector, that prototype differs a lot from the current version. The more up to date version of the connector is described in the paper ``RoFICoM --- First Open-Hardware Connector for Metamorphic Robots'' by Jan Mrázek and Jiří Barnat \cite{MrazekBarnat2019Roficom}.
 
-In this thesis, the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) to describe the result project after my thesis.
+In the following text (in this thesis), the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) to describe the result project after the thesis.
 
 % Establishing the problem
 \TODO{Even though} the previous work creates the connector, the implementation is in work-in-progress state. The aim of this thesis is to enhance the firmware of the \acrshort{roficom} to production ready state by improving the prototype implementation and adding new features.
@@ -622,7 +622,7 @@ if (status != 0) {
 }
 \end{lstlisting}
 
-\subsection{ Distance Modes } \label{distance-modes}
+\subsection{ Distance Modes } \label{sec:distance-modes}
 
 \gls{vl53l1x} has 3 distance modes: \emph{short}, \emph{medium} and \emph{long}. Since the \acrshort{lidar} depends on ambient light, this is when distance modes makes difference. Even though short mode can measure only up to \qty{136}{\centi\metre} it is not as impacted by the ambient light as other modes. In datasheet \cite{vl53l1x} is mentioned that the short distance mode can measure \qty{135}{\centi\metre} under strong ambient light, which is nearly the same as without ambient light. In contrary, the medium and long modes are impacted by the ambient light. Whereas the long mode can measure up to \qty{360}{\centi\metre}, in the strong ambient light it only measured \qty{73}{\centi\metre}.
 
@@ -644,9 +644,15 @@ For the \acrshort{uld}, there is a difference in allowed values \TODO{compared} 
 
 The inter-measurement period must be longer than the timing budget. However, the \acrshort{uld} does not validate this and it is left to the user to assure. Otherwise the actual inter-measurement period would be double the expected value. The default value is set to \qty{100}{\milli\second}.
 
-\subsection{ Result Structure } \label{sec:lidar-result}
+\subsection{ Result Data } \label{sec:lidar-result}
 \TODO{Describe Result structure.}
 
+The main reason for having \acrshort{lidar} is to be able to measure the distance from the \acrshort{roficom}; thus, receiving the measurements and their correctness is the main \TODO{focus}. The result can be received in two ways, either by requesting the specific result values, such as distance, or by receiving all the values at once. The current implementation only uses measured \emph{distance} and \emph{status} of the measurement.
+
+The distance is measured in millimeters and is saved as two bytes long unsigned number.
+
+\TODO{
+\iffalse
 \begin{lstlisting}
 typedef struct {
     uint8_t Status;
@@ -656,14 +662,12 @@ typedef struct {
     uint16_t NumSPADs;
 } VL53L1X_Result_t;
 \end{lstlisting}
-
-\TODO{
-Most important result is the measured \lstinline|Distance| in \unit{\milli\metre} together with the \lstinline|Status| of the measured distance.
+\fi
 }
 
 \paragraph{\TODO{Status}}
 
-The \acrshort{uld} manual \cite{um2510} documents only five statuses, even though the \gls{vl53l1x} datasheet \cite{vl53l1x} specifies eight. The five statuses with their corresponding values are:
+In contrary, the status is only one byte long but has more \TODO{complex meaning}. The \acrshort{uld} manual \cite{um2510} documents only five statuses, even though the \gls{vl53l1x} datasheet \cite{vl53l1x} specifies eight. The five statuses with their corresponding values are:
 \begin{itemize}
     \item Valid (0)
     \item Sigma failure (1)
@@ -682,7 +686,7 @@ The out of bounds with value $4$ usually occurs when the target is at the maximu
 
 The ``wraparound'' range status of value $7$ is reported when the target is very reflective and the distance is longer that the physical limited distance measurable by the \gls{vl53l1x}. This distance is \qty{1.3}{\metre} for the short distance mode and \qty{5}{\metre} for the long mode.
 
-\section{ \TODO{ \acrshort{lidar} driver abstraction in \acrshort{roficom} } } \label{sec:lidar-driver}
+\section[ LiDAR Diver ]{ \TODO{ \acrshort{lidar} Driver Abstraction in \acrshort{roficom} } } \label{sec:lidar-driver}
 
 Because most of the \acrshort{roficom} project is using \verb|C++| abstraction, I wanted to do the same for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} driver was designed to keep similar communication flow as with the \verb|C| driver (as described in section \ref{sec:lidar-api}). \TODO{The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, that means it can be inserted or removed at any time without restarting or crashing the system.} Since the \acrshort{lidar} itself does not have to be plugged in the \acrshort{roficom}, I wanted to make the handling of the \acrshort{lidar} state little more explicit. The states are: \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
 
@@ -711,7 +715,11 @@ Those two functions can call each other, because if anything fails in the proces
 
 Nevertheless, the previous implementation would result in infinite indirect recursion, to avoid the recursion the current implementation uses \lstinline|IdleTask::defer()|. \lstinline|IdleTask| is class that provides scheduling function calls, the scheduled functions are called with \lstinline[breaklines=false]|IdleTask::run()|. The usage of scheduled function calls allows the firmware to schedule other routines in between the two lidar functions, and to handle necessary tasks, such as SPI communication.
 
-\subsection{ Autonomous distance mode }
+\subsection{ Autonomous Distance Mode }
+
+The \acrshort{lidar} driver provides one more additional distance mode than is describe in \ref{sec:distance-modes}. This mode is completely handled by \acrshort{lidar} driver and in reality sets the two provided distance modes by the \acrshort{uld}. The autonomous does not change the set timings and instead works with the default ones, which were found suitable for most measurements.
+
+The changes of underlying mode of the autonomous mode are dependant on the status and distance of successful measurement. The autonomous mode starts in long mode, if the measurement is valid (signalled by the status value) and the measured is under specified threshold under its maximum measurable distance, the mode is set to short. If there is invalid while in short mode, such as sigma failure, out of bounds or wraparound, the distance is set to long mode.
 
 
 \chapter[ Board Support Package ]{\acrlong{bsp}} \label{BSP}
@@ -761,7 +769,7 @@ The prototype version contains three main components --- \lstinline[breakatwhite
 
 The only component that needed change, due to the \acrshort{lidar} addition, was the connector. The \lstinline|Connector| proxy has ability to extend and retract the connector, connect and disconnect powerlines (internal or external), reaction to connection and disconnection from mating side and powerlines, and sending and reacting to received packets. The part of the \lstinline|Connector| that needed change was the \lstinline|ConnectorState|. The prototype version of the \lstinline|ConnectorState| contains information about the connector's position (extended or retracted), connection on powerlines and to the mating side, orientation of the connection (North, East, South, West), and the voltage and current of the powerlines.
 
-The state was extended by the measured distance and the measurement status. However, this is different status that the \acrshort{lidar} status from \ref{sec:lidar-result}. Whereas, the measured distance is just 16-bit number with the measured distance in \unit{\mm}, the status is more complicated.
+The state was extended by the measured distance, the measurement status and setting and receiving distance modes. However, this is different status that the \acrshort{lidar} status from \ref{sec:lidar-result}. Whereas, the measured distance is just 16-bit number with the measured distance in \unit{\mm}, the status is more complicated.
 
 The status is 2-bit number with each value having assigned specific meaning. The status values and their meanings are the following:
 \begin{itemize}
@@ -773,19 +781,21 @@ The status is 2-bit number with each value having assigned specific meaning. The
 
 The value for the Error was chosen carefully to prevent false signaling of the measured state --- if there is error in communication with the \acrshort{roficom}, the read value is $0$, and thus the \acrshort{lidar} status is parsed as an Error. Additionally, the specific choice of values allows for the individual bits of the status to carry their own meaning, i.e. the higher bit acts as an \emph{validity} bit (the value \verb|1| means the measure data can be used), and the lower bit acts as a \emph{certainty} bit (the value of \verb|1| means that measure distance should be correct). Note that the bit can be used as certainty bit only when the validity bit is set to valid. The \acrshort{lidar} status is for explicitness represented as a \lstinline|enum|.
 
+The distance mode is represented as a 2-bit number and the values corresponds to the value of the distance modes for the \acrshort{lidar} driver. The possible modes for the distance mode are autonomous (with value of $0$), short ($1$) and long ($2$). The last possible value ($3$) is currently unspecified and its usage is ignored. There was newly added function to set the distance mode for the connector, which takes a \lstinline|enum class| of the possible modes.
+
 \section{ Implementation --- esp32 }
 \TODOLIST{
 \begin{itemize}
-    \item Apply changes from interface
+    \item Apply changes from interface --- lidar status, distance and \TODO{distance modes}
     \item Issue $\rightarrow$ status is not being updated $\rightarrow$ Needed to implement poller
 \end{itemize}
 }
 
-Since the protocol changed, the changes must be synchronized to all implementations. Not only does this change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status and measured distance is described in \TODO{add section reference}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). \TODO{Other implementations are out of the scope of my work.}
+Since the protocol changed, the changes must be synchronized to all implementations. Not only does the protocol change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status, measured distance and distance mode is described in \ref{sec:lidar-result}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). \TODO{Other implementations are out of the scope of my work.}
 
-The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. Any command, such as to connect, disconnect, are handled by the \lstinline|ConnectorBus| for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on parallel thread. The sent is handled by the function \lstinline|run()| with specified command as argument. After the command is sent and response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from()|.
+The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. Any command, such as to connect and disconnect, are handled by the \lstinline|ConnectorBus| for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on parallel thread. The sent is handled by the function \lstinline|run()| with specified command as argument. After the command is sent and response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from()|.
 
-The changes made to the esp32 implementation are addition of new flags of the protocol \TODO{(\acrshort{lidar} status)}. Followed by parsing the status response from the connector in the \lstinline|ConnectorStateImpl::from()|, that contains the \acrshort{lidar} status and measured distance. As last, due to the change of size of the command, the change needs to be update in the \lstinline|ConnectorBus::run()|, but also in the dma buffer allocation of the \lstinline|ConnectorBus|.
+The changes made to the esp32 implementation are addition of new flags of the protocol --- \TODO{(\acrshort{lidar} status)} and distance modes. Followed by parsing the status command response from the connector in the \lstinline|ConnectorStateImpl::from()|, that contains the \acrshort{lidar} status, measured distance and distance mode. The function to set the distance mode sends the status command with flags set accordingly to the chosen value. As last, due to the change of size of the command, the change needs to be update in the \lstinline|ConnectorBus::run()|, but also in the dma buffer allocation of the \lstinline|ConnectorBus|.
 
 \TODO{Needed poller}
 
@@ -863,7 +873,7 @@ The thresholds were determined by manual testing.
 
 The prototype version of the firmware contains implementation for the connector-to-module communication, although, not complete. The unfinished command is the status command, which only contained expanding and retracting the connector based on received command and responding with blobs remaining to be sent and received. The status command parsing, reacting and responding is accomplished by the function \lstinline|onCmdStatus()|, that is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power management), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional, since the command status can be received before the \acrshort{lidar} responded with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
 
-The \lstinline|onCmdStatus()| function can be virtually split into two halves --- the first half is parsing the requested command and reacting to it and the second half is creating and sending the response. The interesting part in the first half is that the \acrshort{lidar} distance mode can contain invalid value (\lstinline|0b11|), which is simply ignore, because user's request should not be able to break the firmware.
+The \lstinline|onCmdStatus()| function can be virtually split into two halves --- the first half is parsing the requested command and reacting to it and the second half is creating and sending the response. The interesting part in the first half is that the \acrshort{lidar} distance mode can contain invalid value (\lstinline|0b11|), which is simply ignored, because user's request should not be able to break the firmware.
 
 The most interesting part of the second half is the \TODO{transformation} of \acrshort{lidar} status into the protocol flag. The values of the flag are specified in the section \ref{sec:rofi-hal-interface}. Each of possible value for the flag can be derived from the possible value of \lstinline|std::optional< LidarResult >|. If the optional does not contain a value, that means that the result is \emph{not yet measured} (or the \acrshort{lidar} is not plugged in). Otherwise the \lstinline|Result| class must be present. If the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two checks handles the validity bit of the flag. After that the \lstinline|Result| must contain result type, which is the \gls{vl53l1x} result structure described in section \ref{sec:lidar-result}. The certainty bit is decided by the value of the \gls{vl53l1x} status from the result structure --- value of $0$ (i.e., the previously mentioned value of valid status) results in Fully Valid flag; whereas, other values result in the Out of Range flag, since the measurement may not be correct. Consequently, the distance is set only if the validity bit is set to valid.
 
@@ -931,5 +941,14 @@ The newly chosen MCU (STM32G071CBUx) has \TODO{48} pins in total, which is a con
 \appendix %% Start the appendices.
 \chapter{An appendix}
 Here you can insert the appendices of your thesis.
+
+\TODOLIST{
+\begin{itemize}
+    \item Setup project --- dev env = docker
+    \item source setup.sh $\rightarrow$ compile roficom, compile hal example
+    \item flashing roficom
+    \item flashing esp32
+\end{itemize}
+}
 
 \end{document}
