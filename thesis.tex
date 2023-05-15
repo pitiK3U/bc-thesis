@@ -26,9 +26,9 @@
   nocolorbold, %% The `nocolorbold` option disables the usage of the
                %% blue color for bold text, instead using black. Replace
                %% with `colorbold` to use blue for bold text.
-  lof,         %% The `lof` option prints the List of Figures. Replace
+  nolof,         %% The `lof` option prints the List of Figures. Replace
                %% with `nolof` to hide the List of Figures.
-  lot,         %% The `lot` option prints the List of Tables. Replace
+  nolot,         %% The `lot` option prints the List of Tables. Replace
                %% with `nolot` to hide the List of Tables.
     % draft,
 ]{fithesis4}
@@ -57,11 +57,11 @@
     advisor     = {RNDr. Jan Mrázek},
     title       = {Firmware for RoFICoM},
     TeXtitle    = {Firmware for \acrshort{roficom}},
-    keywords    = {\TODO{modular, robots, RoFI, firmware}},
+    keywords    = {\TODO{firmware, embedded, RoFI, robots, c++, lidar}},
     TeXkeywords = {\TODO{keyword1, keyword2, \ldots}},
     abstract    = {%
       % Background
-      \acrshort{roficom} is the Communication Mechanism for the \acrshort{rofi} platform --- an open software and open-hardware platform for modular robots.
+      The \acrshort{rofi} platform is an open software and open-hardware platform for modular robots. The \acrshort{rofi} platform uses the \acrshort{rofi} Communication Mechanism, \acrshort{roficom} for short, for connecting and communicating between two \acrshort{rofi} modules.
       
       % Objective
       This thesis aims to enhance the existing firmware to a production-ready state, this includes improving the existing firmware of the \acrshort{roficom} and implementing additional features. The main \TODO{goals are} adopting the existing implementation to the new hardware version, measuring the distance and propagating it to the \acrshort{rofi} module.
@@ -234,7 +234,7 @@ The module is divided into four components: two bodies and two shoes. The main p
 
 The docks used in the \gls{universal-module} are called \acrshortpl{roficom}. The \acrshort{roficom} is in detail described and explained in the next \autoref{sec:roficom}.
 
-Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. The motors are controlled through UART protocol, and the docks are controlled over SPI protocol. The control unit also controls charging and power management.
+Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. \TODO{ Add ref or reword. The motors are controlled through UART protocol, and the docks are controlled over SPI protocol. The control unit also controls charging and power management. }
 
 The architecture of the \gls{universal-module} is shown in \autoref{fig:uni-mod-arch}.
 
@@ -302,11 +302,11 @@ RoFICoM is built from three main parts: \emph{body}, \emph{clip} and \emph{skirt
 
 The body is a non-movable part that is mounted into the module.
 The clip and skirt are essential for establishing strong mechanical connections between two \acrshortpl{roficom}.
-The clip component consists of four latches attached to a ring. Those latches get attached while connecting with
+\TODO{ Add ref or reword. The clip component consists of four latches attached to a ring. Those latches get attached while connecting with
 other \acrshort{roficom}. While expanding, the clip gets rotated and expanded upward by the motor. In the process, the latches on the mating
 side slide under each other, therefore forming a mechanical connection that prevents connectors from being pulled apart.
 However, the latches themselves are insufficient for a mechanical connection, as a mutual rotation of the connectors releases
-the connection. This is why the skirt is needed, two connected skirts stop the rotation against each other. In order to help ease the process of connection, there are magnets placed in the holes of the skirt. This helps when two connecting sides are slightly misaligned.
+the connection. This is why the skirt is needed, two connected skirts stop the rotation against each other.} In order to help ease the process of connection, there are magnets placed in the holes of the skirt. This helps when two connecting sides are slightly misaligned.
 
 The motor that rotates the clip and the skirt is at the body's bottom. The rotation of the clip and the skirt is accomplished by another component, the \TODO{gearing}, which is connected with both the skirt and clip with a \TODO{metal rod?} that spans from the holes in the body up to the skirt. When the motor activates, it rotates the gearing with the two components, and the \TODO{metal rods} move the interconnected components among the hole path in the body, elevating the components.
 
@@ -846,7 +846,7 @@ Those changes are enough to get the status and distance. However, the state is o
 This chapter discusses interesting design decisions and explains their reasoning. \TODO{Mention the following sections}.
 
 
-\section{ Platform Dependant Code --- port files --- \TODO{CRPT} }
+\section{ Platform Dependant Code --- port files --- \TODO{CRPT} \TODO{Move to stm32 drivers} }
 \TODOLIST{
 \begin{itemize}
     \item comparison CRPT vs inheritance approach
@@ -866,8 +866,6 @@ The \acrshort{i2c} driver lies with other \verb|stm32| drivers in a project at p
 The driver contains class \lstinline|I2C|, \lstinline|SdaPin| and \lstinline|SclPin|, to make the pins distinguishable from \lstinline|Gpio::Pin|, i.e., when constructing the \lstinline|I2C| the following construction, where \lstinline|pinSda| and \lstinline|pinScl| are \lstinline|Gpio::Pin|s, \lstinline|I2C(..., pinSda, pinScl)| would fail to compile. On the other hand, the construction \lstinline|I2C(..., SdaPin( pinSda ), SclPin( pinScl ) )| compiles. It also ensures that swapping the two pin classes would not compile, i.e., \lstinline|I2C(..., SclPin( ... ), SdaPin( ... ) )| would not compile.
 
 The \acrshort{i2c} driver provides two functions \lstinline|read| and \lstinline|write|. Those functions take the \acrshort{i2c} address of the peripheral and data container. (There are also \lstinline|unsafe| variants of these functions that are used in \acrshort{lidar} \acrshort{i2c} implementation \autoref{sec:lidar-i2c-impl} and take the raw buffer and its size instead of the container.) Since the \lstinline|read| and \lstinline|write| are templated functions, they use private functions to implement them. These private functions are not templated and take the raw buffer and size. Using a slim templated function with an inner function that is not templated reduces the size of generated functions from the template but allows the usage of a generalized function.
-
-\TODO{i2c implementation using stm32 tools ?}
 
 \subsection{ Error handling }
 Since the two functions only take the arguments either for reading from or writing to the given argument, the functions are free to return anything. In this case, they return an error. Because the \acrshort{i2c} driver is used in \acrshort{lidar} \acrshort{i2c}, the error values are chosen to be compatible with error handling in the \acrshort{uld} \autoref{uld}. The \acrshort{i2c} error enum has the following errors:
@@ -918,18 +916,10 @@ The \lstinline|onCmdStatus()| function can be virtually split into two halves --
 
 The most interesting part of the second half is the \TODO{transformation} of \acrshort{lidar} status into the protocol flag. The values of the flag are specified in the \autoref{sec:rofi-hal-interface}. Each possible value for the flag can be derived from the possible value of \lstinline|std::optional< LidarResult >|. If the optional does not contain a value,  the result is \emph{not yet measured} (or the \acrshort{lidar} is not plugged in). Otherwise, the \lstinline|Result| class must be present. If the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two checks handle the validity bit of the flag. After that, the \lstinline|Result| must contain the value type, which is the \gls{vl53l1x} result structure described in \autoref{sec:lidar-result}. The certainty bit is decided by the value of the \gls{vl53l1x} status from the result structure --- value of $0$ (i.e., the previously mentioned value of valid status) results in Fully Valid flag. In contrast, other values result in the Out of Range flag since the measurement may not be correct. Consequently, the distance is set only if the validity bit is set to valid.
 
-\section{ Error Handling }
+\section{ \TODO{Changes to build system} }
 \TODOLIST{
 \begin{itemize}
-    \item \lstinline{atoms::Result} = exceptions are too heavy for embedded, \lstinline{std::expected} yet to come \texttt{C++23}
-    \item the reasoning for given result types - \lstinline{atoms::Void}, \lstinline{std::string_view}
-    \item \TODO{error handling in \acrshort{i2c} \& \acrshort{lidar} class}  
-\end{itemize}
-}
-
-\section{ \TODO{??} }
-\TODOLIST{
-\begin{itemize}
+    \item static buffer vs ram
     \item Hard fault = ram had too high static usage, minimizing the usage by lower the number of available buckets for packets solved this (memory::pool)
 \end{itemize}
 }
