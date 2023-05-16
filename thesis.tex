@@ -159,8 +159,6 @@
 \end{itemize}
 }
 
-\todo{Add footnote links for first appearances for not explained protocols: \acrshort{spi}, \acrshort{uart}}
-
 % Introduce topic
 The \acrshort{rofi} platform is an open software and open-hardware platform for modular robots. The \acrshort{rofi} platform utilizes the \acrshort{rofi} Communication Mechanism, \acrshort{roficom} for short, for connecting and communicating between two \acrshort{rofi} modules.
 
@@ -629,7 +627,7 @@ The \acrlong{uld} was selected for the \acrshort{roficom} because the full API w
 The use of \acrshort{uld} resulted in missing errors and error messages previously used with the full API driver. The \acrshort{uld} only reports failures either caused by lidar (signified as value $1$) or from the under-laying layer (\acrshort{i2c} communication). Nevertheless, in both cases, we lose the error message. The precise design of the error handling of the \acrshort{i2c} class (\autoref{sec:i2c}) together with the examination of the error handling of the \acrshort{uld} (\autoref{sec:uld-err}) resulted in some preservation of error information.
 
 \section[ API of the Ultra Lite Driver ]{ API of the \acrlong{uld} } \label{sec:lidar-api}
-Because the \acrshort{uld} API is platform independent, it requires the user to implement \acrshort{i2c} communication for the platform (the implementation of \acrshort{i2c} in \acrshort{roficom} is described in \autoref{sec:lidar-i2c-impl}). The UM2510 \cite{um2510} manual explains how to use the \acrshort{uld} API and will be described in this section.
+Because the \acrshort{uld} API is platform independent, it requires the user to implement \acrshort{i2c} communication for the platform (the implementation of \acrshort{i2c} in \acrshort{roficom} is described in \autoref{sec:i2c}). The UM2510 \cite{um2510} manual explains how to use the \acrshort{uld} API and will be described in this section.
 
 The flow of communication is following:
 \begin{enumerate}
@@ -806,6 +804,18 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine a scenario where M
 \chapter{ Implementation --- Design Decisions } \label{ch:design}
 This chapter discusses interesting design decisions and explains their reasoning. \TODO{Mention the following sections}.
 
+\section{ Changes to the Build System }
+\TODOLIST{
+\begin{itemize}
+    \item static buffer vs ram
+    \item Hard fault = ram had too high static usage, minimizing the usage by lower the number of available buckets for packets solved this (memory::pool)
+\end{itemize}
+}
+
+During the development, the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide. In the debug build of prototype version the static usage of the RAM was very high (around $70\%$), not leaving enough RAM for the runtime of the firmware, which resulted in in corrupted stack frames. The fix to this issue was reducing the size of statically allocated packet buffer. The count of 1025B buffers was reduced from count of 20 to 5, bringing the static usage of RAM to manageable $30\%$.
+
+Compiler flags \lstinline|-fstack-protector-all| and \lstinline|-fstack-check| were added to the debug build to detect similar issues as soon as possible.
+
 \section[ I2C driver ]{ \acrshort{i2c} driver }
 
 The \gls{vl53l1x} requires for its communication the \acrshort{i2c} protocol, which is not present in the prototype version of the firmware. This section explains the decisions in designing the implementation for the \lstinline|stm32cxx| \acrshort{i2c} driver. 
@@ -889,17 +899,6 @@ The \lstinline|onCmdStatus()| function can be virtually split into two halves --
 
 The most interesting part of the second half is the \TODO{transformation} of \acrshort{lidar} status into the protocol flag. The values of the flag are specified in the \autoref{sec:rofi-hal-interface}. Each possible value for the flag can be derived from the possible value of \lstinline|std::optional< LidarResult >|. If the optional does not contain a value,  the result is \emph{not yet measured} (or the \acrshort{lidar} is not plugged in). Otherwise, the \lstinline|Result| class must be present. If the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two checks handle the validity bit of the flag. After that, the \lstinline|Result| must contain the value type, which is the \gls{vl53l1x} result structure described in \autoref{sec:lidar-result}. The certainty bit is decided by the value of the \gls{vl53l1x} status from the result structure --- value of $0$ (i.e., the previously mentioned value of valid status) results in Fully Valid flag. In contrast, other values result in the Out of Range flag since the measurement may not be correct. Consequently, the distance is set only if the validity bit is set to valid.
 
-\section{ Changes to the Build System }
-\TODOLIST{
-\begin{itemize}
-    \item static buffer vs ram
-    \item Hard fault = ram had too high static usage, minimizing the usage by lower the number of available buckets for packets solved this (memory::pool)
-\end{itemize}
-}
-
-During the development, the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide. In the debug build of prototype version the static usage of the RAM was very high (around $70\%$), not leaving enough RAM for the runtime of the firmware, which resulted in in corrupted stack frames. The fix to this issue was reducing the size of statically allocated packet buffer. The count of 1025B buffers was reduced from count of 20 to 5, bringing the static usage of RAM to manageable $30\%$.
-
-Compiler flags \lstinline|-fstack-protector-all| and \lstinline|-fstack-check| were added to the debug build to detect similar issues as soon as possible.
 
 \chapter[ RoFI Hardware Abstraction Layer ]{ \acrshort{rofi} \acrlong{hal} } \label{ch:rofi-hal}
 
