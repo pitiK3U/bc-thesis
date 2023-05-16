@@ -802,7 +802,7 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine a scenario where M
 \lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation units is not defined by the language specification. As a result, \lstinline{bsp} cannot use \lstinline{GpioA}, ..., for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where the first argument is the pin position. The second argument is \TODO{the GPIO line defined by STMicroelectronics}.
 
 \chapter{ Implementation --- Design Decisions } \label{ch:design}
-This chapter discusses interesting design decisions and explains their reasoning. \TODO{Mention the following sections}.
+This chapter discusses interesting design decisions and explains their reasoning. This chapter contains sections discussing the changes made to the build system with the related issue, the implementation of the \acrshort{i2c} driver, the implementation of the new motor driver, the implementation of the power management, and the implementation of the connector-to-module protocol in \acrshort{roficom}.
 
 \section{ Changes to the Build System }
 \TODOLIST{
@@ -968,7 +968,7 @@ Even though many functionality works as intended, such as the \acrshort{lidar} m
 
 Such improvement might be in the motor driver or in the power management. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power management currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue.
 
-The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. \TODO{appendix}
+The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. The appendix contains the procedures for building the relevant sub-projects of the project.
 
 \appendix %% Start the appendices.
 \chapter{Building the Project}
