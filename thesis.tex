@@ -159,7 +159,7 @@
 \end{itemize}
 }
 
-\todo{Add footnote links for first appearances for not explained protocols: SPI, UART}
+\todo{Add footnote links for first appearances for not explained protocols: \acrshort{spi}, \acrshort{uart}}
 
 % Introduce topic
 The \acrshort{rofi} platform is an open software and open-hardware platform for modular robots. The \acrshort{rofi} platform utilizes the \acrshort{rofi} Communication Mechanism, \acrshort{roficom} for short, for connecting and communicating between two \acrshort{rofi} modules.
@@ -220,8 +220,8 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
 \TODOLIST{
     \begin{itemize}
         \item ESP32
-        \item SPI
-        \item UART
+        \item \acrshort{spi}
+        \item \acrshort{uart}
         \item accumulator
         \item EXT and INT power lines
         \item 3 motors
@@ -242,9 +242,9 @@ The module is divided into four components: two bodies and two shoes. The main p
 
 The docks used in the \gls{universal-module} are called \acrshortpl{roficom}. The \acrshort{roficom} is in detail described and explained in the next \autoref{sec:roficom}.
 
-Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. Control of the motors is accomplished with a UART protocol; whereas in the case of the docks, it is done with SPI protocol. Additionally, the control unit manages charging and power connections.
+Each module has a single \emph{control unit} that serves as a centralized control over the actions of the module and all the module's components. Control of the motors is accomplished with a \acrshort{uart} (\acrlong{uart}) \footnote{\url{https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter}} protocol; whereas in the case of the docks, it is done with \acrshort{spi} (\acrlong{spi}) \footnote{\url{https://en.wikipedia.org/wiki/Serial_Peripheral_Interface}} protocol. Additionally, the control unit manages charging and power connections.
 
-The architecture of the \gls{universal-module} is shown in \autoref{fig:uni-mod-arch}.
+The architecture of the \gls{universal-module} is shown in \autoref{fig:uni-mod-arch}. Each box represents component of the \gls{universal-module} and each line represents connection between components. All connections are done by wires and connections with labels, such as \acrshort{uart}, \acrshort{spi}, represents used protocol or describes the wire (INT, EXT). 
 
 \begin{figure}[ht]
     \includegraphics{ assets/universal-module-arch.pdf }
@@ -346,14 +346,14 @@ The \autoref{fig:dock-arrangement} shows the composed components of the \acrshor
 \subsection{ Connector to Connector Interface }
 \iffalse
 <!--
-- UART
+- \acrshort{uart}
 - data and power sharing - EXT and INT power lanes 
 -->
 \fi
 
 A small printed circuit board (PCB) inside the skirt with spring-loaded pins realizes the connector-to-connector connection. This PCB provides both
 data and power sharing to the connected module.
-\acrshort{roficom} uses \textbf{UART} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
+\acrshort{roficom} uses \textbf{\acrshort{uart}} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
 binary data that is transferred between modules. 
 
 \iffalse
@@ -365,7 +365,7 @@ binary data that is transferred between modules.
 \fi
 
 \subsection{ Connector to Module Interface }
-RoFICoM provides an \textbf{SPI} interface for communication between the module and RoFICoM. The communication on the bus is performed
+RoFICoM provides an \textbf{\acrshort{spi}} interface for communication between the module and RoFICoM. The communication on the bus is performed
 in transactions. Transaction format consists of \textbf{command}, the first 8 bits of a transaction, followed by \textbf{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and are required to be supported by all
 connector types. For example, some connector commands are version command, status command, send and receive earlier
@@ -420,8 +420,8 @@ interface](#connector-to-connector-interface).
 \begin{itemize}
     \item MCU
     \item motor
-    \item UART
-    \item SPI
+    \item \acrshort{uart}
+    \item \acrshort{spi}
     \item \acrshort{i2c}
     \item EXT and INT power lines
 \end{itemize}
@@ -430,14 +430,14 @@ interface](#connector-to-connector-interface).
 \acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}, which are connected with a cable connecting the pins between them. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection, where the pins are
 
 \begin{itemize}
-    \item UART pins (TX --- transmit pis and RX --- receive pin),
+    \item \acrshort{uart} pins (TX --- transmit pis and RX --- receive pin),
     \item EXT and INT powerlines,
     \item ``sense`` pins for detecting the orientation of the connection.
 \end{itemize}
 
 The internal (INT) powerline can be used to charge the current module or  to charge connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \autoref{sec:i2c}), the \acrshort{lidar}'s enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
 
-The \TODO{system board} contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines, and SPI interface needed for the connector to module interface. That being said, the circuit for reading the current is not attached at the moment.
+The \TODO{system board} contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's microcontroller, motor, power connections, power management, reading current and voltage from power lines, and \acrshort{spi} interface needed for the connector to module interface. That being said, the circuit for reading the current is not attached at the moment.
 
 % \TODO{ Missing pins and a change in the motor's limit led to the change of MCU }
 
@@ -453,7 +453,7 @@ The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectro
     \item 48 available pins.
 \end{itemize}
 
-The microcontroller has other functionality, such as CRC calculation, SPI, UART, \acrshort{i2c}.
+The microcontroller has other functionality, such as CRC calculation, \acrshort{spi}, \acrshort{uart}, \acrshort{i2c}.
 
 
 \chapter[ RoFICoM --- prototype version and current implementation ]{ \acrshort{roficom} --- prototype version and current implementation }
@@ -494,14 +494,12 @@ The format of command data is shown in the \autoref{fig:status-command}, where t
 
 The first row of the command data represents the request state, whereas the second row is a bit mask for the previous row. The mask is used to signal which values of the first row to apply. The meaning of the status bits has the following meaning:
 
-\TODO{
 \begin{itemize}
     \item P (position) --- $0$ = retracted connector, $1$ = extended connector,
     \item I (internal powerline) --- $0$ = internal powerline is disconnected, $1$ = internal powerline is connected,
     \item E (external powerline) --- $0$ = external powerline is disconnected, $1$ = external powerline is connected,
     \item DM (distance mode) --- $0$ = autonomous distance mode, $1$ = short distance mode, $2$ = long distance mode. 
 \end{itemize}
-}
 
 \begin{figure}
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/status_command_new.pdf}
@@ -544,7 +542,7 @@ The port files of the \lstinline|stm32cxx| handle the portability or the MCU fam
 Port files follow the same guidelines that the specific code under \lstinline|namespace detail| and it is implemented via \emph{mixins}. However, since \verb|C++| does not natively support mixins, this is done using the \verb|C++| technique called CRTP. CRTP \footnote{\url{https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern}} (Curiously recurring template pattern) is a templated class, which takes the class we wish to extend with our mixin as a template parameter, and implements the mixin functionality on the template class. Such functionality might be enabling a clock for the periphery or \TODO{setting an alternative function on periphery pins}.
 
 
-The prototype version had \TODO{many drivers (that were needed) implemented}, such as drivers for GPIO, UART, SPI and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter, blocking wait for time, and missing family-specific definitions.
+The prototype version had \TODO{many drivers (that were needed) implemented}, such as drivers for GPIO, \acrshort{uart}, \acrshort{spi} and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter, blocking wait for time, and missing family-specific definitions.
 
 \section[ RoFI HAL ]{ \acrshort{rofi} HAL } \label{sec:rofi-hal-desc}
 \TODOLIST{
@@ -612,13 +610,13 @@ The start condition is when the controller drives the SDA line low before the SC
 \subsection[ Addressing LiDAR's Registers ]{ Addressing \TODO{\acrshort{lidar}}'s Registers } \label{sec:lidar-i2c} 
 \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number. However, the \acrshort{i2c} protocol only addresses the device, in order to address the device's register, a normal transaction is started, where the first two data packets are the two bytes of the register address. The most significant byte of this index (register address) is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that to read data from the \gls{vl53l1x}, the controller needs to make two transactions: a write transaction with register index, and the actual read. However, writing data to the \gls{vl53l1x} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
 
-\subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
-\TODOLIST{
-\begin{itemize}
-    \item i2c driver
-    \item \gls{vl53l1x} platform files
-\end{itemize}
-}
+% \subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
+% \TODOLIST{
+% \begin{itemize}
+%     \item i2c driver
+%     \item \gls{vl53l1x} platform files
+% \end{itemize}
+% }
 
 
 \section[ Controlling the VL53L1X ]{ \TODO{ Controlling the \gls{vl53l1x} (Protocol / API)} }
@@ -771,7 +769,7 @@ Since the \acrshort{lidar}'s current (only) requirement is always to measure the
 
 Those two functions can call each other because if anything fails in the process (in both functions), the device probably needs to be initialized again. On the contrary, when the \lstinline|lidarInit()| succeeds, it is safe to call \lstinline|lidarGet()|. \lstinline|lidarGet()| calls itself to ensure the latest measurements are saved. It is important to note that not receiving the data (i.e., the data is not ready yet) is not a failure and only means it is necessary to check on the data again. Otherwise, the measured value would never be received --- the device would get initialized again before the first measurement.
 
-Nevertheless, the previous implementation would result in infinite indirect recursion; to avoid the recursion, the current implementation uses \lstinline|IdleTask::defer()|. \lstinline|IdleTask| is a class that provides scheduling function calls; the scheduled functions are called with \lstinline[breaklines=false]|IdleTask::run()|. The usage of scheduled function calls allows the firmware to schedule other routines between the two lidar functions, and handle necessary tasks, such as SPI communication.
+Nevertheless, the previous implementation would result in infinite indirect recursion; to avoid the recursion, the current implementation uses \lstinline|IdleTask::defer()|. \lstinline|IdleTask| is a class that provides scheduling function calls; the scheduled functions are called with \lstinline[breaklines=false]|IdleTask::run()|. The usage of scheduled function calls allows the firmware to schedule other routines between the two lidar functions, and handle necessary tasks, such as \acrshort{spi} communication.
 
 \subsection{ Autonomous Distance Mode } \label{sec:lidar-autonomous}
 
@@ -823,8 +821,8 @@ that take the raw buffer and its size instead of a container. Since the \lstinli
 
 Since the two functions only take the arguments either for reading from or writing to the given argument, the functions are free to return anything. In this case, they return an error. Because the \acrshort{i2c} driver is used in \acrshort{lidar} \acrshort{i2c}, the error values are chosen to be compatible with error handling in the \acrshort{uld} \autoref{sec:uld-err}. The \acrshort{i2c} error enum has the following errors:
 \begin{itemize}
-    \item \emph{Valid} value $0$ --- this is to be compatible with the \acrshort{lidar} error reporting,
-    \item \emph{Reserved} $1$ --- Reserved for the error reported by the \TODO{todo ...},
+    \item \emph{Valid} value $0$ --- this is to be compatible with the \acrshort{uld} error reporting,
+    \item \emph{Reserved} $1$ --- Reserved for the error reported by the \acrshort{uld},
     \item \emph{NotAcknowledge} = 2 --- The acknowledgment bit was not signaled after the 8 bits were transmitted,
     \item \emph{BusError} = 3 --- Bus error signals misplaced start or stop condition,
     \item \emph{ArbitrationLoss} --- Arbitration loss occurs when two masters start transmitting at the same time,
@@ -850,8 +848,6 @@ The \autoref{fig:motor-state} shows the possible states and their transition in 
 
 The thresholds were determined by manual testing.
 
-\TODO{However, the current implementation still has an issue of sometimes going over the edge sensors falling from the gearing reach.}
-
 \section{ Power management }
 
 The last missing part for the protocol implementation in the \acrshort{roficom} is the power management. The \acrshort{roficom} has two powerlines internal (INT) and external (EXT), those powerlines are connected to the mating side. The decided features for power management are to charge or discharge the battery from the powerline, measure the voltage and the current on both powerlines. However, the measurement of the current could not be implemented because the circuit for measuring is not soldered in the current board.
@@ -874,7 +870,7 @@ Combining the formulas ($V_M = A$) we receive the following calculation in the f
 
 However, the protocol specifies the data of the voltage to be in fixed format \verb|8-bit.8-bit| number, which is converted by multiplying by $255.0$ and converted to \lstinline|uint16_t|.
 
-Each measurement and conversion is done in the \lstinline|run()| function, the results are obtained by the corresponding ``get'' function because the when the communicating through the SPI \acrshort{roficom} cannot measure and must provide response fast enough to the control unit.
+Each measurement and conversion is done in the \lstinline|run()| function, the results are obtained by the corresponding ``get'' function because the when the communicating through the \acrshort{spi} \acrshort{roficom} cannot measure and must provide response fast enough to the control unit.
 
 \section[ Protocol Implementation in RoFICoM ]{ Protocol implementation in \acrshort{roficom} }
 \TODOLIST{
@@ -885,7 +881,6 @@ Each measurement and conversion is done in the \lstinline|run()| function, the r
 \end{itemize}
 }
 
-\TODO{Section intro}
 As previously mentioned in the \autoref{sec:roficom-firmware}, the prototype version of the firmware was missing the full implementation of the connector-to-module communication. The unfinished command is the status command, which only implemented expanding and retracting the connector based on the received command and responding with blobs remaining to be sent and received. This section describes finishing the implementation of the status command.
 
 The function \lstinline|onCmdStatus()| accomplishes the status command parsing, reacting and responding, which is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power management), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional since the command status can be received before the \acrshort{lidar} responds with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol, the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
@@ -894,7 +889,7 @@ The \lstinline|onCmdStatus()| function can be virtually split into two halves --
 
 The most interesting part of the second half is the \TODO{transformation} of \acrshort{lidar} status into the protocol flag. The values of the flag are specified in the \autoref{sec:rofi-hal-interface}. Each possible value for the flag can be derived from the possible value of \lstinline|std::optional< LidarResult >|. If the optional does not contain a value,  the result is \emph{not yet measured} (or the \acrshort{lidar} is not plugged in). Otherwise, the \lstinline|Result| class must be present. If the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two checks handle the validity bit of the flag. After that, the \lstinline|Result| must contain the value type, which is the \gls{vl53l1x} result structure described in \autoref{sec:lidar-result}. The certainty bit is decided by the value of the \gls{vl53l1x} status from the result structure --- value of $0$ (i.e., the previously mentioned value of valid status) results in Fully Valid flag. In contrast, other values result in the Out of Range flag since the measurement may not be correct. Consequently, the distance is set only if the validity bit is set to valid.
 
-\section{ \TODO{Changes to the Build System} }
+\section{ Changes to the Build System }
 \TODOLIST{
 \begin{itemize}
     \item static buffer vs ram
@@ -902,7 +897,7 @@ The most interesting part of the second half is the \TODO{transformation} of \ac
 \end{itemize}
 }
 
-During the development, the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide. In the debug build of prototype version the static usage of the RAM was very high (around $70\%$), not leaving enough RAM for the runtime of the firmware, which resulted in in corrupted stack frames. \TODO{} The fix to this issue was reducing the size of \TODO{pre-allocated} packet buffer. The count of 1025B buffers was reduced from \TODO{20} to \TODO{5}, bringing the static usage of RAM to manageable $30\%$.
+During the development, the firmware started hard faulting on the \acrshort{roficom}. Hard faults are exceptions that are typically caused by unrecoverable system errors. Such errors can be an execution of an Undefined instruction, an attempted load or store to an unaligned address, and many more, which are described in more detail in the ARM Devices Generic User Guide. In the debug build of prototype version the static usage of the RAM was very high (around $70\%$), not leaving enough RAM for the runtime of the firmware, which resulted in in corrupted stack frames. The fix to this issue was reducing the size of statically allocated packet buffer. The count of 1025B buffers was reduced from count of 20 to 5, bringing the static usage of RAM to manageable $30\%$.
 
 Compiler flags \lstinline|-fstack-protector-all| and \lstinline|-fstack-check| were added to the debug build to detect similar issues as soon as possible.
 
@@ -956,8 +951,6 @@ The prototype version has a lot of functionality implemented. Before mentioning 
 
 The changes to the esp32 implementation include new protocol flags --- (\acrshort{lidar} status) and distance modes. This is followed by parsing the status command response from the connector in the \lstinline|ConnectorStateImpl::from()|, that containing the \acrshort{lidar} status, measured distance and distance mode. The function to set the distance mode sends the status command with flags set accordingly to the chosen value. As last, due to the change in the size of the command, the change needs to be updated in the \lstinline|ConnectorBus::run()|, but also in the DMA buffer allocation of the \lstinline|ConnectorBus|.
 
-\TODO{Needed poller}
-
 Those changes are enough to get the status and distance. However, the state is only updated when the status command is issued; this means that the state of status and distance does not represent the current value. Updating the state was solved with the poller. This poller runs in a separate thread and periodically asks the \acrshort{roficom} to update the state. There must be a slight delay between commands to allow the \acrshort{roficom} to apply the commands and send the response. The poller is done by the FreeRTOS function \lstinline|xTaskCreate()|, which creates the new thread for polling and constantly issues the command status.
 
 \chapter{Conclusion}
@@ -980,7 +973,8 @@ The final implement can be found in the github repository of the \acrshort{rofi}
 
 \appendix %% Start the appendices.
 \chapter{An appendix}
-Here you can insert the appendices of your thesis.
+
+
 
 \TODOLIST{
 \begin{itemize}
