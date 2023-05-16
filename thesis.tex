@@ -171,11 +171,11 @@ This thesis improves the currently implemented firmware for the connector (\acrs
 \end{figure}
 
 % Background --- previous research
-The \acrshort{rofi} platform is established in Jan Mrázek's thesis \cite{Mrazek2019thesis}. His thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In the case of the docking system, his thesis introduces connector-to-connector and connector-to-module communication (\TODO{which both persist to this day}), and the mechanical structure, which was improved over the proposed version.
+The \acrshort{rofi} platform is established in Jan Mrázek's thesis \cite{Mrazek2019thesis}. His thesis focuses on modeling the platform as well as specifying the requirements for modules and even the docking system. In the case of the docking system, his thesis introduces connector-to-connector and connector-to-module communication, and the mechanical structure, which was improved over the proposed version.
 
-Even though the thesis (by Jan Mrázek) showcases the connector prototype, that prototype differs a lot from the current version. The more up-to-date version of the connector is described in the paper ``RoFICoM --- First Open-Hardware Connector for Metamorphic Robots'' by Jan Mrázek and Jiří Barnat \cite{MrazekBarnat2019Roficom}.
+Even though the thesis showcases the connector prototype, that prototype differs a lot from the current version. The more up-to-date version of the connector is described in the paper ``RoFICoM --- First Open-Hardware Connector for Metamorphic Robots'' by Jan Mrázek and Jiří Barnat \cite{MrazekBarnat2019Roficom}.
 
-In the following text (this thesis), the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) is to describe the resulting project after the thesis.
+In the following text, the usage of ``prototype'' is used to address the project version before my thesis, and the usage of ``current'' (implementation or version) is to describe the resulting project after the thesis.
 
 % Establishing the problem
 \TODO{Even though} the previous work creates the connector, the implementation is in a work-in-progress state. The aim of this thesis is to enhance the firmware of the \acrshort{roficom} to a production-ready state by improving the prototype implementation and adding new features.
@@ -966,7 +966,7 @@ Lastly, this thesis described the update of connector-to-module communication to
 
 Even though many functionality works as intended, such as the \acrshort{lidar} measurement, its propagation to the \gls{universal-module}'s control unit, transition to new board version with \acrlong{bsp}, update of the connector-to-module protocol, there is still room for improvement.
 
-Such improvement might be in the motor driver or in the power management. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power management currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue.
+Such improvement might be in the motor driver or in the power management. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power management currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue. Both are suspected to be hardware-related problem in the current board and mechanical construction revision and their rework is out of the scope of this thesis
 
 The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. The appendix contains the procedures for building the relevant sub-projects of the project.
 
