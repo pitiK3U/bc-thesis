@@ -64,7 +64,7 @@
       The \acrshort{rofi} platform is an open software and open-hardware platform for modular robots. The \acrshort{rofi} platform uses the \acrshort{rofi} Communication Mechanism, \acrshort{roficom} for short, for connecting and communicating between two \acrshort{rofi} modules.
       
       % Objective
-      This thesis aims to enhance the existing firmware solution to a production-ready state by improving the existing firmware of the \acrshort{roficom} and implementing additional features. 
+      This thesis aims to enhance the existing firmware solution to \mbox{a production-ready} state by improving the existing firmware of the \acrshort{roficom} and implementing additional features. 
       
       The main goals are adopting the existing implementation to the new hardware version, measuring the distance, and propagating it to the \acrshort{rofi} module.
       
@@ -80,7 +80,7 @@
       % Conclusions
     },
     thanks      = {%
-        \TODO{These are the acknowledgments for my thesis, which can}
+        I would like to thank the ParaDiSe laboratory for a welcoming place to work, and everybody who supported me during the writing of this thesis.
     },
     bib         = citations.bib,
     %% Remove the following line to use the JVS 2018 faculty logo.
@@ -181,13 +181,13 @@ In the following text (this thesis), the usage of ``prototype'' is used to addre
 \TODO{Even though} the previous work creates the connector, the implementation is in a work-in-progress state. The aim of this thesis is to enhance the firmware of the \acrshort{roficom} to a production-ready state by improving the prototype implementation and adding new features.
 
 % Specifying objectives
-The main objectives for this thesis are:
+The main objectives for this thesis are to:
 \begin{itemize}
-    \item Implement distance measuring into \acrshort{roficom}, which includes implementing an \acrshort{i2c} driver and \TODO{integrating} the \gls{vl53l1x} driver.
-    \item Propagate the measurements from the \acrshort{roficom} to the \gls{universal-module}. 
-    \item Port the prototype firmware for the \acrshort{roficom} to the production-ready version of the hardware board.
-    \item Change motor control in the firmware to use newly added magnetic sensors.
-    \item Implement power control --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
+    \item implement distance measuring into \acrshort{roficom}, which includes implementing an \acrshort{i2c} driver and \TODO{integrating} the \gls{vl53l1x} driver,
+    \item propagate the measurements from the \acrshort{roficom} to the \gls{universal-module}, 
+    \item port the prototype firmware for the \acrshort{roficom} to the production-ready version of the hardware board.
+    \item change motor control in the firmware to use newly added magnetic sensors, and
+    \item implement power control --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
 \end{itemize}
 
 % Paper structure
@@ -273,7 +273,7 @@ The architecture of the \gls{universal-module} is shown in \autoref{fig:uni-mod-
 communication to other modules. As the name suggests, its primary purpose is to (inter)connect modules. In order to achieve its purpose, the \acrshort{roficom} has a well-defined interface that can be divided into three parts:
 \begin{itemize}
     \item mechanical structure,
-    \item connector-to-connector interface (communication between two \acrshortpl{roficom}),
+    \item connector-to-connector interface (communication between two \acrshortpl{roficom}), and
     \item connector-to-module interface (communication with the integrated module).
 \end{itemize}
 
@@ -425,11 +425,11 @@ interface](#connector-to-connector-interface).
 \end{itemize}
 }
 
-\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}, which are connected with a cable connecting the pins between them. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection, where the pins are
+\acrshort{roficom} is actually split into two boards: \TODO{skirt connector} and \TODO{??system board??}, which are connected with a cable connecting the pins between them. The skirt connector board holds \acrshort{lidar} and pins for connector-to-connector connection, where the pins are: 
 
 \begin{itemize}
     \item \acrshort{uart} pins (TX --- transmit pis and RX --- receive pin),
-    \item EXT and INT powerlines,
+    \item EXT and INT powerlines, and
     \item ``sense`` pins for detecting the orientation of the connection.
 \end{itemize}
 
@@ -445,9 +445,9 @@ As for the magnetic sensors, instead of two pieces, they got increased to an arr
 The \acrshort{roficom} has microcontroller STM32G071CBUx from the STMicroelectronics. This microcontroller from the STM32G0 family is a high-performance ARM Cortex-M0+ processor. The main features of this microcontroller are:
 
 \begin{itemize}
-    \item A maximum clock frequency of \qty{64}{\mega\hertz},
-    \item The biggest size of flash memory currently in embedded microcontrollers of \qty{128}{\kilo\byte},
-    \item Static RAM of size \qty{36}{\kilo\byte},
+    \item a maximum clock frequency of \qty{64}{\mega\hertz},
+    \item the biggest size of flash memory currently in embedded microcontrollers of \qty{128}{\kilo\byte},
+    \item static RAM of size \qty{36}{\kilo\byte}, and
     \item 48 available pins.
 \end{itemize}
 
@@ -482,9 +482,9 @@ The prototype version had several needed features implemented. Those features we
 
 \subsection{ Connector-to-Module Protocol }
 
-The protocol for communication hat to be revised because of the addition of distance Measurement to the \acrshort{roficom} and the need to transfer the distance to control unit. After the revision, it was decided that only the status command would be extended by needed information (distance status, measured distance and distance mode).
+The protocol for communication had to be revised because of the addition of distance Measurement to the \acrshort{roficom} and the need to transfer the distance to control unit. After the revision, it was decided that only the status command would be extended by needed information (distance status, measured distance and distance mode).
 
-As previously mentioned the protocol was established in thesis \cite[p.~19--22]{Mrazek2019thesis}, and the following text only describes the final look the status command (not the other commands).
+As previously mentioned, the protocol was established in thesis \cite[p.~19--22]{Mrazek2019thesis}, and the following text only describes the final look the status command (not the other commands).
 
 The status command (command of value $1$) is used to request and change the status of the connector, such as expanding or retracting the connector. The module's control unit initiates the communication by sending the command data and waiting for the response.
 
@@ -495,7 +495,7 @@ The first row of the command data represents the request state, whereas the seco
 \begin{itemize}
     \item P (position) --- $0$ = retracted connector, $1$ = extended connector,
     \item I (internal powerline) --- $0$ = internal powerline is disconnected, $1$ = internal powerline is connected,
-    \item E (external powerline) --- $0$ = external powerline is disconnected, $1$ = external powerline is connected,
+    \item E (external powerline) --- $0$ = external powerline is disconnected, $1$ = external powerline is connected, and
     \item DM (distance mode) --- $0$ = autonomous distance mode, $1$ = short distance mode, $2$ = long distance mode. 
 \end{itemize}
 
@@ -517,7 +517,7 @@ The \autoref{fig:status-response} shows the format of the status command respons
 
 \begin{itemize}
     \item C (connected) --- $0$ = not connected to mating side, $1$ = connected to the mating side,
-    \item O (orientation) --- $0$ = north, $1$ = east, $3$ = south, $4$ = west
+    \item O (orientation) --- $0$ = north, $1$ = east, $3$ = south, $4$ = west, and
     \item L (\acrshort{lidar} status) --- $0$ = error, $1$ = not measured, $2$ = out of range, $3$ = fully valid.
 \end{itemize}
 
@@ -576,7 +576,7 @@ This chapter describes \acrshort{lidar} and its capabilities, how to use the \gl
     \item the ability to accurately measure the range between \qty{4}{\centi\metre} and \qty{4}{\metre},
     \item up to \qty{50}{\hertz} ranging frequency,
     \item single \qty{2.8}{\volt} power supply,
-    \item \acrshort{i2c} communication interface with up to \qty{400}{\kilo\hertz} speed,
+    \item \acrshort{i2c} communication interface with up to \qty{400}{\kilo\hertz} speed, and
     \item shutdown and interrupt pins. (However, these pins are not necessary.)
 \end{itemize}
 
@@ -723,11 +723,11 @@ typedef struct {
 
 On the contrary, the status is only one byte long but has more a \TODO{complex meaning}. The \acrshort{uld} manual \cite{um2510} documents only five statuses, even though the \gls{vl53l1x} datasheet \cite{vl53l1x} specifies eight. The five statuses with their corresponding values are:
 \begin{itemize}
-    \item Valid (0)
-    \item Sigma failure (1)
-    \item Signal failure (2)
-    \item Out of bounds (4)
-    \item Wraparound (7)
+    \item Valid (0),
+    \item Sigma failure (1),
+    \item Signal failure (2),
+    \item Out of bounds (4), and
+    \item Wraparound (7).
 \end{itemize}
 
 The range status of $0$ indicates successful measurement with the measurement data being ready to use.
@@ -836,7 +836,7 @@ Since the two functions only take the arguments either for reading from or writi
     \item \emph{NotAcknowledge} = 2 --- The acknowledgment bit was not signaled after the 8 bits were transmitted,
     \item \emph{BusError} = 3 --- Bus error signals misplaced start or stop condition,
     \item \emph{ArbitrationLoss} --- Arbitration loss occurs when two masters start transmitting at the same time,
-    \item \emph{OverrunUnderrun} --- Overrun is when the newly sent 8-bits are read before the previous 8-bits were read, thus, resulting in data loss. On the other hand, Underrun is when the 8-bits are sent from the data register before the new 8-bits are written into the register, resulting in sending the same 8-bits of data a second time,
+    \item \emph{OverrunUnderrun} --- Overrun is when the newly sent 8-bits are read before the previous 8-bits were read, thus, resulting in data loss. On the other hand, Underrun is when the 8-bits are sent from the data register before the new 8-bits are written into the register, resulting in sending the same 8-bits of data a second time, and
     \item \emph{BufferOverflow} --- Buffer overflow happens when the receiving data are longer than the allocated buffer to store those data. The data are read until the end of the buffer and the error is reported.
 \end{itemize}
 
@@ -971,9 +971,7 @@ Such improvement might be in the motor driver or in the power management. Even t
 The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. \TODO{appendix}
 
 \appendix %% Start the appendices.
-\chapter{An appendix}
-
-
+\chapter{Building the Project}
 
 \TODOLIST{
 \begin{itemize}
@@ -983,5 +981,19 @@ The final implement can be found in the github repository of the \acrshort{rofi}
     \item flashing esp32
 \end{itemize}
 }
+
+The attachment of this thesis contains the snapshot of the whole project that can be used to build and flash the result implementation.
+
+At the root of the project, there is dockerfile, that is used as development environment for building and flashing the firmware.
+
+The build environment is set up with the \texttt{setup.sh} script, it is invoked by \texttt{source setup.sh \{build\_mode\}}, where the current values for the \texttt{build\_mode} are: \texttt{Debug}, \texttt{Release}, \texttt{RelWithDebInfo}, \texttt{MinSizeRel}. For releasing the environment, use the command \texttt{teardown}. Before building the wanted sub-project, the wanted suite for compilation needs to be configuration via the command \texttt{rcfg suite [suite1...]}. After that, the sub-project can be build using the command \texttt{rmake \{target\}}. Finally, the firmware can be flashed using the command \texttt{rflash \{target\}}.
+
+\section*{RoFiCoM}
+
+The suite for the \acrshort{roficom} is the \texttt{stm32}, and the target is \texttt{roficomFw}. After invoking the build environment with desired build mode, the suite can be configured with command \texttt{rcfg stm32}, then building the firmware with command \texttt{rmake roficomFw}, and finally, flashing the firmware to the connected \acrshort{roficom} through st-link device with \texttt{rflash roficomFw}.
+
+\section*{HAL example}
+
+The suite for the \gls{universal-module} is the \texttt{esp32}, and the target example is \texttt{hal\_example\_connector\_status} for showcasing the implemented status command. The build environment for the \gls{universal-module} must be invoked with the \texttt{-i} argument to download necessary dependencies --- i.e., \texttt{source setup.sh -i \{build\_mode\}}. After that, configure the suite with \texttt{rcfg esp32} and build the example with \texttt{rmake hal\_example\_connector\_status}. The command \texttt{rflash hal\_example\_connector\_status} is used to flash the program to the connected esp32.
 
 \end{document}
