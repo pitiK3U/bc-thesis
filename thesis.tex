@@ -174,7 +174,7 @@ The main objectives for this thesis are to:
     \item propagate the measurements from the \acrshort{roficom} to the \acrshort{rofi} module, 
     \item port the prototype firmware for the \acrshort{roficom} to the production-ready version of the hardware board.
     \item change motor control in the firmware to use newly added magnetic sensors, and
-    \item implement power sharing --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
+    \item implement power-sharing --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
 \end{itemize}
 
 % Paper structure
@@ -321,7 +321,7 @@ The \autoref{fig:dock-arrangement} shows the composed components of the \acrshor
 \subsection{ Ratings }
 \begin{itemize}
     \item compact, flat layout (diameter 50 mm, thickness 17 mm)
-    \item data and power sharing between connected units
+    \item data and power-sharing between connected units
     \item load capacity
         \item normal direction: 110 N
         \item shear direction: 50 N
@@ -330,16 +330,16 @@ The \autoref{fig:dock-arrangement} shows the composed components of the \acrshor
 \end{itemize}
 \fi
 
-\subsection{ Connector to Connector Interface }
+\subsection{ Connector-to-Connector Interface }
 \iffalse
 <!--
 - \acrshort{uart}
-- data and power sharing - EXT and INT power lanes 
+- data and power-sharing - EXT and INT power lanes 
 -->
 \fi
 
 A small printed circuit board (PCB) inside the skirt with spring-loaded pins realizes the connector-to-connector connection. This PCB provides both
-data and power sharing to the connected module.
+data and power-sharing to the connected module.
 \acrshort{roficom} uses \emph{\acrshort{uart}} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
 binary data transferred between modules. 
 
@@ -351,7 +351,7 @@ binary data transferred between modules.
 \end{figure}
 \fi
 
-\subsection{ Connector to Module Interface }
+\subsection{ Connector-to-Module Interface }
 RoFICoM provides an \emph{\acrshort{spi}} interface for communication between the module and RoFICoM. The communication on the bus is performed
 in transactions. Transaction format consists of \emph{command}, the first 8 bits of a transaction, followed by \emph{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and must be supported by all
@@ -426,7 +426,7 @@ The schematics and the board design can be found in the project under the path \
 
 The internal (INT) powerline can be used to charge the current module or connected modules from the current one. On the other hand, the external powerline is used only to connect the powerlines of other modules. There are four used pins for the \acrshort{lidar}: two pins for \acrshort{i2c} (SDA and SCL explained in \autoref{sec:i2c}), the \acrshort{lidar}'s enable pin and the \acrshort{lidar}'s interrupt pin. The skirt connector is placed in the middle of the skirt, thus, moving together with the skirt.
 
-The system board contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's \acrfull{mcu}, motor, power connections, power sharing, reading current and voltage from power lines, and \acrshort{spi} interface needed for the connector to module interface. That being said, the circuit for measuring the current is not attached at the moment.
+The system board contains all other necessary circuits for \acrshort{roficom} to function. It consists of the board's \acrfull{mcu}, motor, power connections, power-sharing, reading current and voltage from power lines, and \acrshort{spi} interface needed for the connector-to-module interface. That being said, the circuit for measuring the current is not attached at the moment.
 
 \begin{figure}
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/control_board.png}
@@ -476,7 +476,7 @@ The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|C++| pro
 \section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware } \label{sec:roficom-firmware}
 \acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
 
-The prototype version had several needed features implemented. Those features were the \lstinline|spiInterface| (the connector to module interface), \lstinline|connInterface| (the connector to connector interface), and motor control. However, since the motor control could not stop the motor fast enough and the magnetic sensors for detecting the motor position changed, \TODO{the motor control firmware needed an update too}. However, the \lstinline|connInterface| is not fully implemented in the prototype and is missing sending all the information defined by the protocol. Due to the addition of lidar, the protocol had to be extended.
+The prototype version had several needed features implemented. Those features were the \lstinline|spiInterface| (the connector-to-module interface), \lstinline|connInterface| (the connector-to-connector interface), and motor control. However, since the motor control could not stop the motor fast enough and the magnetic sensors for detecting the motor position changed, \TODO{the motor control firmware needed an update too}. However, the \lstinline|connInterface| is not fully implemented in the prototype and is missing sending all the information defined by the protocol. Due to the addition of lidar, the protocol had to be extended.
 
 \subsection{ Connector-to-Module Protocol }
 
@@ -801,7 +801,7 @@ To illustrate the main benefit of the \acrshort{bsp}, imagine a scenario where \
 \lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify the used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation units is not defined by the language specification. As a result, \lstinline{bsp} cannot use \lstinline{GpioA}, ..., for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where the first argument is the pin position. The second argument is the \acrshort{gpio} line defined by STMicroelectronics.
 
 \chapter{ Implementation --- Design Decisions } \label{ch:design}
-This chapter discusses interesting design decisions and explains their reasoning. This chapter contains sections discussing the changes made to the build system with the related issue, the implementation of the \acrshort{i2c} driver, the implementation of the new motor driver, the implementation of the power sharing, and the implementation of the connector-to-module protocol in \acrshort{roficom}.
+This chapter discusses interesting design decisions and explains their reasoning. This chapter contains sections discussing the changes made to the build system with the related issue, the implementation of the \acrshort{i2c} driver, the implementation of the new motor driver, the implementation of the power-sharing, and the implementation of the connector-to-module protocol in \acrshort{roficom}.
 
 \section{ Changes to the Build System }
 \TODOLIST{
@@ -857,11 +857,11 @@ The \autoref{fig:motor-state} shows the possible states and their transition in 
 
 The thresholds were determined by manual testing.
 
-\section{ Power sharing }
+\section{ Power-sharing }
 
-The last missing part for the protocol implementation in the \acrshort{roficom} is the power sharing. The \acrshort{roficom} has two powerlines internal (INT) and external (EXT), those powerlines are connected to the mating side. The decided features for power sharing are to charge or discharge the battery from the powerline, additionally, to measure the voltage and the current on both powerlines. However, the measurement of the current could not be implemented because the circuit for measuring is not soldered in the current board.
+The last missing part for the protocol implementation in the \acrshort{roficom} is the power-sharing. The \acrshort{roficom} has two powerlines internal (INT) and external (EXT), those powerlines are connected to the mating side. The decided features for power-sharing are to charge or discharge the battery from the powerline, additionally, to measure the voltage and the current on both powerlines. However, the measurement of the current could not be implemented because the circuit for measuring is not soldered in the current board.
 
-The power sharing is implemented as a \lstinline|PowerSwitch| class in the file \lstinline|connInterface.hpp|. The connection of the internal or external powerline is done via circuit switch, which result in controlling the switch by a pin on the \acrshort{mcu} --- pin with high value means that the switch is connected, pin with low value means the switch is disconnected.
+The power-sharing is implemented as a \lstinline|PowerSwitch| class in the file \lstinline|connInterface.hpp|. The connection of the internal or external powerline is done via circuit switch, which result in controlling the switch by a pin on the \acrshort{mcu} --- pin with high value means that the switch is connected, pin with low value means the switch is disconnected.
 
 The measurement of the voltage is more complicated and is accomplished with analog-to-digital convertor (ADC for short). ADC allows to read analog values, such as voltage, and convert them into digital data readable by the \acrshort{mcu}. The result of the conversion depends on the number of bits the ADC outputs, in the case of \acrshort{roficom}, it is 12-bits. The ADC measures the input by comparing in to the reference input and returns the comparison as digital number, where the maximum digital number corresponds to the referential input. The reference voltage in the \acrshort{roficom} is \qty{3.3}{\volt}.
 
@@ -892,7 +892,7 @@ Each measurement and conversion is done in the \lstinline|run()| function, the r
 
 As previously mentioned in \autoref{sec:roficom-firmware}, the prototype version of the firmware was missing the full implementation of the connector-to-module communication. The unfinished command is the status command, which only implemented expanding and retracting the connector based on the received command and responding with blobs remaining to be sent and received. This section describes finishing the implementation of the status command.
 
-The function \lstinline|onCmdStatus()| accomplishes the status command parsing, reacting and responding, which is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power sharing), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional since the command status can be received before the \acrshort{lidar} responds with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol, the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
+The function \lstinline|onCmdStatus()| accomplishes the status command parsing, reacting and responding, which is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power-sharing), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional since the command status can be received before the \acrshort{lidar} responds with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol, the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
 
 The \lstinline|onCmdStatus()| function can be virtually split into two halves --- the first half parses the requested command and reacts to it, while the second half creates and sends the response. The interesting part in the first half is that the \acrshort{lidar} distance mode can contain an invalid value (\lstinline|0b11|), which is simply ignored because the user's request should not be able to break the firmware.
 
@@ -959,13 +959,13 @@ These changes consists of distance measurement using the \acrshort{lidar} and ma
 
 The \acrlong{bsp} has been added to isolate board-specific code and allow easier transition in different \acrshort{roficom}'s board versions.
 
-Followed by smaller, but not less important additions to the \acrshort{roficom}'s firmware, such as new motor driver, implementation for power sharing and power measuring.
+Followed by smaller, but not less important additions to the \acrshort{roficom}'s firmware, such as new motor driver, implementation for power-sharing and power measuring.
 
 Lastly, this thesis described the update of connector-to-module communication to transfer the status of \acrshort{lidar}'s measurement and measured distance and allow for setting the \acrshort{lidar}'s distance mode. This change was added to the \acrshort{roficom}'s firmware, \acrshort{rofi} \acrshort{hal}'s interface and esp32 implementation for the \gls{universal-module}.
 
 Even though many functionality works as intended, such as the \acrshort{lidar} measurement, its propagation to the \gls{universal-module}'s control unit, transition to new board version with \acrlong{bsp}, update of the connector-to-module protocol, there is still room for improvement.
 
-Such improvement might be in the motor driver or in the power sharing. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power sharing currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue. Both are suspected to be hardware-related problem in the current board and mechanical construction revision and their rework is out of the scope of this thesis.
+Such improvement might be in the motor driver or in the power-sharing. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power-sharing currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue. Both are suspected to be hardware-related problem in the current board and mechanical construction revision and their rework is out of the scope of this thesis.
 
 The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. The appendix contains the procedures for building the relevant sub-projects of the project.
 
