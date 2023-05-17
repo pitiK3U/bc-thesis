@@ -340,7 +340,7 @@ The \autoref{fig:dock-arrangement} shows the composed components of the \acrshor
 
 A small printed circuit board (PCB) inside the skirt with spring-loaded pins realizes the connector-to-connector connection. This PCB provides both
 data and power sharing to the connected module.
-\acrshort{roficom} uses \textbf{\acrshort{uart}} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
+\acrshort{roficom} uses \emph{\acrshort{uart}} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
 binary data transferred between modules. 
 
 \iffalse
@@ -352,8 +352,8 @@ binary data transferred between modules.
 \fi
 
 \subsection{ Connector to Module Interface }
-RoFICoM provides an \textbf{\acrshort{spi}} interface for communication between the module and RoFICoM. The communication on the bus is performed
-in transactions. Transaction format consists of \textbf{command}, the first 8 bits of a transaction, followed by \textbf{command
+RoFICoM provides an \emph{\acrshort{spi}} interface for communication between the module and RoFICoM. The communication on the bus is performed
+in transactions. Transaction format consists of \emph{command}, the first 8 bits of a transaction, followed by \emph{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and must be supported by all
 connector types. For example, some connector commands are version command, status command, and send and receive earlier
 mentioned blob.
