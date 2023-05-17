@@ -88,12 +88,12 @@
 }
 \usepackage{makeidx}      %% The `makeidx` package contains
 \makeindex                %% helper commands for index typesetting.
-\usepackage{hyperref}
 \usepackage[acronym]{glossaries}          %% The `glossaries` package
 \renewcommand*\glspostdescription{\hfill} %% contains helper commands
 \loadglsentries{terms-abbrs.tex}  %% for typesetting glossaries
 \makenoidxglossaries                      %% and lists of abbreviations.
 %% These additional packages are used within the document:
+\usepackage{hyperref}
 \usepackage{paralist} %% Compact list environments
 \usepackage{amsmath}  %% Mathematics
 \usepackage{amsthm}
@@ -226,11 +226,13 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
         \item 6 docks
     \end{itemize}
 }
+This section provides only highlights of the functionality and design of the \gls{universal-module}, the detailed description can be found in \cite[chapter~3]{Mrazek2019thesis}.
+
 \gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal \TODO{necessary features} that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If other specific sensors are needed, it is expected to use them as their own modules.
 
 An inertial measurement device measures the unit's acceleration, angular velocity and orientation. The measured data can be used in algorithms coordinating the modules.
 
-The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and described in detail in \autoref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock to an obstacle or a surface, which can to help align docks when connecting. The \acrshort{lidar} can scan the environment, which can be useful when the \gls{rofibot} needs to walk upstairs or needs to know about its surroundings.
+The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and described in detail in \autoref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock to an obstacle or a surface, which can help to align docks when connecting. The \acrshort{lidar} can scan the environment, which can be useful when the \gls{rofibot} needs to walk upstairs or needs to know about its surroundings.
 
 The module is divided into four components: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. In comparison, the body encloses actuators, electronics, and accumulators. The last \TODO{joint} is situated between the two bodies. In total, the module contains six docks, three \TODO{joints/motors}, and two types of sensors.
 
