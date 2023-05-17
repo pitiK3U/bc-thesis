@@ -183,11 +183,11 @@ In the following text, the usage of ``prototype'' is used to address the project
 % Specifying objectives
 The main objectives for this thesis are to:
 \begin{itemize}
-    \item implement distance measuring into \acrshort{roficom}, which includes implementing an \acrshort{i2c} driver and \TODO{integrating} the \gls{vl53l1x} driver,
-    \item propagate the measurements from the \acrshort{roficom} to the \gls{universal-module}, 
+    \item implement distance measuring into \acrshort{roficom}, which includes implementing an \acrshort{i2c} driver and \TODO{integrating} the driver for distance measuring,
+    \item propagate the measurements from the \acrshort{roficom} to the \acrshort{rofi} module, 
     \item port the prototype firmware for the \acrshort{roficom} to the production-ready version of the hardware board.
     \item change motor control in the firmware to use newly added magnetic sensors, and
-    \item implement power control --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
+    \item implement power sharing --- i.e., reading current and voltage on internal and external powerlines, charging accumulator from internal powerline, and discharging the accumulator to the internal powerline.
 \end{itemize}
 
 % Paper structure
@@ -645,7 +645,7 @@ The flow of communication is following:
     
     \item Prepare for the next ranging --- clear the interrupt flag.
     
-    \item Either repeat from $5.$ step or stop the measuring.
+    \item Either repeat from step $5$ or stop the measuring.
 \end{enumerate}
 
 \todo{Insert API flow diagram}
@@ -757,13 +757,15 @@ Even though the return value types differ for many functions, the error type is 
 
 \subsection{ Usage of the driver }
 
-\begin{figure}[ht]
-    \input{lidar-state.tex}
-    \caption[Diagram of \acrshort{lidar}'s state]{\TODO{THIS WILL BE REPLACED lidar state}}
+\begin{figure}[h!]
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/lidar-state.pdf}
+    \caption[Diagram of \acrshort{lidar}'s state]{Diagram of \acrshort{lidar}'s state.}
     \label{fig:lidar-state}
 \end{figure}
 
-Since the \acrshort{lidar}'s current (only) requirement is always to measure the distance, the firmware accounts for two states --- actively measuring and uninitialized (or unable to measure). The \verb|Measuring| in the figure above stays the same as the actively measuring. However, the state ``unable to measure'' is combined from states \verb|Missing|, \verb|Uninitialized| and \TODO{partially} \verb|Initialized|. These two new states make state handling easier in the code. The state ``unable to measure'' is handled by the function \lstinline|lidarInit()|, and the state \verb|Measuring| is handled by \lstinline|lidarGet()|. The main purpose of \lstinline|lidarInit()| is to initialize correctly the device and start measuring. On the other hand, the function \lstinline|lidarGet()| expects the device to be correctly initialized and measuring. The purpose of \lstinline|lidarGet()| is to check whether the distance is measured, and if it is, save the measurements for the next transfer to the \TODO{module's control unit}.
+The \acrshort{lidar}'s state, visualized in the \autoref{fig:lidar-state}, consist of four possible values: \texttt{Missing}, \texttt{Uninitialized}, \texttt{Initialized}, and \texttt{Measuring}. The state \texttt{Missing} represents that the \acrshort{lidar} is either not present, or the \acrshort{roficom} cannot communicate with it. When \acrshort{roficom} recognizes that the \acrshort{lidar} is connected, it is represented as \texttt{Uninitialized} state, which means device is connected and running but needs to be initialized by the firmware. After initialization from the firmware, the \acrshort{lidar} is ready to start measuring, the state \texttt{Initialized} can be understood as a software standby. While in \texttt{Measuring} state, after measurement, the \acrshort{lidar} can be stopped in measuring and returned to software standby.
+
+Since the \acrshort{lidar}'s current (only) requirement is always to measure the distance, the firmware accounts for two states --- actively measuring and uninitialized (or unable to measure). The \verb|Measuring| in the \autoref{fig:lidar-state} stays the same as the actively measuring. However, the state ``unable to measure'' is combined from states \verb|Missing|, \verb|Uninitialized| and \TODO{partially} \verb|Initialized|. These two new states make state handling easier in the code. The state ``unable to measure'' is handled by the function \lstinline|lidarInit()|, and the state \verb|Measuring| is handled by \lstinline|lidarGet()|. The main purpose of \lstinline|lidarInit()| is to initialize correctly the device and start measuring. On the other hand, the function \lstinline|lidarGet()| expects the device to be correctly initialized and measuring. The purpose of \lstinline|lidarGet()| is to check whether the distance is measured, and if it is, save the measurements for the next transfer to the \TODO{module's control unit}.
 
 Those two functions can call each other because if anything fails in the process (in both functions), the device probably needs to be initialized again. On the contrary, when the \lstinline|lidarInit()| succeeds, it is safe to call \lstinline|lidarGet()|. \lstinline|lidarGet()| calls itself to ensure the latest measurements are saved. It is important to note that not receiving the data (i.e., the data is not ready yet) is not a failure and only means it is necessary to check on the data again. Otherwise, the measured value would never be received --- the device would get initialized again before the first measurement.
 
@@ -849,7 +851,7 @@ The number of magnetic sensors increased from two to array of ten among the move
 The current position is measured as a sum of the positions of active pins divided by the count of active pins, further divided by the position of the last pin. The pins are indexed from $\numrange{0}{9}$, where the gearing in the retracted position activates the sensor pin $0$ and the sensor pin $9$ is active in an expanded state. Such indexing should mean that the count of active pins should always be at least one; however, due to the movement or \TODO{malfunction}, the count can be zero, resulting in a division by zero and crashing the whole system. The measured position ranges from $0$ to $100$ (the calculated value times $100$) and sets explicitly the value $-1$ for error in measuring (i.e., zero active sensors). Explicitly setting the error value allows stopping the motor; otherwise, it could run indefinitely, damaging the structure. 
 
 \begin{figure}
-    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/motor-state-diagram-wip.png}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/motor-state.pdf}
     \caption{Diagram of motor's state}
     \label{fig:motor-state}
 \end{figure}
@@ -966,7 +968,7 @@ Lastly, this thesis described the update of connector-to-module communication to
 
 Even though many functionality works as intended, such as the \acrshort{lidar} measurement, its propagation to the \gls{universal-module}'s control unit, transition to new board version with \acrlong{bsp}, update of the connector-to-module protocol, there is still room for improvement.
 
-Such improvement might be in the motor driver or in the power management. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power management currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue. Both are suspected to be hardware-related problem in the current board and mechanical construction revision and their rework is out of the scope of this thesis
+Such improvement might be in the motor driver or in the power management. Even though both are implemented, they do not work as intended. The motor movement occasionally moves the gearing beyond the specified position and the magnetic sensors, which prevents the motor from moving back. The power management currently does not measure the correct values, although the formula is correct, and should be further inspect it to find the issue. Both are suspected to be hardware-related problem in the current board and mechanical construction revision and their rework is out of the scope of this thesis.
 
 The final implement can be found in the github repository of the \acrshort{rofi} project at the address: \url{https://github.com/paradise-fi/RoFI}. The snapshot of the whole \acrshort{rofi} project containing the changes made during the development can be found in the thesis attachment. The appendix contains the procedures for building the relevant sub-projects of the project.
 

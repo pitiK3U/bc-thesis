@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net" modified="2023-05-17T08:02:22.274Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0" etag="QbgnMIdQ1G87JKkbgmKd" version="21.3.2" type="device">
+  <diagram name="Page-1" id="58cdce13-f638-feb5-8d6f-7d28b1aa9fa0">
+    <mxGraphModel dx="819" dy="411" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="_GlD7jWUdG3damwN6tX9-3" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;endArrow=open;endSize=8;fontFamily=Verdana;fontSize=12;align=left;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-4" target="_GlD7jWUdG3damwN6tX9-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-21" value="&lt;div&gt;LiDAR plugged in&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-4" value="Missing" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;align=center;glass=0;" vertex="1" parent="1">
+          <mxGeometry x="311" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-5" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;endArrow=open;endSize=8;fontFamily=Verdana;fontSize=12;align=left;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-6" target="_GlD7jWUdG3damwN6tX9-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-6" value="" style="ellipse;html=1;shape=startState;rounded=1;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;align=center;direction=south;" vertex="1" parent="1">
+          <mxGeometry x="220" y="335" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-7" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;endArrow=open;endSize=8;fontFamily=Verdana;fontSize=12;align=left;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-8" target="_GlD7jWUdG3damwN6tX9-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-22" value="LiDAR initialized" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;endArrow=open;fontSize=12;fontFamily=Verdana;align=left;endSize=8;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-8" target="_GlD7jWUdG3damwN6tX9-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="320" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="650" y="280" />
+              <mxPoint x="371" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-20" value="&lt;div&gt;LiDAR unplugged&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-13">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-8" value="Uninitialized" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;align=center;glass=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-9" style="edgeStyle=elbowEdgeStyle;html=1;labelBackgroundColor=none;endArrow=open;endSize=8;fontFamily=Verdana;fontSize=12;align=left;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-10" target="_GlD7jWUdG3damwN6tX9-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-25" value="&lt;div&gt;LiDAR started measuring&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-19" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.034;exitY=0.075;exitDx=0;exitDy=0;entryX=0.973;entryY=0.938;entryDx=0;entryDy=0;labelBackgroundColor=none;endArrow=open;fontSize=12;fontFamily=Verdana;align=left;endSize=8;entryPerimeter=0;exitPerimeter=0;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-10" target="_GlD7jWUdG3damwN6tX9-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-23" value="&lt;div&gt;LiDAR unplugged&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-19">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-10" value="Initialized" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;align=center;glass=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-18" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=none;endArrow=open;fontSize=12;fontFamily=Verdana;align=left;endSize=8;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-12" target="_GlD7jWUdG3damwN6tX9-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-24" value="&lt;div&gt;LiDAR unplugged&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-26" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=none;endArrow=open;fontSize=12;fontFamily=Verdana;align=left;endSize=8;fontColor=default;" edge="1" parent="1" source="_GlD7jWUdG3damwN6tX9-12" target="_GlD7jWUdG3damwN6tX9-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="371" y="600" />
+              <mxPoint x="650" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-27" value="&lt;div&gt;LiDAR stopped measuring&lt;br&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=default;" vertex="1" connectable="0" parent="_GlD7jWUdG3damwN6tX9-26">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_GlD7jWUdG3damwN6tX9-12" value="&lt;div&gt;Measuring&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;align=center;glass=0;" vertex="1" parent="1">
+          <mxGeometry x="311" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
