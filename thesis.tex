@@ -42,7 +42,7 @@
 ]{babel}        %% foreign texts to be typeset as follows:
 %%
 
-\newcommand{\TODO}[1]{#1} % \textcolor{red}{\textit{#1}}}
+\newcommand{\TODO}[1]{\textcolor{red}{\textit{#1}}}
 \newcommand{\TODOLIST}[1]{\iffalse\TODO{#1}\fi}
 
 %% The following section sets up the metadata of the thesis.
@@ -178,7 +178,7 @@ The main objectives for this thesis are to:
 \end{itemize}
 
 % Paper structure
-The structure of this paper starts with an introduction to the \acrshort{rofi} platform and a description of its components \TODO{in the next chapter}, which is followed by an overview of the prototype firmware implementation and proposes what changes were made to improve it. After that, this thesis focuses on changes made to the \acrshort{roficom} firmware in this thesis. Those changes are distance measuring in the \acrshort{lidar} \autoref{sec:lidar}, \acrlong{bsp} for isolating board-specific code and adapting changes in the board (\autoref{ch:bsp}) and other interesting implementations and their reasoning, followed by the conclusion of this thesis (\autoref{ch:design}). The last chapter (\autoref{ch:rofi-hal}) focuses on changes and updates to the \acrshort{rofi} \acrlong{hal}.
+The structure of this paper starts with an introduction to the \acrshort{rofi} platform and a description of its components in the next chapter, which is followed by an overview of the prototype firmware implementation and proposes what changes were made to improve it. After that, this thesis focuses on changes made to the \acrshort{roficom} firmware in this thesis. Those changes are distance measuring in the \acrshort{lidar} \autoref{sec:lidar}, \acrlong{bsp} for isolating board-specific code and adapting changes in the board (\autoref{ch:bsp}) and other interesting implementations and their reasoning, followed by the conclusion of this thesis (\autoref{ch:design}). The last chapter (\autoref{ch:rofi-hal}) focuses on changes and updates to the \acrshort{rofi} \acrlong{hal}.
 
 \chapter[ RoFI ]{ \acrshort{rofi} }
 \TODOLIST{
@@ -198,7 +198,7 @@ The \acrshort{rofi} is a platform of distributed self-reconfigurable modular rob
 
 The main goal of the \acrshort{rofi} platform is to provide a well-established open-source and open-hardware platform for metamorphic robots. Therefore, source code and hardware schematics are publicly provided in the \TODO{ GitHub repository \footcite[\url{https://github.com/paradise-fi/RoFI}]{rofi-github} }. The primary use case for such a platform is testing reconfiguring algorithms on a hardware platform and further researching this topic rather than \TODO{solving real-world problems}.
 
-The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A \TODO{flock} of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
+The basic building block is the \acrshort{rofi} module, which is an individual module that can connect and communicate with other modules. A group of connected \acrshort{rofi} modules makes a \emph{\gls{rofibot}}. A specific example of the \acrshort{rofi} module is the \gls{universal-module}.
 
 
 \section[ Universal Module ]{ \gls{universal-module} }
@@ -215,15 +215,15 @@ The basic building block is the \acrshort{rofi} module, which is an individual m
 }
 This section provides only highlights of the functionality and design of the \gls{universal-module}, the detailed description can be found in \cite[chapter~3]{Mrazek2019thesis}.
 
-\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal \TODO{necessary features} that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If other specific sensors are needed, it is expected to use them as their own modules.
+\gls{universal-module} \glsdesc{universal-module} The \gls{universal-module} is not designed as an all-in-one module but rather as a module with minimal necessary features that can be used in nearly all systems. Thus, the \gls{universal-module} uses only two sensors: an \emph{inertial measurement unit} (IMU) and a \emph{distance sensor} (\acrshort{lidar}). If other specific sensors are needed, it is expected to use them as their own modules.
 
 An inertial measurement device measures the unit's acceleration, angular velocity, and orientation. The measured data can be used in algorithms coordinating the modules.
 
 The distance sensor (\acrshort{lidar}) is placed in the middle of each dock and described in detail in \autoref{sec:lidar}. The \acrshort{lidar} measures the distance from the dock to an obstacle or a surface, which can help to align docks when connecting. The \acrshort{lidar} can scan the environment, which can be useful when the \gls{rofibot} needs to walk upstairs or needs to know about its surroundings.
 
-The module is divided into four components: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and \TODO{one joint}. In comparison, the body encloses actuators, electronics, and accumulators. The last \TODO{joint} is situated between the two bodies. In total, the module contains six docks, three \TODO{joints/motors}, and two types of sensors.
+The module is divided into four components: two bodies and two shoes. The main purpose of shoes is to establish connections with other modules and provide movement. Each shoe contains three docks and one joint. In comparison, the body encloses actuators, electronics, and accumulators. The last joint is situated between the two bodies. In total, the module contains six docks, three joints (motors), and two types of sensors.
 
-\todo{Insert image of \gls{universal-module}}
+% \todo{Insert image of \gls{universal-module}}
 
 \subsection{ Architecture }
 
@@ -235,7 +235,7 @@ The architecture of the \gls{universal-module} is shown in \autoref{fig:uni-mod-
 
 \begin{figure}[ht]
     \includegraphics{ assets/universal-module-arch.pdf }
-    \caption{The architecture of the \gls{universal-module} from \TODO{\cite[p.~35]{Mrazek2019thesis}}}
+    \caption{The architecture of the \gls{universal-module} from \cite[p.~35]{Mrazek2019thesis}}
     \label{fig:uni-mod-arch}
 \end{figure}
 
@@ -270,7 +270,7 @@ communication to other modules. As the name suggests, its primary purpose is to 
 \begin{figure}
     % responsive_image path: assets/img/connector/roficom_main_sketch.jpg
     \includegraphics{ roficom_main_sketch.jpg }
-    \caption{ \TODO{ The current look of \acrshort{roficom} } }
+    \caption{ The current look of \acrshort{roficom} }
 \end{figure}
 \fi
 
@@ -305,7 +305,7 @@ side slide under each other, forming a mechanical connection that prevents conne
 However, the latches themselves are insufficient for a mechanical connection, as a mutual rotation of the connectors releases
 the connection. This is why the skirt is needed, two connected skirts stop the rotation against each other. In order to help ease the process of connection, there are magnets placed in the holes of the skirt. This helps when two connecting sides are slightly misaligned.
 
-The motor that rotates the clip and the skirt is at the body's bottom. The rotation of the clip and the skirt is accomplished by another component, the \TODO{gearing}, which is connected to both the skirt and clip with a small steel pin that spans from the holes in the body up to the skirt. When the motor activates, it rotates the gearing with the two components and the steel pins move the interconnected components among the hole path in the body, elevating the components.
+The motor that rotates the clip and the skirt is at the body's bottom. The rotation of the clip and the skirt is accomplished by another component, the gearing, which is connected to both the skirt and clip with a small steel pin that spans from the holes in the body up to the skirt. When the motor activates, it rotates the gearing with the two components and the steel pins move the interconnected components among the hole path in the body, elevating the components.
 
 The \autoref{fig:dock-arrangement} shows the composed components of the \acrshort{roficom}, the color of each component matches colors in \autoref{fig:key-components}. The outmost ring part is the body in the color green. Next in the body, the pink circle is the clip. The gearing is the purple half-circle connected with the clip by the steel pin.
 
@@ -347,7 +347,7 @@ binary data transferred between modules.
 \begin{figure}
     % responsive_image path: assets/img/connector/skirt_pins.svg
     \includegraphics{ skirt_pins.pdf }
-    \caption{ \TODO{Graph showing pin layout on PCB inside the skirt} }
+    \caption{ Graph showing pin layout on PCB inside the skirt }
 \end{figure}
 \fi
 
@@ -471,7 +471,7 @@ This chapter focuses on the software of the \acrshort{rofi} platform and describ
 % \section{ Project Structure / Architecture}
 The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|C++| project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers, and \acrshort{rofi} HAL.
 
-% \TODO{Need more introduction or depth description of the structure ??}
+% Need more introduction or depth description of the structure ??
 
 \section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware } \label{sec:roficom-firmware}
 \acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
@@ -503,7 +503,7 @@ The first row of the command data represents the request state, whereas the seco
     \label{fig:status-command}
 \end{figure}
 
-The prototype version of the protocol already contained the bits P, I and E. The current version added the 2-bits for setting the distance mode. The autonomous distance mode makes the \acrshort{roficom} handle the distance mode of the \acrshort{lidar} and is explained in the \autoref{sec:lidar-autonomous}. The manual handling of the distance mode is done \TODO{via} setting either the short or the long mode, described in \autoref{sec:distance-modes}.
+The prototype version of the protocol already contained the bits P, I and E. The current version added the 2-bits for setting the distance mode. The autonomous distance mode makes the \acrshort{roficom} handle the distance mode of the \acrshort{lidar} and is explained in  \autoref{sec:lidar-autonomous}. The manual handling of the distance mode is done via setting either the short or the long mode, described in \autoref{sec:distance-modes}.
 
 \autoref{fig:status-response} shows the format of the status command response.
 
@@ -531,13 +531,13 @@ Compared to the prototype version of the protocol, the new version added the L b
 }
 
 The \lstinline|stm32cxx| sub-project abstracts and wraps around the bare 
-\verb|C| stm32 drivers into nicer \verb|C++| \TODO{classes}. This abstraction allows using the drivers without explicitly handling family-specific code and provides easier and prettier usage rather than using the \verb|C| drivers.
+\verb|C| stm32 drivers into nicer \verb|C++| classes. This abstraction allows using the drivers without explicitly handling family-specific code and provides easier and prettier usage rather than using the \verb|C| drivers.
 
-The port files of the \lstinline|stm32cxx| handle the portability or the \acrshort{mcu} family-specific code. Folders for family-specific \TODO{abstraction} are under the path \path{RoFI/softwareComponents/stm32cxx/port/}. The \verb|port| files are in the format \verb|{driver}.port.hpp|. For example, the port file for \acrshort{i2c} for the microcontroller of \acrshort{roficom} is in \path{.../stm32cxx/stm32g0xx/i2c.port.hpp}.
+The port files of the \lstinline|stm32cxx| handle the portability or the \acrshort{mcu} family-specific code. Folders with the family-specific abstractions are under the path \path{RoFI/softwareComponents/stm32cxx/port/}. The \verb|port| files are in the format \verb|{driver}.port.hpp|. For example, the port file for \acrshort{i2c} for the microcontroller of \acrshort{roficom} is in \path{.../stm32cxx/stm32g0xx/i2c.port.hpp}.
 
 Port files follow the same guidelines, which is that the specific code is under \lstinline|namespace detail|, and it is implemented via \emph{mixins}. However, since \verb|C++| does not natively support mixins, this is done using the \verb|C++| technique called CRTP. CRTP \footnote{\url{https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern}} (Curiously recurring template pattern) is a templated class, which takes the class we wish to extend with our mixin as a template parameter, and implements the mixin functionality on the template class. Such functionality might be enabling a clock for the periphery or \TODO{setting an alternative function on periphery pins}.
 
-The prototype version had \TODO{many drivers (that were needed) implemented}, such as drivers for GPIO, \acrshort{uart}, \acrshort{spi} and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter, blocking wait for time, and missing family-specific definitions.
+The prototype version had \TODO{many drivers (that were needed) implemented}, such as drivers for \acrfull{gpio}, \acrshort{uart}, \acrshort{spi} and more. The current implementation mainly added the driver for \acrshort{i2c} and some smaller additions, namely timer counter, blocking wait for time, and missing family-specific definitions.
 
 \section[ RoFI HAL ]{ \acrshort{rofi} HAL } \label{sec:rofi-hal-desc}
 \TODOLIST{
@@ -553,14 +553,14 @@ The \acrshort{rofi} \acrshort{hal} is divided into \emph{interface} and \emph{im
 
 The prototype had implementations for the esp32 and simulator. The esp32 is the implementation for the \gls{universal-module}.
 
-The actual changes to the prototype implementation are described later in the \autoref{ch:rofi-hal}.
+The actual changes to the prototype implementation are described later in \autoref{ch:rofi-hal}.
 
 \chapter[ Distance Measurement --- LiDAR ]{ Distance Measurement --- \acrshort{lidar} } \label{sec:lidar}
 \TODOLIST{
 \begin{itemize}
-    \item \TODO{Walk through \acrshort{lidar} features}
-    \item \TODO{Communicating by \acrshort{i2c}}
-    \item \TODO{\acrshort{lidar} protocol}
+    \item Walk through \acrshort{lidar} features
+    \item Communicating by \acrshort{i2c}
+    \item \acrshort{lidar} protocol
 \end{itemize}
 }
 This chapter describes \acrshort{lidar} and its capabilities, how to use the \gls{vl53l1x} \acrshort{lidar}, which includes communicating with the \gls{vl53l1x} over the bus and using the \gls{vl53l1x} driver provided by the manufacturer. The last section describes the current implementation of the \acrshort{lidar} driver, a \verb|C++| class abstracting the usage of the \gls{vl53l1x} driver.  
@@ -602,7 +602,7 @@ The address of a peripheral is a 7-bit (in rare cases 10-bit number). The reason
 The start condition is when the controller drives the SDA line low before the SCL goes down. The stop condition is when the controller releases SDA (the line goes from low to high) \textbf{after} the SCL line changes to high. It is suggested not to change the SDA line while SCL is high to avoid signaling false stop conditions during data transmission. Note that the acknowledgment bit is negated, i.e., logical 0 on the bus line signals that the peripheral received the packet successfully, whereas logical 1 signals the opposite.
 
 
-\subsection[ Addressing LiDAR's Registers ]{ Addressing \TODO{\acrshort{lidar}}'s Registers } \label{sec:lidar-i2c} 
+\subsection[ Addressing LiDAR's Registers ]{ Addressing \TODO{\gls{vl53l1x}}'s Registers } \label{sec:lidar-i2c} 
 \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number. However, the \acrshort{i2c} protocol only addresses the device. In order to address the device's register, a normal transaction is started, where the first two data packets are the two bytes of the register address. The most significant byte of this index (register address) is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that to read data from the \gls{vl53l1x}, the controller needs to make two transactions: a write transaction with register index, and the actual read. However, writing data to the \gls{vl53l1x} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
 
 % \subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
@@ -686,7 +686,7 @@ The \acrshort{uld} provides only two distance modes: short and long. The represe
 
 \subsection{ Timing Budget } \label{TB}
 
-The \emph{timing budget} is the time that \acrshort{lidar} measures the distance. \TODO{ The longer the timing budget, the longer the maximum distance \acrshort{lidar} can measure }, but it comes at the cost of increased power consumption. The user can set the timing budget, which ranges from \qtyrange{20}{1000}{\milli\second}. There are a few constraints on the timing budget. The minimal budget timing that can be used for all distance modes is \qty{33}{\milli\second}; however, the short distance can use lower timings. In order to be able to measure \qty{4}{\metre} in the long distance mode, the timing budget must be at least \qty{140}{\milli\second}.
+The \emph{timing budget} is the time that \acrshort{lidar} measures the distance. \TODO{ Longer timing budget increases the maximum measurable distance. The longer the timing budget, the longer the maximum distance \acrshort{lidar} can measure }, but it comes at the cost of increased power consumption. The user can set the timing budget, which ranges from \qtyrange{20}{1000}{\milli\second}. There are a few constraints on the timing budget. The minimal budget timing that can be used for all distance modes is \qty{33}{\milli\second}; however, the short distance can use lower timings. In order to be able to measure \qty{4}{\metre} in the long distance mode, the timing budget must be at least \qty{140}{\milli\second}.
 
 For the \acrshort{uld}, there is a difference in allowed values \TODO{compared} to the timing budget in the datasheet \cite{vl53l1x}. The allowed values for timing budget in the \acrshort{uld} are only $[15, 20,
 33, 50, 100, 200, \qty{500}{\milli\second}]$. \TODO{However, the \qty{15}{\milli\second} timing can only be used for the short distance mode}. The default value is set to \qty{100}{\milli\second}.
@@ -737,9 +737,9 @@ The out-of-bounds with value $4$ usually occurs when the target is at the maximu
 
 The wraparound range status of value $7$ is reported when the target is very reflective, and the distance is longer than the limited physical distance measurable by the \gls{vl53l1x}. This distance is \qty{1.3}{\metre} for the short distance mode and \qty{5}{\metre} for the long mode.
 
-\section[ LiDAR Diver ]{ \TODO{ \acrshort{lidar} Driver Abstraction in \acrshort{roficom} } } \label{sec:lidar-driver}
+\section[ \TODO{LiDAR Diver} ]{ \TODO{ \acrshort{lidar} Driver Abstraction in \acrshort{roficom} } } \label{sec:lidar-driver}
 
-Because most of the \acrshort{roficom} project uses \verb|C++| abstraction, the same was intended for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as an independent library from the \acrshort{roficom} firmware. \TODO{However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers.} The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update of the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} driver was designed to keep communication flow similar to the \verb|C| driver (as described in \autoref{sec:lidar-api}).The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, which means it can be inserted or removed at any time without restarting or crashing the system. Since the \acrshort{lidar} itself does not have to be plugged into the \acrshort{roficom}, it was desired to have the management of the \acrshort{lidar} state more explicit. The states are: \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
+Because most of the \acrshort{roficom} project uses \verb|C++| abstraction, the same was intended for the \acrshort{lidar}. Moreover, the \acrshort{lidar} was designed as an independent library from the \acrshort{roficom} firmware. However, the \acrshort{lidar} library depends on the \texttt{stm32cxx} drivers. The main goal for this driver is to make pleasant abstraction around the actual \verb|C| driver. Having the \acrshort{lidar} driver abstraction enables to change or update of the underlying driver without more or less changing the \acrshort{roficom}'s firmware. The \acrshort{lidar} driver was designed to keep communication flow similar to the \verb|C| driver (as described in \autoref{sec:lidar-api}).The \acrshort{lidar} is supposed to be \emph{hot-pluggable}, which means it can be inserted or removed at any time without restarting or crashing the system. Since the \acrshort{lidar} itself does not have to be plugged into the \acrshort{roficom}, it was desired to have the management of the \acrshort{lidar} state more explicit. The states are: \acrshort{lidar} is not present, \acrshort{lidar} is present but not yet initialized, \acrshort{lidar} is initialized but not measuring, and last, \acrshort{lidar} is measuring. 
 
 \subsection{Error handling}
 Managing the state goes in hand with error handling since every operation can fail by either \acrshort{i2c} failing, \verb|C| driver failing, or simply by the fact that \acrshort{lidar} is not plugged in. Before considering the error handling, it is important to mention that the operations of \gls{vl53l1x} differ in the returned value. For example, some function returns the distance mode, the measurement result, or in most cases, they do not return any value; however, all of them can fail.
@@ -748,7 +748,7 @@ There are several choices for considering error handling in \verb|C++|. The firs
 
 \verb|C++23| contains a new mechanism for error handling the \lstinline|std::expected|, similar to Rust's \lstinline|Result| or Haskell's \lstinline|Either|. However, at the time of writing, the project is using \verb|C++20| since not all the features of \verb|C++23| are yet implemented in the used compilers. Fortunately, the \acrshort{rofi} project contains implement of the concept under the name \lstinline|Result| under the Atoms project. Atoms are helper libraries for the \acrshort{rofi} project, and the \lstinline|Result| can be found under the path \path{RoFI/softwareComponents/atoms/include/atoms/result.hpp}.
 
-The \lstinline|Result| contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although it contains more information about the error. Both the value and error can be any \TODO{type}. The \lstinline|Result| provides the ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are unfamiliar with monadic functions, they allow you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant checking of whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then()|, \lstinline|or_else()| and \lstinline|transform()|. The \lstinline|and_then()| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present; otherwise, it returns the error. Similarly, the \lstinline|or_else()| returns value if it contains value; otherwise, returns result of its argument (again callable function). The \lstinline|transform()| and \lstinline|transform_error()| are used to transform the type of value or error, respectively.
+The \lstinline|Result| contains either \emph{value} or \emph{error}. The \lstinline|Result| cannot contain both. It is similar to the \lstinline|std::optional|, although it contains more information about the error. Both the value and error can be of any type. The \lstinline|Result| provides the ability to check whether the result contains value or error (with either \lstinline|bool| operator or \lstinline|has_value()| method), receive the underlying value or error, and \emph{monadic functions}. If you are unfamiliar with monadic functions, they allow you to work on the wrapped value (i.e., value or error in the case of \lstinline|Result|) rather than the \lstinline|Result| itself. Those functions save us from the constant checking of whether the result contains value or error. The monadic functions for the \lstinline|Result| are \lstinline|and_then()|, \lstinline|or_else()| and \lstinline|transform()|. The \lstinline|and_then()| method applies its argument (callable function) on the value of the \lstinline|Result| only if the value is present; otherwise, it returns the error. Similarly, the \lstinline|or_else()| returns value if it contains value; otherwise, returns result of its argument (again callable function). The \lstinline|transform()| and \lstinline|transform_error()| are used to transform the type of value or error, respectively.
 
 Even though the return value types differ for many functions, the error type is the same for all the functions \TODO{; thus, it is important choice}. The default error type for the \lstinline|Result| is \verb|C++|'s \lstinline|std::string|. However, \lstinline|std::string| is a very robust and heavy library (in an embedded context), which means it is unsuitable for the firmware. Two alternatives were considered --- \lstinline|std::string_view| and base number (or an enum). The \lstinline|std::string_view| was chosen since it allows error detection when developing. However, all functions are implemented in a way to allow for easy error type change. Every function returns the error wrapped by function \lstinline|errorMessage( error )|. The function \lstinline|errorMessage()| converts the bare error (in this case, the error returned by the \gls{vl53l1x} driver) to the \acrshort{lidar}'s error. Thus, when changing the error type for the \acrshort{lidar}, only the \lstinline|error_type| member and the \lstinline|errorMessage()| function must be changed.
 
@@ -762,7 +762,7 @@ Even though the return value types differ for many functions, the error type is 
 
 The \acrshort{lidar}'s state, visualized in \autoref{fig:lidar-state}, consist of four possible values: \texttt{Missing}, \texttt{Uninitialized}, \texttt{Initialized}, and \texttt{Measuring}. The state \texttt{Missing} represents that the \acrshort{lidar} is either not present, or the \acrshort{roficom} cannot communicate with it. When \acrshort{roficom} recognizes that the \acrshort{lidar} is connected, it is represented as \texttt{Uninitialized} state, which means device is connected and running but needs to be initialized by the firmware. After initialization from the firmware, the \acrshort{lidar} is ready to start measuring, the state \texttt{Initialized} can be understood as a software standby. While in \texttt{Measuring} state, after measurement, the \acrshort{lidar} can be stopped in measuring and returned to software standby.
 
-Since the \acrshort{lidar}'s current (only) requirement is always to measure the distance, the firmware accounts for two states --- actively measuring and uninitialized (or unable to measure). The \verb|Measuring| in \autoref{fig:lidar-state} stays the same as the actively measuring. However, the state ``unable to measure'' is combined from states \verb|Missing|, \verb|Uninitialized| and \TODO{partially} \verb|Initialized|. These two new states make state handling easier in the code. The state ``unable to measure'' is handled by the function \lstinline|lidarInit()|, and the state \verb|Measuring| is handled by \lstinline|lidarGet()|. The main purpose of \lstinline|lidarInit()| is to correctly initialize the device and start measuring. On the other hand, the function \lstinline|lidarGet()| expects the device to be correctly initialized and measuring. The purpose of \lstinline|lidarGet()| is to check whether the distance is measured, and if it is, save the measurements for the next transfer to the \TODO{module's control unit}.
+Since the \acrshort{lidar}'s current (only) requirement is always to measure the distance, the firmware accounts for two states --- actively measuring and uninitialized (or unable to measure). The \verb|Measuring| in \autoref{fig:lidar-state} stays the same as the actively measuring. However, the state ``unable to measure'' is combined from states \verb|Missing|, \verb|Uninitialized| and \verb|Initialized|. These two new states make state handling easier in the code. The state ``unable to measure'' is handled by the function \lstinline|lidarInit()|, and the state \verb|Measuring| is handled by \lstinline|lidarGet()|. The main purpose of \lstinline|lidarInit()| is to correctly initialize the device and start measuring. On the other hand, the function \lstinline|lidarGet()| expects the device to be correctly initialized and measuring. The purpose of \lstinline|lidarGet()| is to check whether the distance is measured, and if it is, save the measurements for the next transfer to the module's control unit.
 
 Those two functions can call each other because if anything fails in the process (in both functions), the device probably needs to be initialized again. On the contrary, when the \lstinline|lidarInit()| succeeds, it is safe to call \lstinline|lidarGet()|. \lstinline|lidarGet()| calls itself to ensure the latest measurements are saved. It is important to note that not receiving the data (i.e., the data is not ready yet) is not a failure and only means it is necessary to check on the data again. Otherwise, the measured value would never be received --- the device would get initialized again before the first measurement.
 
@@ -791,14 +791,14 @@ The main benefit and use case for \acrshort{bsp} is having all board-specific co
 
 \acrshort{bsp} is usually used in an embedded environment and provides many benefits. Not only it abstracts hardware details, but it also establishes a single source of truth for pin definitions, which is less error-prone than having them defined at multiple places. \acrshort{bsp} assures correct initialization of the board at single place. Having everything at a single point enables easier portability across different board versions. The abstraction allows for using the components defined in \acrshort{bsp} in different independent parts of the project. 
 
-In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides the declaration of function \lstinline{dbgInstance}, which is a function that \acrshort{roficom} uses for debugging with a \TODO{ \texttt{uart} } driver. \verb|bsp.hpp| depends on the external function \lstinline|SystemCoreClockUpdate()|, which is a \TODO{platform-dependent function} that needs to be called after the board clock has been setup. On the contrary, the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
+In \acrshort{roficom}, \acrshort{bsp} is implemented as two files: \verb|bsp.hpp| and \verb|bsp.cpp|. The \verb|bsp.hpp| header file contains all declarations of pins and peripheral drivers, which live in namespace \lstinline{bsp} and are exposed for use in \acrshort{roficom}. However, the function \lstinline{bsp::setupBoard()} \textbf{must} be called before any pin or driver is accessed. The function \lstinline{bsp::setupBoard()} initialized the board, pins and drivers provided in the \lstinline{bsp} namespace. The header file provides the declaration of function \lstinline{dbgInstance}, which is a function that \acrshort{roficom} uses for debugging with a \texttt{uart} driver. \verb|bsp.hpp| depends on the external function \lstinline|SystemCoreClockUpdate()|, which is a platform-dependent function that needs to be called after the board clock has been set up. On the contrary, the \verb|bsp.cpp| defines and implements everything declared in \verb|bsp.hpp|. 
 
 \verb|bsp.hpp| acts as an interface specifying what drivers and pins \acrshort{roficom} needs to function; however, since those pins and drivers are stored as global variables in namespace \lstinline{bsp}, the interface should be kept as minimal as possible to save space in the global space. On the other hand, \verb|bsp.cpp| acts as an implementation of this interface and should mainly correctly set up the board, pins, and drivers for usage; that means the \verb|bsp.cpp| can use pins and drivers that are not exposed as it needs to meet the interface specification.
 
 To illustrate the main benefit of the \acrshort{bsp}, imagine a scenario where \acrshort{mcu} on the board must be replaced with a different family, thus, changing the pin layout. In this scenario, it would be only to change the \verb|bsp.cpp| file with pin definitions (and if not already present implementation of drivers), but the \verb|bsp.hpp| and components built on top of that would be left unchanged and still work.
 
 \section[ Gpio::Pin Initialization ]{ \lstinline|Gpio::Pin| Initialization }
-\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify the used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation units is not defined by the language specification. As a result, \lstinline{bsp} cannot use \lstinline{GpioA}, ..., for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where the first argument is the pin position. The second argument is \TODO{the GPIO line defined by STMicroelectronics}.
+\lstinline{Gpio::Pin} initialization is the most notable and important change in \lstinline{bsp} that differs from all other uses in \acrshort{roficom}. \acrshort{roficom} uses the expression \lstinline{GpioA[ 9 ]} to specify the used pins. \lstinline{GpioA}, \lstinline{GpioB} and \lstinline{GpioC} are global objects provided by the \lstinline{Gpio} driver. At the time of writing, the initialization order of global variables across multiple translation units is not defined by the language specification. As a result, \lstinline{bsp} cannot use \lstinline{GpioA}, ..., for pin definitions and instead uses the \lstinline{Gpio::Pin} structure initialization, where the first argument is the pin position. The second argument is the \acrshort{gpio} line defined by STMicroelectronics.
 
 \chapter{ Implementation --- Design Decisions } \label{ch:design}
 This chapter discusses interesting design decisions and explains their reasoning. This chapter contains sections discussing the changes made to the build system with the related issue, the implementation of the \acrshort{i2c} driver, the implementation of the new motor driver, the implementation of the power sharing, and the implementation of the connector-to-module protocol in \acrshort{roficom}.
@@ -841,11 +841,11 @@ Since the two functions only take the arguments either for reading from or writi
 
 \section{ Motor driver }
 
-As previously mentioned in the \autoref{sec:roficom-hw}, the prototype version of the motor's driver could not stop the motor's rotation fast enough and damaged the \acrshort{roficom}'s case. That resulted in addition of magnetic sensors and the motor driver had to updated. This section explains the current implementation of the driver.
+As previously mentioned in \autoref{sec:roficom-hw}, the prototype version of the motor's driver could not stop the motor's rotation fast enough and damaged the \acrshort{roficom}'s case. That resulted in addition of magnetic sensors and the motor driver had to updated. This section explains the current implementation of the driver.
 
 The number of magnetic sensors increased from two to array of ten among the movement path of the gearing. The gearing contains a small magnet that activates the sensors while moving near them. While testing the movement, it was observed that at the same time multiple sensors can detect the magnet, which influenced the way the current position is measured.
 
-The current position is measured as a sum of the positions of active pins divided by the count of active pins, further divided by the position of the last pin. The pins are indexed from $\numrange{0}{9}$, where the gearing in the retracted position activates the sensor pin $0$ and the sensor pin $9$ is active in an expanded state. Such indexing should mean that the count of active pins should always be at least one; however, due to the movement or \TODO{malfunction}, the count can be zero, resulting in a division by zero and crashing the whole system. The measured position ranges from $0$ to $100$ (the calculated value times $100$) and sets explicitly the value $-1$ for error in measuring (i.e., zero active sensors). Explicitly setting the error value allows stopping the motor; otherwise, it could run indefinitely, damaging the structure. 
+The current position is measured as a sum of the positions of active pins divided by the count of active pins, further divided by the position of the last pin. The pins are indexed from $\numrange{0}{9}$, where the gearing in the retracted position activates the sensor pin $0$ and the sensor pin $9$ is active in an expanded state. Such indexing should mean that the count of active pins should always be at least one; however, due to the movement or malfunction, the count can be zero, resulting in a division by zero and crashing the whole system. The measured position ranges from $0$ to $100$ (the calculated value times $100$) and sets explicitly the value $-1$ for error in measuring (i.e., zero active sensors). Explicitly setting the error value allows stopping the motor; otherwise, it could run indefinitely, damaging the structure. 
 
 \begin{figure}
     \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{assets/motor-state.pdf}
@@ -886,11 +886,11 @@ Each measurement and conversion is done in the \lstinline|run()| function, the r
 \begin{itemize}
     \item Added power information - connection of INT and EXT, current and voltage of INT and EXT.
     \item Connection to mating side.
-    \item Lidar status and distance and setting \TODO{ distance mode ?? }.
+    \item Lidar status and distance and setting distance mode.
 \end{itemize}
 }
 
-As previously mentioned in the \autoref{sec:roficom-firmware}, the prototype version of the firmware was missing the full implementation of the connector-to-module communication. The unfinished command is the status command, which only implemented expanding and retracting the connector based on the received command and responding with blobs remaining to be sent and received. This section describes finishing the implementation of the status command.
+As previously mentioned in \autoref{sec:roficom-firmware}, the prototype version of the firmware was missing the full implementation of the connector-to-module communication. The unfinished command is the status command, which only implemented expanding and retracting the connector based on the received command and responding with blobs remaining to be sent and received. This section describes finishing the implementation of the status command.
 
 The function \lstinline|onCmdStatus()| accomplishes the status command parsing, reacting and responding, which is part of the reaction callback function given for the \lstinline|spiInterface|. The \lstinline|onCmdStatus()| parameters needed to be extended by the \lstinline|ConnectorStatus| (manages connection to mating connector), \lstinline|PowerSwitch| (power sharing), \lstinline|Lidar| and \lstinline|std::optional< LidarResult >|. The \acrshort{lidar} result is optional since the command status can be received before the \acrshort{lidar} responds with the first measurement or when the \acrshort{lidar} is not plugged in. Because of the new addition to the protocol, the structure containing the flags for command status was extended correspondingly (with \acrshort{lidar} distance mode and result status).
 
@@ -917,7 +917,7 @@ The header file for the interface is in file \path{RoFI/softwareComponents/rofiH
 
 The prototype version of the interface has all components as a \emph{Proxy}. The Proxy object is meant to be an abstraction that does not hold the ownership of the underlying component and is meant to be lightweight, safely copyable and shareable.
 
-The prototype version contains three main components --- \lstinline[breakatwhitespace]|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, consisting of a number of joints and connectors. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both control and \TODO{getting joint information}.
+The prototype version contains three main components --- \lstinline[breakatwhitespace]|RoFI|, \lstinline|Joint| and \lstinline|Connector|. The \lstinline|RoFI| represents the \acrshort{rofi} module, this object does not have a constructor and is instead received with \lstinline|RoFI::getLocalRoFI()| static method or \lstinline|RoFI::getRemoteRoFI(Id remoteId)|. Each module has its shape, consisting of a number of joints and connectors. The \lstinline|RoFI| allows to get the proxy for the module's joints and connectors. The \lstinline|Joint| proxy allows for both: controlling the joint and getting the joint information.
 
 The connector was the only component that needed a change due to the \acrshort{lidar} addition. The \lstinline|Connector| proxy has the ability to extend and retract the connector, connect and disconnect powerlines (internal or external), react to connection and disconnection from the mating side and powerlines, and send and react to received packets. The part of the \lstinline|Connector| that needed change was the \lstinline|ConnectorState|. The prototype version of the \lstinline|ConnectorState| contains information about the connector's position (extended or retracted), connection on powerlines and to the mating side, the orientation of the connection (North, East, South, West), and the voltage and current of the powerlines.
 
@@ -938,12 +938,12 @@ The distance mode is represented as a 2-bit number, and the values correspond to
 \section{ Implementation --- esp32 }
 \TODOLIST{
 \begin{itemize}
-    \item Apply changes from interface --- lidar status, distance and \TODO{distance modes}
+    \item Apply changes from interface --- lidar status, distance and distance modes
     \item Issue $\rightarrow$ status is not being updated $\rightarrow$ Needed to implement poller
 \end{itemize}
 }
 
-Since the protocol has changed, the changes must be synchronized to all implementations. Not only does the protocol change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status, measured distance, and distance mode is described in \autoref{sec:lidar-result}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). \TODO{Other implementations are out of the scope of this thesis.}
+Since the protocol has changed, the changes must be synchronized to all implementations. Not only does the protocol change need to be replaced in all of the \acrshort{rofi} \acrshort{hal} implementations, but also in the firmware implementation. The change of firmware implementation that sends the \acrshort{lidar} status, measured distance, and distance mode is described in \autoref{sec:lidar-result}. This section describes changes made in the esp32 \acrshort{hal} implementation (for the \gls{universal-module}). Other implementations are out of the scope of this thesis.
 
 The prototype version has a lot of functionality implemented. Before mentioning the specific changes made, there is a short overview of how the esp32 \acrshort{hal} handles the connector-to-module communication. The \lstinline|ConnectorBus| handles any command (such as to connect and disconnect) for the local connector. The connector schedules the command to be sent over the bus. The \lstinline|ConnectorBus| for sending the commands runs on a parallel thread. The sent is handled by the function \lstinline|run()| with a specified command as an argument. After the command is sent and the response is received, it is returned to the connector under the function call \lstinline|finish()|. The parsing of the response into the \lstinline|ConnectorState| is done with the function \lstinline|ConnectorStateImpl::from()|.
 
