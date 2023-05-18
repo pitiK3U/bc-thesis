@@ -1,0 +1,45 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Firmware for RoFICoM
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Petr
+    family-names: Bém
+    affiliation: 'Masaryk University, Faculty of Informatics.'
+identifiers:
+  - type: url
+    value: 'https://is.muni.cz/th/plbdk/'
+repository-code: 'https://github.com/paradise-fi/RoFI/'
+repository: 'https://github.com/pitiK3U/bc-thesis'
+abstract: >-
+  The RoFI platform is an open-software and open-hardware
+  platform for modular robots. The RoFI platform uses the
+  RoFI Communication Mechanism, RoFICoM for short, for
+  connecting and communicating between two RoFI modules.
+
+  This thesis presents an implementation of firmware for
+  RoFiCoM. It is built on top an existing prototype
+  implementation and transforms it into a production-ready
+  state. We primarily introduce a board support package to
+  support various hardware revisions and implement missing
+  functionality, such as utilizing all on-board sensors and
+  reworking motor control. Additionally, we enhance the
+  communication protocol with support for these features and
+  extend implementation for the Universal module's RoFICoM
+  driver to support these changes.
+keywords:
+  - firmware
+  - embedded
+  - RoFI
+  - robots
+  - c++
+  - lidar
+license: CC-BY-3.0
+commit: 94e26e5
+version: 1.0.0
+date-released: '2023-05-17'
