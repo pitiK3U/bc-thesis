@@ -42,7 +42,7 @@
 ]{babel}        %% foreign texts to be typeset as follows:
 %%
 
-\newcommand{\TODO}[1]{\textcolor{red}{\textit{#1}}}
+\newcommand{\TODO}[1]{#1} % \textcolor{red}{\textit{#1}}}
 \newcommand{\TODOLIST}[1]{\iffalse\TODO{#1}\fi}
 
 %% The following section sets up the metadata of the thesis.
@@ -51,7 +51,6 @@
     university  = mu,
     faculty     = fi,
     type        = bc,
-    % department  = \TODO{Department of Machine Learning and Data Processing},
     author      = Petr Bém,
     gender      = m,
     advisor     = {RNDr. Jan Mrázek},
@@ -106,8 +105,6 @@
 \usepackage{xcolor}
 \usepackage{graphicx}
 \graphicspath{ {./assets/} }
-
-\usepackage{todonotes} % colorful TODO notes, REMOVE
 
 \usepackage{tikz}
 \usepackage{aeguill}
@@ -256,30 +253,13 @@ communication to other modules. As the name suggests, its primary purpose is to 
     \item connector-to-module interface (communication with the integrated module).
 \end{itemize}
 
-\iffalse
-\begin{figure}
-    % responsive_image path: assets/img/connector/roficom_main_sketch.jpg
-    \includegraphics{ roficom_main_sketch.jpg }
-    \caption{ The current look of \acrshort{roficom} }
-\end{figure}
-\fi
-
 \subsection{Mechanical structure}
-\iffalse
-<!--
-- Describe individual parts: body, clip and skirt
-- Magnets in skirt to ease/join the connecting
-- extracting and retracting  - motors
-- ?? lidar - I2C
--->
-\fi
 
 This section describes the mechanical components, their functionality, and the mechanism used to extend and retract the connector. This section summarizes the previously mentioned paper ``RoFICoM'' \cite{MrazekBarnat2019Roficom}, where the structure is explained more deeply.
 
 RoFICoM is built from three main parts: \emph{body}, \emph{clip}, and \emph{skirt}. These three parts are shown in \autoref{fig:key-components}
 
 \begin{figure}[ht]
-    %responsive_image path: assets/img/connector/dock_key_components.svg 
     \includegraphics{ dock_components.pdf }
     \caption{ The components of the connector from the paper ``RoFICoM'' \cite{MrazekBarnat2019Roficom} }
     \label{fig:key-components}
@@ -307,90 +287,20 @@ The \autoref{fig:dock-arrangement} shows the composed components of the \acrshor
     \label{fig:dock-arrangement}
 \end{figure}
 
-\iffalse
-\subsection{ Ratings }
-\begin{itemize}
-    \item compact, flat layout (diameter 50 mm, thickness 17 mm)
-    \item data and power-sharing between connected units
-    \item load capacity
-        \item normal direction: 110 N
-        \item shear direction: 50 N
-    \item actuation time: less than 0.6 s
-    \item genderless, 90-degree symmetrical with automatic orientation detection
-\end{itemize}
-\fi
-
 \subsection{ Connector-to-Connector Interface }
-\iffalse
-<!--
-- \acrshort{uart}
-- data and power-sharing - EXT and INT power lanes 
--->
-\fi
 
 A small printed circuit board (PCB) inside the skirt with spring-loaded pins realizes the connector-to-connector connection. This PCB provides both
 data and power-sharing to the connected module.
 \acrshort{roficom} uses \emph{\acrshort{uart}} transferring frames with specified format and CRC for data communication. Those frames hold ``blobs'' ---
 binary data transferred between modules. 
 
-\iffalse
-\begin{figure}
-    % responsive_image path: assets/img/connector/skirt_pins.svg
-    \includegraphics{ skirt_pins.pdf }
-    \caption{ Graph showing pin layout on PCB inside the skirt }
-\end{figure}
-\fi
-
 \subsection{ Connector-to-Module Interface }
+
 RoFICoM provides a \emph{\acrshort{spi}} interface for communication between the module and RoFICoM. The communication on the bus is performed
 in transactions. Transaction format consists of a \emph{command}, the first 8~bits of a transaction, followed by a \emph{command
 data}, then at least 8 bytes pause with connector response. Commands \numrange{0}{127} are reserved for the base connector and must be supported by all
 connector types. For example, some connector commands are: version command, status command, and send and receive earlier
 mentioned blob.
-
-\iffalse
-\subsection{ Motivation of RoFICoM }
-<!--
-_Requirements_:
-- able to connect when docks are not touching side by side
-- genderless
-- connection in four different orientations
-- based on a mechanical connection
-- disconnect without the participation of the mating side
-- support data and power-sharing
--->
-
-Since the RoFI platform is [grid-based]({% link _platform/01_grid-system.md %}), it results in several _requirements_
-for both the platform and, more importantly for us, the docking system.
-In order to answer "Why do we need it?" let's walk through the _requirements_, their cause and how RoFICoM implements them.
-
-<!-- The first _requirement_ is to **allow modules to connect
-when they are not touching side by side**, which is caused by the modules being sphere-shaped, resulting in an empty gap between two adjacent modules. RoFICoM solves this by having a [flat design with expanding and retracting](#mechanical-structure) as it connects and disconnects, respectively. -->
-RoFICoM has a flat design with ability to expand and retract. This allows RoFICoM to connect over empty space between
-adjacent modules. As result modules don't have to be physically touching to be able to connect.
-
-<!-- The _requirement_ of a **genderless** docking system and the **ability to connect in four different orientations** are to limit the
-complexity of configuration and reconfiguration. RoFICoM solves this by being 90-degree symmetrical (see figure below). -->
-RoFICoM has 90-degree symmetrical design, this is best seen in figure below on the skirt design. Therefore it enables
-RoFICoM to connect in **four different orientations** (0°, 90°, 180°, 270°) and makes the connector **genderless**.
-
-{% responsive_image path: assets/img/connector/skirt_symmetry.svg max_width: "450px" title: "Top down look of skirt symmetry" %}
-
-RoFICoM forms **strong mechanical connection** using previously mentioned clip and skirt. This feature not only helps RoFICoM stay connected under pressure, but also remain connected without electricity consumption or to avoid limitations of magnetic force.
-
-{% responsive_image path: assets/img/connector/locking_process.svg max_width: "450px" title: "Visualization of roficom's locking process." %}
-
-<!-- It is required to be able to **disconnect without the participation of the mating side** to ease reconfiguration. On top of
-that, this allows for connection to passive docks. RoFICoM solves this with its mechanical design of the clip and skirt.
-The design enables the connector to expand/retract and thus connect to/disconnect from the mating side independently
-of the other side. -->
-RoFICoM is designed . This design is accomplished by the clip and skirt, which enables **connection between mating sides** to be established **independently of each other**. Additionally this enables the RoFICoM to connect to passive docks.
-
-Last but not least, the docking system must **support data and power
-sharing**, which is used to coordinate and charge modules. RoFICoM solves this with a [connector-to-connector
-interface](#connector-to-connector-interface).
-\fi
-
 
 \subsection{ Hardware details } \label{sec:roficom-hw}
 \TODOLIST{
@@ -424,8 +334,6 @@ The system board contains all other necessary circuits for \acrshort{roficom} to
     \label{fig:roficom-board}
 \end{figure}
 
-% \TODO{ Missing pins and a change in the motor's limit led to the change of \acrshort{mcu} }
-
 The magnetic sensors for the motor's retraction and expansion limit could not detect and stop the movement of the motor fast enough, which damaged the \acrshort{roficom}'s case.
 As for the magnetic sensors, instead of two pieces, they got increased to an array of ten pieces along the motor's movement path to determine the motor's speed and position more precisely.
 
@@ -440,7 +348,6 @@ The main features of this microcontroller are:
 \end{itemize}
 
 The microcontroller has other functionality, such as CRC calculation, \acrshort{spi}, \acrshort{uart}, \acrshort{i2c}.
-
 
 \chapter[ RoFICoM --- prototype version and current implementation ]{ \acrshort{roficom} --- prototype version and current implementation }
 \TODOLIST{
@@ -458,10 +365,7 @@ The microcontroller has other functionality, such as CRC calculation, \acrshort{
 
 This chapter focuses on the software of the \acrshort{rofi} platform and describes both the state of the software in the prototype implementation and the changes in the current implementation.
 
-% \section{ Project Structure / Architecture}
 The \acrshort{rofi} repository is an enormous monolithic (mostly) \verb|C++| project and contains many \acrshort{rofi} related sub-projects. For this thesis, only several sub-projects are essential. Those sub-projects are the \acrshort{roficom}'s firmware, stm32 drivers, and \acrshort{rofi} HAL.
-
-% Need more introduction or depth description of the structure ??
 
 \section[ RoFICoM's Firmware ]{ \acrshort{roficom}'s Firmware } \label{sec:roficom-firmware}
 \acrshort{roficom}'s firmware is located in the repository at the path \path{RoFI/hardwareModules/RoFICoM/software/control_board/}.
@@ -588,21 +492,12 @@ This section describes details of communication with the \gls{vl53l1x} --- i.e.,
 The protocol's communication is done in 8-bit packets. The transaction starts with the start condition. After that, every packet is confirmed from the receiving side with one acknowledgment bit, and the transaction ends with the stop condition. Since more peripheral devices can be connected to the \acrshort{i2c} bus, the controller must first address the peripheral to communicate.
 
 The address of a peripheral is a 7-bit (in rare cases 10-bit number). The reason why the address is only 7-bit and not the full 8-bits of the packet is because the last bit indicates the transaction type. The transaction type is either read transaction (the bit is set to 0) or write transaction (the bit is set to 1). The read/write bit is the least significant bit of the packet, and the address is contained in the seven highest bits of the packet (i.e., the address is shifted left by one bit). After the address is sent and met with acknowledgment from the peripheral, the data begins to be transmitted. 
-% \TODO{The protocol allows for any length of the data to be transmitted.}
 
 The start condition is when the controller drives the SDA line low before the SCL goes down. The stop condition is when the controller releases SDA (the line goes from low to high) \textbf{after} the SCL line changes to high. It is suggested not to change the SDA line while SCL is high to avoid signaling false stop conditions during data transmission. Note that the acknowledgment bit is negated, i.e., logical 0 on the bus line signals that the peripheral received the packet successfully, whereas logical 1 signals the opposite.
 
 
 \subsection[ Addressing VL53L1X's Registers ]{ Addressing \gls{vl53l1x}'s Registers } \label{sec:lidar-i2c} 
 \gls{vl53l1x} not only uses an \acrshort{i2c} address but also requires the address of its register, which is a 16-bit number. However, the \acrshort{i2c} protocol only addresses the device. In order to address the device's register, a normal transaction is started, where the first two data packets are the two bytes of the register address. The most significant byte of this index (register address) is sent first, followed by the least significant byte. Sending the index applies to both types of transactions (read and write). That means that to read data from the \gls{vl53l1x}, the controller needs to make two transactions: a write transaction with register index, and the actual read. However, writing data to the \gls{vl53l1x} makes only one write transaction because the index and data \textbf{must} be written together in one transaction.
-
-% \subsection[ I2C Implementation ]{ \acrshort{i2c} Implementation } \label{sec:lidar-i2c-impl}
-% \TODOLIST{
-% \begin{itemize}
-%     \item i2c driver
-%     \item \gls{vl53l1x} platform files
-% \end{itemize}
-% }
 
 \section[VL53L1X Interface ]{ \gls{vl53l1x} Interface }
 
@@ -635,8 +530,6 @@ The communication flow is following:
     
     \item Either repeat from step $5$ or stop the measuring.
 \end{enumerate}
-
-% \todo{Insert API flow diagram}
 
 \subsection{ Error Handling } \label{sec:uld-err}
 
@@ -671,10 +564,6 @@ if (status != 0) {
 \gls{vl53l1x} has three distance modes: \emph{short}, \emph{medium} and \emph{long}. Since the \acrshort{lidar} depends on ambient light, this is when distance modes make a~difference. Even though short mode can measure only up to \qty{136}{\centi\metre}, it is not as impacted by the ambient light as other modes. The datasheet \cite{vl53l1x} mentions that the short distance mode can measure \qty{135}{\centi\metre} under strong ambient light, which is nearly the same as without ambient light. On the contrary, the ambient light impacts the medium and long modes. Whereas the long mode can measure up to \qty{360}{\centi\metre}, in the strong ambient light, it only measured \qty{73}{\centi\metre}.
 
 The \acrshort{uld} provides only two distance modes: short and long. The representation for modes is \lstinline|1| for the short mode and \lstinline|2| for the long mode. The \acrshort{uld} provides functions \lstinline|VL53L1X_SetDistanceMode()| and \lstinline|VL53L1X_GetDistanceMode()| to set and retrieve the current \gls{vl53l1x} distance mode.
-
-% \subsection{ Timings }
-
-% \todo{ Insert timings diagram }
 
 \subsection{ Timing Budget } \label{TB}
 
@@ -801,7 +690,7 @@ The \acrshort{i2c} driver lies with other \verb|stm32| drivers in a project at p
 
 The driver contains class \lstinline|I2C|, \lstinline|SdaPin| and \lstinline|SclPin|, to make the pins distinguishable from \lstinline|Gpio::Pin|, i.e., when constructing the \lstinline|I2C| the following construction, where \lstinline|pinSda| and \lstinline|pinScl| are \lstinline|Gpio::Pin|s, \lstinline|I2C(..., pinSda, pinScl)| would fail to compile. On the other hand, the construction \lstinline|I2C(..., SdaPin( pinSda ), SclPin( pinScl ) )| compiles. It also ensures that swapping the two pin classes would not compile, i.e., \lstinline|I2C(..., SclPin( ... ), SdaPin( ... ) )| would not compile.
 
-The \acrshort{i2c} driver provides two functions: \lstinline|read| and \lstinline|write|. Those functions take the \acrshort{i2c} address of the peripheral and data container. There are also \lstinline|unsafe| variants of these functions that are used in \acrshort{lidar} \acrshort{i2c} implementation %\autoref{sec:lidar-i2c-impl}
+The \acrshort{i2c} driver provides two functions: \lstinline|read| and \lstinline|write|. Those functions take the \acrshort{i2c} address of the peripheral and data container. There are also \lstinline|unsafe| variants of these functions that are used in \acrshort{lidar} \acrshort{i2c} implementation
 that take the raw buffer and its size instead of a container. Since the \lstinline|read| and \lstinline|write| are templated functions, they use private functions to implement them. These private functions are not templated and take the raw buffer and size. Using a slim templated function with an inner function that is not templated reduces the size of generated functions from the template but allows the usage of a~generalized function.
 
 \subsection{ Error handling }
