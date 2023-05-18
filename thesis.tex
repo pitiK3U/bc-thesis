@@ -78,7 +78,7 @@
         Jan Mrázek for introduction to the \acrshort{rofi} platform, and everybody who supported me
         during the writing of this thesis.
     },
-    bib         = citations.bib,
+    bib         = used-citations.bib,
     %% Remove the following line to use the JVS 2018 faculty logo.
     facultyLogo = fithesis-fi,
 }
@@ -563,8 +563,9 @@ family-specific code. Folders with the family-specific abstractions are under th
 \verb|{driver}.port.hpp|. For example, the port file for \acrshort{i2c} for the microcontroller of
 \acrshort{roficom} is in \path{.../stm32cxx/stm32g0xx/i2c.port.hpp}.
 
-Port files follow the same guidelines, which is that the specific code is under \lstinline|namespace
-detail|, and it is implemented via \emph{mixins}. However, since \verb|C++| does not natively
+Port files follow the same guidelines, which is that the specific code is under
+\lstinline|namespace detail|, and it is implemented via \emph{mixins}.
+However, since \verb|C++| does not natively
 support mixins, this is done using the \verb|C++| technique called CRTP. CRTP
 \footnote{\url{https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern}} (Curiously
 recurring template pattern) is a templated class, which takes the class we wish to extend with our
@@ -1293,8 +1294,9 @@ able to break the firmware.
 
 The most interesting part of the second half is the transformation of \acrshort{lidar} status into
 the protocol flag. The values of the flag are specified in the \autoref{sec:rofi-hal-interface}.
-Each possible value for the flag can be derived from the possible value of \lstinline|std::optional<
-LidarResult >|. If the optional does not contain a value,  the result is \emph{not yet measured} (or
+Each possible value for the flag can be derived from the possible value of
+\lstinline|std::optional<LidarResult >|. 
+If the optional does not contain a value,  the result is \emph{not yet measured} (or
 the \acrshort{lidar} is not plugged in). Otherwise, the \lstinline|Result| class must be present. If
 the \lstinline|Result| has the error type set, the flag is set as such (the error value). The two
 checks handle the validity bit of the flag. After that, the \lstinline|Result| must contain the
